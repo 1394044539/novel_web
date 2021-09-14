@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "test": "vue-cli-service --mode test",
     "build": "vue-cli-service build"
   },
   "dependencies": {

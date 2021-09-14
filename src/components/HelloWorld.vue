@@ -32,10 +32,15 @@
 </template>
 
 <script>
+import index from "../api/index";
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  setup(){
+    index.userApi.userLogin()
   }
 }
 </script>
