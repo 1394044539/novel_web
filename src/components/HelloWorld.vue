@@ -32,7 +32,8 @@
 </template>
 
 <script>
-import index from "../api/index";
+
+import api from "../api/api";
 
 export default {
   name: 'HelloWorld',
@@ -40,7 +41,8 @@ export default {
     msg: String
   },
   setup(){
-    index.userApi.userLogin()
+    let param={}
+    api.userApi.userLogin()
   }
 }
 </script>

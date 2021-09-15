@@ -6,4 +6,8 @@ const userApi={
     },
 }
 
-export default userApi
+const sysApi={
+
+}
+
+export default { userApi ,sysApi }
