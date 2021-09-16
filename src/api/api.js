@@ -1,8 +1,8 @@
 import http from '../utils/http'
 
 const userApi={
-    userLogin: (params) => {
-        return http.post('/sysUser/login',params)
+    userLogin: (params,loading=false) => {
+        return http.post('/sysUser/login',params,loading)
     },
 }
 

@@ -1,5 +1,49 @@
-import instance from './axios'
+import axios from "axios";
+import util from '../utils/util'
 
+const instance =axios.create({})
+
+instance.defaults.baseURL = '/api'
+instance.defaults.timeout = 20000
+
+//封装请求头
+instance.interceptors.request.use(config =>{
+    config.headers.authorization = localStorage.getItem("authorization")
+    return config
+})
+
+//处理响应
+instance.interceptors.response.use(response => {
+    const res = response.data;
+    if(res.code === -10000){
+        //未登录
+        return Promise.reject(res.msg);
+    }
+    if(res.code === 200){
+        return res;
+    }
+    return response;
+},error => {
+    const res=error.response
+    if(res && res.status === 500){
+        util.error("服务器异常！")
+    } else if (res && res.status === 404){
+        util.error("404啦！")
+    }else if (error.toString().search('timeout')){
+        util.error('请求超时')
+    } else {
+        util.error('错误代码：'+res.status+",请联系管理员")
+    }
+    return Promise.reject(error)
+})
+
+/**
+ * post请求
+ * @param url
+ * @param data
+ * @param loading
+ * @returns {Promise<unknown>}
+ */
 const post = function (url,data,loading) {
     return new Promise((resolve,reject)=>{
         instance.post(url,data)

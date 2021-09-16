@@ -1,4 +1,9 @@
 const fs = require('fs');
+let path = require('path')
+
+function resolve(dir) { // 配置别名
+    return path.join(__dirname, dir)
+}
 module.exports = {
     publicPath: '/novel/',
     devServer: {
@@ -21,5 +26,12 @@ module.exports = {
         // public: '100.72.181.60:8080/readOnline/',
         // hot: true,
         disableHostCheck: true,
-    }
+    },
+    configureWebpack: {
+        resolve: {
+            alias: {
+                '@': resolve('src')
+            }
+        }
+    },
 }
