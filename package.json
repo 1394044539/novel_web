@@ -8,6 +8,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "ant-design-vue": "^2.2.7",
     "axios": "^0.21.4",
     "core-js": "^3.6.5",
     "vue": "^3.0.0",
@@ -19,7 +20,8 @@
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "@vue/compiler-sfc": "^3.0.0"
+    "@vue/compiler-sfc": "^3.0.0",
+    "vue-loader-v16": "^16.0.0-beta.5.4"
   },
   "browserslist": [
     "> 1%",
