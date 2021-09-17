@@ -20,19 +20,22 @@ instance.interceptors.response.use(response => {
         return Promise.reject(res.msg);
     }
     if(res.code === 200){
-        return res;
+        return res.data;
     }
-    return response;
+    util.error(res.msg)
+    return Promise.reject(res.msg);
+    // return response;
 },error => {
+    debugger
     const res=error.response
     if(res && res.status === 500){
-        util.error("服务器异常！")
+        util.noticeError("服务器异常！",res.data)
     } else if (res && res.status === 404){
-        util.error("404啦！")
+        util.noticeError("404啦！",res.data)
     }else if (error.toString().search('timeout')){
-        util.error('请求超时')
+        util.noticeError('请求超时',res.data)
     } else {
-        util.error('错误代码：'+res.status+",请联系管理员")
+        util.noticeError('错误代码：'+res.status+",请联系管理员",res.data)
     }
     return Promise.reject(error)
 })

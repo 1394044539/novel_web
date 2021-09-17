@@ -2,7 +2,7 @@ import http from '../utils/http'
 
 const userApi={
     userLogin: (params,loading=false) => {
-        return http.post('/sysUser/login',params,loading)
+        return http.post('/sysUser/loginByAccount',params,loading)
     },
 }
 

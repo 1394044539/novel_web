@@ -30,41 +30,33 @@ util.loading = function (message,duration=0) {
     return message.loading(message,duration)
 }
 
-util.noticeSuccess = function (title='操作成功',description,duration=4.5) {
+util.noticeSuccess = function (message='成功',description='操作成功',duration=4.5) {
     notification.success({
-        title,
+        message,
         description,
         duration,
     })
 }
 
-util.noticeSuccess = function (title='操作成功',description,duration=4.5) {
-    notification.success({
-        title,
-        description,
-        duration,
-    })
-}
-
-util.noticeError = function (title='操作失败',description,duration=4.5) {
+util.noticeError = function (message='错误',description='操作失败',duration=4.5) {
     notification.error({
-        title,
+        message,
         description,
         duration,
     })
 }
 
-util.noticeInfo = function (title='提示',description,duration=4.5) {
+util.noticeInfo = function (message='提示',description='提示',duration=4.5) {
     notification.info({
-        title,
+        message,
         description,
         duration,
     })
 }
 
-util.noticeWarning = function (title='警告',description,duration=4.5) {
+util.noticeWarning = function (message='警告',description='警告',duration=4.5) {
     notification.warning({
-        title,
+        message,
         description,
         duration,
     })
