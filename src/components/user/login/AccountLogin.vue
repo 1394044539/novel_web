@@ -69,23 +69,18 @@
                     ...toRaw(value)
                 }
                 api.userApi.userLogin(param).then(res=>{
-                    loading.value=false
                     util.success({
                         content: '登录成功!',
                         duration: 1,
                         key,
                     })
-                    .then(
-                        () => {
-                            localStorage.setItem("authorization",res.token)
-                            localStorage.setItem("userName",res.userName)
-                            localStorage.setItem("accountName",res.accountName)
-                            localStorage.setItem("roleList",JSON.stringify(res.roleList))
-                            localStorage.setItem("permissionList",JSON.stringify(res.permissionList))
-                            router.push({name: 'Main'})
-                        },
-                        () => {},
-                    )
+                    loading.value=false
+                    localStorage.setItem("authorization",res.token)
+                    localStorage.setItem("userName",res.userName)
+                    localStorage.setItem("accountName",res.accountName)
+                    localStorage.setItem("roleList",JSON.stringify(res.roleList))
+                    localStorage.setItem("permissionList",JSON.stringify(res.permissionList))
+                    router.push({name: 'Main'})
                 }).catch(err=>{
                     loading.value=false
                     setTimeout(hide,0)

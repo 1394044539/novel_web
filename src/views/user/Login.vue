@@ -11,7 +11,7 @@
             <!-- 手机号登录或者是找回密码表单 -->
             <PhoneLogin v-if="loginType===1||loginType===2" :loginType="loginType"  @switchType="switchType"/>
             <!-- 重新输入密码的界面 -->
-            <ResetPassword v-if="loginType===3" @switchType="switchType"/>
+            <ResetPassword v-if="loginType===3" :accountName="accountName" @switchType="switchType"/>
             <template #footer>
                 <div class="login-footer">
                     <div>
@@ -61,6 +61,7 @@
             //模块标题
             let title=ref("登录模块")
             let loginType=ref(0)
+            let accountName=ref("")
             //footer部分
             let registerModelStatus = ref(false)
             //监听loginType的变化
@@ -75,8 +76,12 @@
             })
 
             //切换登录状态
-            const switchType = (data) =>{
+            const switchType = (data,value) =>{
+                debugger
                 loginType.value=data
+                if(value){
+                    accountName.value=value
+                }
             }
 
 
@@ -84,7 +89,8 @@
                 title,
                 loginType,
                 registerModelStatus,
-                switchType
+                switchType,
+                accountName
             }
         }
     }
