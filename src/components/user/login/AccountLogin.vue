@@ -20,7 +20,7 @@
         </a-form-item>
         <a-form-item style="margin-bottom: 0">
             <a-button @click="formRef.resetFields()" >重置</a-button>
-            <a-button style="margin-left: 15px" type="primary" html-type="submit">登录</a-button>
+            <a-button style="margin-left: 15px" type="primary" html-type="submit" :loading="loading">登录</a-button>
         </a-form-item>
     </a-form>
 </template>
@@ -30,6 +30,7 @@
     import api from '@/api/api'
     import router from "../../../router/index";
     import './less/login.less'
+    import util from '@/utils/util'
 
     export default {
         name: "AccountLogin",
@@ -37,6 +38,7 @@
 
             //登录表单
             let formRef = ref()
+            let loading = ref(false)
             let accountLoginForm=reactive({
                 accountName:'',
                 password:'',
@@ -57,13 +59,36 @@
             }
             //表单操作
             const accountLogin = (value) =>{
+                const key = 'login'
+                loading.value=true
+                const hide = util.loading({
+                    content: '登录中...',
+                    key,
+                });
                 let param={
                     ...toRaw(value)
                 }
                 api.userApi.userLogin(param).then(res=>{
-                    debugger
-                    localStorage.setItem("authorization",res.token)
-                    router.push({name: 'Main'})
+                    loading.value=false
+                    util.success({
+                        content: '登录成功!',
+                        duration: 1,
+                        key,
+                    })
+                    .then(
+                        () => {
+                            localStorage.setItem("authorization",res.token)
+                            localStorage.setItem("userName",res.userName)
+                            localStorage.setItem("accountName",res.accountName)
+                            localStorage.setItem("roleList",JSON.stringify(res.roleList))
+                            localStorage.setItem("permissionList",JSON.stringify(res.permissionList))
+                            router.push({name: 'Main'})
+                        },
+                        () => {},
+                    )
+                }).catch(err=>{
+                    loading.value=false
+                    setTimeout(hide,0)
                 })
             }
 
@@ -76,7 +101,8 @@
                 accountLoginForm,
                 accountLogin,
                 accountRules,
-                callBackLogin
+                callBackLogin,
+                loading
             }
         }
     }

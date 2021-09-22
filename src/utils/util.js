@@ -4,30 +4,50 @@ import { createVNode } from 'vue';
 const util={}
 
 util.success = function (msg,duration=3) {
-    message.success(msg,duration)
+    return message.success(msg,duration)
 }
 
 util.error = function (msg,duration=3) {
-    message.error(msg,duration)
+    return message.error(msg,duration)
 }
 
 util.info = function (msg,duration=3) {
-    message.info(msg,duration)
-}
-
-util.warning = function (msg,duration=3) {
-    message.warning(msg,duration)
+    return message.info(msg,duration)
 }
 
 /**
  * 此方法会返回一个hide，需要调用setTimeout(hide, 2500)来停止loading，2500指时间，可以是0，代表立马停止
  * 也可以传入一个时间，然后返回一个hide，调用then方法，让他继续向后执行
- * @param message
+ * @param msg
  * @param duration
  * @returns {*}
  */
-util.loading = function (message,duration=0) {
-    return message.loading(message,duration)
+util.loading = function (msg,duration=0) {
+    return message.loading(msg,duration)
+}
+
+util.successKey = function (content,duration=3,key) {
+    return message.success({
+        content,
+        duration,
+        key
+    })
+}
+
+util.errorKey = function (content,duration=3,key) {
+    return message.error({
+        content,
+        duration,
+        key
+    })
+}
+
+util.loadingKey = function (msg,duration=0,key) {
+    return message.loading({
+        content,
+        duration,
+        key
+    })
 }
 
 util.noticeSuccess = function (message='成功',description='操作成功',duration=4.5) {

@@ -15,10 +15,10 @@ instance.interceptors.request.use(config =>{
 //处理响应
 instance.interceptors.response.use(response => {
     const res = response.data;
-    if(res.code === -10000){
-        //未登录
-        return Promise.reject(res.msg);
-    }
+    // if(res.code === -10000){
+    //     //未登录
+    //     return Promise.reject(res.msg);
+    // }
     if(res.code === 200){
         return res.data;
     }
@@ -26,7 +26,6 @@ instance.interceptors.response.use(response => {
     return Promise.reject(res.msg);
     // return response;
 },error => {
-    debugger
     const res=error.response
     if(res && res.status === 500){
         util.noticeError("服务器异常！",res.data)
