@@ -25,17 +25,31 @@
             </template>
         </a-modal>
         <a-modal
-            :visible="registerModelStatus"
+            v-model:visible="registerModelStatus"
             title="注册"
-            width="300px"
+            width="400px"
             style="text-align: center"
+            :after-close="()=>registerRef.resetFields()"
         >
-        <p>暂时供内部使用，注册请联系开发人员</p>
-        <template #footer>
-            <div style="text-align: center">
-                <a-button type="primary" @click="registerModelStatus=false">确定</a-button>
-            </div>
-        </template>
+            <p>该平台暂提供给内部使用，注册请填写信息申请</p>
+            <a-form
+                :model="registerForm"
+                ref="registerRef"
+                :rules="registerRules"
+            >
+                <a-form-item style="text-align: left" label="手机号：" name="phone">
+                    <a-input v-model:value="registerForm.phone" type="input" autocomplete="off"/>
+                </a-form-item>
+                <a-form-item style="text-align: left" label="申请描述：" name="registerMessage">
+                    <a-textarea showCount :maxlength="200" :rows="5" placeholder="说说为什么要申请" v-model:value="registerForm.registerMessage" autocomplete="off"/>
+                </a-form-item>
+            </a-form>
+            <template #footer>
+                <div style="text-align: center">
+                    <a-button @click="()=>registerModelStatus=false">取消</a-button>
+                    <a-button style="margin-left: 15px" type="primary" @click="applyRegister">申请</a-button>
+                </div>
+            </template>
         </a-modal>
     </div>
 </template>
@@ -43,7 +57,7 @@
 <script>
     import util from "../../utils/util"
     import { QqOutlined,WechatOutlined } from '@ant-design/icons-vue'
-    import { ref, watch } from 'vue'
+    import { ref,reactive, watch } from 'vue'
     import AccountLogin from '@/components/user/login/AccountLogin'
     import PhoneLogin from '@/components/user/login/PhoneLogin'
     import ResetPassword from '@/components/user/login/ResetPassword'
@@ -77,11 +91,41 @@
 
             //切换登录状态
             const switchType = (data,value) =>{
-                debugger
                 loginType.value=data
                 if(value){
                     accountName.value=value
                 }
+            }
+
+            //申请注册模块
+            const registerRef=ref()
+            let registerForm = reactive({
+                phone:'',
+                registerMessage:''
+            })
+
+            let registerRules ={
+                phone: [
+                    {
+                        required: true,
+                        message: '请输入手机号',
+                        trigger: 'change'
+                    },
+                    {
+                        pattern: "^1[3456789]\\d{9}$",
+                        message: "手机号格式有误",
+                        trigger: 'blur'
+                    }
+                ]
+            }
+            //提交表单
+            const applyRegister = () =>{
+                registerRef.value.validate().then(res=>{
+                    //开始校验逻辑
+                    registerModelStatus.value=false
+                }).catch(err=>{
+                    console.log(err)
+                })
             }
 
 
@@ -90,7 +134,11 @@
                 loginType,
                 registerModelStatus,
                 switchType,
-                accountName
+                accountName,
+                registerForm,
+                registerRef,
+                applyRegister,
+                registerRules
             }
         }
     }
