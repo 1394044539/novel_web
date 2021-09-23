@@ -55,6 +55,7 @@
 </template>
 
 <script>
+    import api from "../../api/api"
     import util from "../../utils/util"
     import { QqOutlined,WechatOutlined } from '@ant-design/icons-vue'
     import { ref,reactive, watch } from 'vue'
@@ -122,7 +123,13 @@
             const applyRegister = () =>{
                 registerRef.value.validate().then(res=>{
                     //开始校验逻辑
-                    registerModelStatus.value=false
+                    let param ={
+                        ...res
+                    }
+                    api.userApi.applyRegister(param).then(res=>{
+                        util.success("申请成功！我们会发送短信通知您")
+                        registerModelStatus.value=false
+                    })
                 }).catch(err=>{
                     console.log(err)
                 })

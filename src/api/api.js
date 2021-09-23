@@ -15,6 +15,9 @@ const userApi = {
     },
     updatePassword: (params,loading=false)=>{
         return http.put('/sysUser/updatePassword',params,loading)
+    },
+    applyRegister: (params,loading=false)=>{
+        return http.post('/sysRegister/applyRegister',params,loading)
     }
 }
 
