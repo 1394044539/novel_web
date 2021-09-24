@@ -18,6 +18,9 @@ const userApi = {
     },
     applyRegister: (params,loading=false)=>{
         return http.post('/sysRegister/applyRegister',params,loading)
+    },
+    logout: (loading=false)=>{
+        return http.post('/sysUser/logout')
     }
 }
 
