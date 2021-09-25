@@ -6,7 +6,7 @@
                 <a-dropdown placement="bottomCenter" :overlay-style="{paddingTop:'20px'}">
                     <a class="ant-dropdown-link" @click.prevent>
                         <span style="margin-right: 15px">
-                            {{ userName }}
+                            {{ $store.state.userName }}
                         </span>
                             <a-badge :count="0">
                                 <a-avatar shape="square">
@@ -16,12 +16,6 @@
                         </a>
                     <template #overlay>
                         <a-menu @click="handleMenuClick">
-                            <a-menu-item key="1">
-                                1st menu item
-                            </a-menu-item>
-                            <a-menu-item key="2">
-                                2nd menu item
-                            </a-menu-item>
                             <a-menu-divider />
                             <a-menu-item key="logout">
                                 <LogoutOutlined />
@@ -37,39 +31,44 @@
                 <a-menu
                         theme="dark"
                         mode="inline"
-                        v-model:selectedKeys="selectedKeys2"
+                        v-model:selectedKeys="selectedKeys"
                         v-model:openKeys="openKeys"
                         :style="{ height: '100%', borderRight: 0 }"
+                        @click="switchMenu"
                 >
-                    <a-sub-menu key="sub1">
+                    <a-sub-menu key="Novel">
                         <template #title>
                             <user-outlined/>
-                            <span>subnav 1</span>
+                            <span>小说模块</span>
                         </template>
-                        <a-menu-item key="1">option1</a-menu-item>
-                        <a-menu-item key="2">option2</a-menu-item>
-                        <a-menu-item key="3">option3</a-menu-item>
-                        <a-menu-item key="4">option4</a-menu-item>
+                        <a-menu-item key="MyNovel">我的书架</a-menu-item>
+                        <a-menu-item key="NovelManager">小说管理</a-menu-item>
+                        <a-menu-item key="UploadRecord">上传记录</a-menu-item>
+                        <a-menu-item key="MarkList">书签列表</a-menu-item>
+                        <a-menu-item key="HistoryRecord">历史记录</a-menu-item>
+<!--                        <a-menu-item key="6">分享记录</a-menu-item>-->
                     </a-sub-menu>
-                    <a-sub-menu key="sub2">
+                    <a-sub-menu key="UserCenter">
                         <template #title>
                             <laptop-outlined/>
-                            <span>subnav 2</span>
+                            <span>个人中心</span>
                         </template>
-                        <a-menu-item key="5">option5</a-menu-item>
-                        <a-menu-item key="6">option6</a-menu-item>
-                        <a-menu-item key="7">option7</a-menu-item>
-                        <a-menu-item key="8">option8</a-menu-item>
+                        <a-menu-item key="DynamicInfo">动态信息</a-menu-item>
                     </a-sub-menu>
-                    <a-sub-menu key="sub3">
+                    <a-sub-menu key="UserSetting">
                         <template #title>
                             <notification-outlined/>
-                            <span>subnav 3</span>
+                            <span>个人设置</span>
                         </template>
-                        <a-menu-item key="9">option9</a-menu-item>
-                        <a-menu-item key="10">option10</a-menu-item>
-                        <a-menu-item key="11">option11</a-menu-item>
-                        <a-menu-item key="12">option12</a-menu-item>
+                        <a-menu-item key="InfoSetting">信息设置</a-menu-item>
+                        <a-menu-item key="SafeSetting">安全设置</a-menu-item>
+                    </a-sub-menu>
+                    <a-sub-menu v-if="$store.getters.isAdmin" key="SystemSetting">
+                        <template #title>
+                            <notification-outlined/>
+                            <span>系统设置</span>
+                        </template>
+                        <a-menu-item key="AdminCenter">管理员中心</a-menu-item>
                     </a-sub-menu>
                 </a-menu>
             </a-layout-sider>
@@ -93,6 +92,8 @@
     import {UserOutlined, LaptopOutlined, NotificationOutlined,LogoutOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
     import {createVNode, ref} from 'vue';
     import { Modal } from 'ant-design-vue'
+    import { useStore } from 'vuex'
+    import { useRouter } from 'vue-router'
     import api from '../api/api'
     import util from '../utils/util'
 
@@ -106,6 +107,10 @@
             QuestionCircleOutlined
         },
         setup() {
+            const store = useStore()
+            const router = useRouter();
+
+            //右上角用户信息部分
             const handleMenuClick=({key})=>{
                 if(key==='logout'){
                     Modal.confirm({
@@ -120,24 +125,31 @@
                                 api.userApi.logout().then(res=>{
                                     util.success("退出成功！")
                                     localStorage.clear()
+                                    store.commit('clearStore')
                                     resolve()
                                 }).catch(err=>{reject()})
                             }).then(()=>{
-                                //todo 路由跳转
+                                router.push({name:'Login'})
                             }).catch(() => {});
                         }
                     });
                 }
             }
 
+            //切换菜单
+            const switchMenu = e =>{
+                //切换路由
+                router.push({name:e.key})
+            }
+
 
             return {
-                selectedKeys1: ref(['2']),
-                selectedKeys2: ref(['1']),
+                selectedKeys: ref(['MyNovel']),
                 collapsed: ref(false),
-                openKeys: ref(['sub1']),
+                openKeys: ref(['Novel']),
                 userName: ref(localStorage.getItem("userName")),
-                handleMenuClick
+                handleMenuClick,
+                switchMenu
             };
         }
     }

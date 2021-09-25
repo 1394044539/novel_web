@@ -42,7 +42,8 @@
     import './less/login.less'
     import util from '../../../utils/util'
     import api from '../../../api/api'
-    import router from "../../../router";
+    import { useRouter } from 'vue-router'
+    import { useStore } from 'vuex'
 
     export default {
         name: "PhoneLogin",
@@ -53,6 +54,9 @@
             }
         },
         setup(props, content) {
+            //拿到路由和vuex
+            const router = useRouter()
+            const store = useStore()
             //登录表单
             let formRef = ref()
             let loading = ref(false)
@@ -85,7 +89,8 @@
                         localStorage.setItem("accountName", res.accountName)
                         localStorage.setItem("roleList", JSON.stringify(res.roleList))
                         localStorage.setItem("permissionList", JSON.stringify(res.permissionList))
-                        router.push({name: 'Main'})
+                        store.commit('setUserInfo',res)
+                        router.push({name: 'MyNovel'})
                     }).catch(err => {
                         loading.value = false
                         setTimeout(hide, 0)
