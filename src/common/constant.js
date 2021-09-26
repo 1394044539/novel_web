@@ -9,13 +9,13 @@ let method = {
         let roleList = useStore().state.roleList
         date.menu.forEach(m => {
             //判断权限
-            if (!m.role) {
+            if (!m.role || method.intersect(m.role, roleList).length > 0) {
                 reMenu.push(m)
-            } else if (method.intersect(m.role, roleList).length > 0) {
-                reMenu.push(m)
+                //查看子集目录有没有权限
+
             }
         })
-        return date.menu
+        return reMenu
     },
     intersect(set1, set2) {
         let a = new Set(set1);
