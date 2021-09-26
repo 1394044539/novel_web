@@ -8,17 +8,19 @@
                         <span style="margin-right: 15px">
                             {{ $store.state.userName }}
                         </span>
-                            <a-badge :count="0">
-                                <a-avatar shape="square">
-                                    <template #icon><UserOutlined /></template>
-                                </a-avatar>
-                            </a-badge>
-                        </a>
+                        <a-badge :count="0">
+                            <a-avatar shape="square">
+                                <template #icon>
+                                    <UserOutlined/>
+                                </template>
+                            </a-avatar>
+                        </a-badge>
+                    </a>
                     <template #overlay>
                         <a-menu @click="handleMenuClick">
-                            <a-menu-divider />
+                            <a-menu-divider/>
                             <a-menu-item key="logout">
-                                <LogoutOutlined />
+                                <LogoutOutlined/>
                                 退出登录
                             </a-menu-item>
                         </a-menu>
@@ -37,47 +39,19 @@
                         @click="switchMenu"
                         @openChange="openMenu"
                 >
-                    <a-sub-menu key="Novel">
-                        <template #title>
-                            <user-outlined/>
-                            <span>小说模块</span>
+                    <a-sub-menu v-for="(menu,index) in menus" :key="menu.key" :title="menu.title">
+                        <template #icon>
+                            <component :is="$antIcons[menu.icon]"/>
                         </template>
-                        <a-menu-item key="MyNovel" title="我的书架">我的书架</a-menu-item>
-                        <a-menu-item key="NovelManager" title="小说管理">小说管理</a-menu-item>
-                        <a-menu-item key="UploadRecord" title="上传记录">上传记录</a-menu-item>
-                        <a-menu-item key="MarkList" title="书签列表">书签列表</a-menu-item>
-                        <a-menu-item key="HistoryRecord" title="历史记录">历史记录</a-menu-item>
-<!--                        <a-menu-item key="6">分享记录</a-menu-item>-->
-                    </a-sub-menu>
-                    <a-sub-menu key="UserCenter">
-                        <template #title>
-                            <laptop-outlined/>
-                            <span>个人中心</span>
-                        </template>
-                        <a-menu-item key="DynamicInfo">动态信息</a-menu-item>
-                    </a-sub-menu>
-                    <a-sub-menu key="UserSetting">
-                        <template #title>
-                            <notification-outlined/>
-                            <span>个人设置</span>
-                        </template>
-                        <a-menu-item key="InfoSetting">信息设置</a-menu-item>
-                        <a-menu-item key="SafeSetting">安全设置</a-menu-item>
-                    </a-sub-menu>
-                    <a-sub-menu v-if="$store.getters.isAdmin" key="SystemSetting">
-                        <template #title>
-                            <notification-outlined/>
-                            <span>系统设置</span>
-                        </template>
-                        <a-menu-item key="AdminCenter">管理员中心</a-menu-item>
+                        <a-menu-item v-for="(subMenu,index) in menu.children" :key="subMenu.key">
+                            {{subMenu.title}}
+                        </a-menu-item>
                     </a-sub-menu>
                 </a-menu>
             </a-layout-sider>
             <a-layout style="padding: 0 24px 24px">
                 <a-breadcrumb style="margin: 16px 0">
                     <a-breadcrumb-item v-for="(item,index) in breadList">{{item}}</a-breadcrumb-item>
-<!--                    <a-breadcrumb-item>{{firstMenu}}</a-breadcrumb-item>-->
-<!--                    <a-breadcrumb-item>{{secondMenu}}</a-breadcrumb-item>-->
                 </a-breadcrumb>
                 <a-layout-content
                         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px'}"
@@ -90,83 +64,78 @@
 </template>
 
 <script>
-    import {UserOutlined, LaptopOutlined, NotificationOutlined,LogoutOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
-    import {createVNode, ref,watch} from 'vue';
-    import { Modal } from 'ant-design-vue'
-    import { useStore } from 'vuex'
-    import { useRouter } from 'vue-router'
+    import {createVNode, ref, watch, reactive} from 'vue';
+    import {Modal} from 'ant-design-vue'
+    import {useStore} from 'vuex'
+    import {useRouter} from 'vue-router'
     import api from '../api/api'
     import util from '../utils/util'
     import constant from '../common/constant'
 
     export default {
         name: "Main",
-        components: {
-            UserOutlined,
-            LaptopOutlined,
-            NotificationOutlined,
-            LogoutOutlined,
-            QuestionCircleOutlined
-        },
         setup() {
             const store = useStore()
             const router = useRouter();
             //右上角用户信息部分
-            const handleMenuClick=({key})=>{
-                if(key==='logout'){
+            const handleMenuClick = ({key}) => {
+                if (key === 'logout') {
                     Modal.confirm({
-                        title:"退出",
-                        content:"确认退出登录？",
-                        icon:createVNode(QuestionCircleOutlined),
+                        title: "退出",
+                        content: "确认退出登录？",
+                        icon: createVNode(QuestionCircleOutlined),
                         okText: '确认',
                         cancelText: '取消',
-                        onOk(){
+                        onOk() {
                             return new Promise((resolve, reject) => {
                                 //请求后台
-                                api.userApi.logout().then(res=>{
+                                api.userApi.logout().then(res => {
                                     util.success("退出成功！")
                                     localStorage.clear()
                                     store.commit('clearStore')
                                     resolve()
-                                }).catch(err=>{reject()})
-                            }).then(()=>{
-                                router.push({name:'Login'})
-                            }).catch(() => {});
+                                }).catch(err => {
+                                    reject()
+                                })
+                            }).then(() => {
+                                router.push({name: 'Login'})
+                            }).catch(() => {
+                            });
                         }
                     });
                 }
             }
 
             //面包屑信息，从缓存中取出，没有就默认第一个
-            const breadList = ref(JSON.parse(localStorage.getItem("breadList"))||['小说模块','我的书架'])
+            const breadList = ref(JSON.parse(localStorage.getItem("breadList")) || ['小说模块', '我的书架'])
             //切换菜单
-            const switchMenu = e =>{
+            const switchMenu = e => {
                 //当前面包屑
-                breadList.value=[]
-                e.keyPath.forEach(e=>{
+                breadList.value = []
+                e.keyPath.forEach(e => {
                     breadList.value.push(constant.method.getMenuValue(e))
                 })
                 //存入缓存
-                localStorage.setItem("breadList",JSON.stringify(breadList.value))
+                localStorage.setItem("breadList", JSON.stringify(breadList.value))
                 //切换路由
-                router.push({name:e.key})
+                router.push({name: e.key})
             }
             //打开菜单项
-            const openMenu = e =>{
+            const openMenu = e => {
                 //记录到缓存中去
-                localStorage.setItem("openKey",JSON.stringify(e))
+                localStorage.setItem("openKey", JSON.stringify(e))
             }
             return {
                 //目前选择的子菜单，根据路由进行选择
                 selectedKeys: ref([router.currentRoute.value.name]),
                 //打开的主菜单，从缓存中获取，缓存中有就打开，没有就取默认的novel
-                openKeys: ref(localStorage.getItem("openKey")?JSON.parse(localStorage.getItem("openKey")):['Novel']),
+                openKeys: ref(localStorage.getItem("openKey") ? JSON.parse(localStorage.getItem("openKey")) : ['Novel']),
                 collapsed: ref(false),
                 handleMenuClick,
                 switchMenu,
                 openMenu,
                 breadList,
-                constant
+                menus: reactive(constant.method.getMenu())
             };
         }
     }
