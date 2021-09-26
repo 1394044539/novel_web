@@ -23,7 +23,7 @@ const routes = [
         path: 'myNovel',
         name: 'MyNovel',
         meta: {
-          title: '首页'
+          title: '首页',
         },
         component: () => import('@/views/novel/MyNovel.vue')
       },

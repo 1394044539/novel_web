@@ -35,17 +35,18 @@
                         v-model:openKeys="openKeys"
                         :style="{ height: '100%', borderRight: 0 }"
                         @click="switchMenu"
+                        @openChange="openMenu"
                 >
                     <a-sub-menu key="Novel">
                         <template #title>
                             <user-outlined/>
                             <span>小说模块</span>
                         </template>
-                        <a-menu-item key="MyNovel">我的书架</a-menu-item>
-                        <a-menu-item key="NovelManager">小说管理</a-menu-item>
-                        <a-menu-item key="UploadRecord">上传记录</a-menu-item>
-                        <a-menu-item key="MarkList">书签列表</a-menu-item>
-                        <a-menu-item key="HistoryRecord">历史记录</a-menu-item>
+                        <a-menu-item key="MyNovel" title="我的书架">我的书架</a-menu-item>
+                        <a-menu-item key="NovelManager" title="小说管理">小说管理</a-menu-item>
+                        <a-menu-item key="UploadRecord" title="上传记录">上传记录</a-menu-item>
+                        <a-menu-item key="MarkList" title="书签列表">书签列表</a-menu-item>
+                        <a-menu-item key="HistoryRecord" title="历史记录">历史记录</a-menu-item>
 <!--                        <a-menu-item key="6">分享记录</a-menu-item>-->
                     </a-sub-menu>
                     <a-sub-menu key="UserCenter">
@@ -74,9 +75,9 @@
             </a-layout-sider>
             <a-layout style="padding: 0 24px 24px">
                 <a-breadcrumb style="margin: 16px 0">
-                    <a-breadcrumb-item>Home</a-breadcrumb-item>
-                    <a-breadcrumb-item>List</a-breadcrumb-item>
-                    <a-breadcrumb-item>App</a-breadcrumb-item>
+                    <a-breadcrumb-item v-for="(item,index) in breadList">{{item}}</a-breadcrumb-item>
+<!--                    <a-breadcrumb-item>{{firstMenu}}</a-breadcrumb-item>-->
+<!--                    <a-breadcrumb-item>{{secondMenu}}</a-breadcrumb-item>-->
                 </a-breadcrumb>
                 <a-layout-content
                         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px'}"
@@ -90,12 +91,13 @@
 
 <script>
     import {UserOutlined, LaptopOutlined, NotificationOutlined,LogoutOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
-    import {createVNode, ref} from 'vue';
+    import {createVNode, ref,watch} from 'vue';
     import { Modal } from 'ant-design-vue'
     import { useStore } from 'vuex'
     import { useRouter } from 'vue-router'
     import api from '../api/api'
     import util from '../utils/util'
+    import constant from '../common/constant'
 
     export default {
         name: "Main",
@@ -109,7 +111,6 @@
         setup() {
             const store = useStore()
             const router = useRouter();
-
             //右上角用户信息部分
             const handleMenuClick=({key})=>{
                 if(key==='logout'){
@@ -136,20 +137,36 @@
                 }
             }
 
+            //面包屑信息，从缓存中取出，没有就默认第一个
+            const breadList = ref(JSON.parse(localStorage.getItem("breadList"))||['小说模块','我的书架'])
             //切换菜单
             const switchMenu = e =>{
+                //当前面包屑
+                breadList.value=[]
+                e.keyPath.forEach(e=>{
+                    breadList.value.push(constant.method.getMenuValue(e))
+                })
+                //存入缓存
+                localStorage.setItem("breadList",JSON.stringify(breadList.value))
                 //切换路由
                 router.push({name:e.key})
             }
-
-
+            //打开菜单项
+            const openMenu = e =>{
+                //记录到缓存中去
+                localStorage.setItem("openKey",JSON.stringify(e))
+            }
             return {
-                selectedKeys: ref(['MyNovel']),
+                //目前选择的子菜单，根据路由进行选择
+                selectedKeys: ref([router.currentRoute.value.name]),
+                //打开的主菜单，从缓存中获取，缓存中有就打开，没有就取默认的novel
+                openKeys: ref(localStorage.getItem("openKey")?JSON.parse(localStorage.getItem("openKey")):['Novel']),
                 collapsed: ref(false),
-                openKeys: ref(['Novel']),
-                userName: ref(localStorage.getItem("userName")),
                 handleMenuClick,
-                switchMenu
+                switchMenu,
+                openMenu,
+                breadList,
+                constant
             };
         }
     }
