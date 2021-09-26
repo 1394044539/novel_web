@@ -11,7 +11,7 @@ let method = {
             //判断权限
             if (!m.role || method.intersect(m.role, roleList).length > 0) {
                 reMenu.push(m)
-                //查看子集目录有没有权限
+                //todo 查看子集目录有没有权限
 
             }
         })
