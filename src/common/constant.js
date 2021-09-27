@@ -5,14 +5,18 @@ let method = {
         return date.menuMap.get(key)
     },
     getMenu() {
-        let reMenu = []
         let roleList = useStore().state.roleList
-        date.menu.forEach(m => {
+        return this.recursionMenu(date.menu,roleList)
+    },
+    recursionMenu(menus,roleList){
+        let reMenu = []
+        menus.forEach(m => {
             //判断权限
             if (!m.role || method.intersect(m.role, roleList).length > 0) {
+                if(m.children){
+                    m.children = method.recursionMenu(m.children,roleList)
+                }
                 reMenu.push(m)
-                //todo 查看子集目录有没有权限
-
             }
         })
         return reMenu
@@ -20,6 +24,7 @@ let method = {
     intersect(set1, set2) {
         let a = new Set(set1);
         return set2.filter(x => a.has(x.roleCode));
+
     }
 }
 

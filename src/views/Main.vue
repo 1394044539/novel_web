@@ -1,6 +1,6 @@
 <template>
-    <a-layout style=" height: 100vh;">
-        <a-layout-header class="header">
+    <a-layout>
+        <a-layout-header class="header"  :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
             <div class="logo">没有名字的系统</div>
             <div style="float: right">
                 <a-dropdown placement="bottomCenter" :overlay-style="{paddingTop:'20px'}">
@@ -28,8 +28,8 @@
                 </a-dropdown>
             </div>
         </a-layout-header>
-        <a-layout>
-            <a-layout-sider width="200" style="background: #fff" v-model:collapsed="collapsed" collapsible>
+        <a-layout :style="{ marginTop: '64px' }">
+            <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0}"  width="200" style="background: #fff" v-model:collapsed="collapsed" collapsible>
                 <a-menu
                         theme="dark"
                         mode="inline"
@@ -49,7 +49,7 @@
                     </a-sub-menu>
                 </a-menu>
             </a-layout-sider>
-            <a-layout style="padding: 0 24px 24px">
+            <a-layout style="padding: 0 10% 24px;margin-left: 200px">
                 <a-breadcrumb style="margin: 16px 0">
                     <a-breadcrumb-item v-for="(item,index) in breadList">{{item}}</a-breadcrumb-item>
                 </a-breadcrumb>

@@ -8,6 +8,7 @@ import permissiom from './router/permisson'
 import 'ant-design-vue/dist/antd.css'
 import 'ant-design-vue/dist/antd.less'
 import * as antIcons from '@ant-design/icons-vue'
+import './common/index.less'
 
 
 const app = createApp(App)

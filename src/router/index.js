@@ -34,6 +34,62 @@ const routes = [
           title: '小说管理'
         },
         component: () => import('@/views/novel/NovelManager.vue')
+      },
+      {
+        path: 'uploadRecord',
+        name: 'UploadRecord',
+        meta: {
+          title: '上传记录'
+        },
+        component: () => import('@/views/novel/UploadRecord.vue')
+      },
+      {
+        path: 'historyRecord',
+        name: 'HistoryRecord',
+        meta: {
+          title: '历史记录'
+        },
+        component: () => import('@/views/novel/HistoryRecord.vue')
+      },
+      {
+        path: 'markList',
+        name: 'MarkList',
+        meta: {
+          title: '书签记录'
+        },
+        component: () => import('@/views/novel/MarkList.vue')
+      },
+      {
+        path: 'dynamicInfo',
+        name: 'DynamicInfo',
+        meta: {
+          title: '动态信息'
+        },
+        component: () => import('@/views/user/DynamicInfo.vue')
+      },
+      {
+        path: 'infoSetting',
+        name: 'InfoSetting',
+        meta: {
+          title: '信息设置'
+        },
+        component: () => import('@/views/user/InfoSetting.vue')
+      },
+      {
+        path: 'safeSetting',
+        name: 'SafeSetting',
+        meta: {
+          title: '安全设置'
+        },
+        component: () => import('@/views/user/SafeSetting.vue')
+      },
+      {
+        path: 'adminCenter',
+        name: 'AdminCenter',
+        meta: {
+          title: '管理员中心'
+        },
+        component: () => import('@/views/system/AdminCenter.vue')
       }
     ]
   },
