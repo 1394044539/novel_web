@@ -26,4 +26,13 @@ const userApi = {
 
 const sysApi = {}
 
-export default {userApi, sysApi}
+const novelApi = {
+    getNovelList: (params, loading = false) => {
+        return http.post('/novel/getNovelList', params, loading)
+    },
+    quickUpload: (params,loading=false) =>{
+        return http.post('/novel/quickUpload',params,loading)
+    }
+}
+
+export default {userApi, sysApi, novelApi}
