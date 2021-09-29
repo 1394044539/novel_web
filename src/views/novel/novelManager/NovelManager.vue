@@ -5,7 +5,7 @@
                 <component :is="$antIcons['UploadOutlined']"/>
                 快速上传
             </a-button>
-            <a-button type="primary" size="large">
+            <a-button type="primary" size="large" @click="getNovelList">
                 <component :is="$antIcons['DiffOutlined']"/>
                 创建小说
             </a-button>
@@ -13,6 +13,12 @@
         <a-divider />
         <div>
             <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
+                <template #novelImg="{ record }">
+                    <a-image
+                            :width="50"
+                            :src="record.novelImg"
+                    />
+                </template>
                 <template #action>
                     <a>action</a>
                 </template>
@@ -56,8 +62,8 @@
 <script>
     import { onMounted,reactive,ref } from 'vue'
     import {} from 'vue'
-    import util from '../../utils/util'
-    import api from '../../api/api'
+    import util from '../../../utils/util'
+    import api from '../../../api/api'
     import { useRouter } from 'vue-router'
     import { InboxOutlined } from '@ant-design/icons-vue';
 
@@ -69,15 +75,14 @@
         setup(props,content){
             //获取路由
             const route = useRouter();
-
-            // //直接调用方法
-            // api.novelApi.getNovelList({}).then(res=>{
-            // }).catch(err=>{})
-
+            let fileList = ref([])
+            let page=ref(1);
+            let pageSize=ref(10);
+            let data = ref([])
             const columns = [
                 {
                     title: '小说名',
-                    width: 100,
+                    width: 150,
                     dataIndex: 'novelName',
                     key: 'novelName',
                     fixed: 'left',
@@ -93,29 +98,34 @@
                     dataIndex: 'novelImg',
                     key: 'novelImg',
                     width: 150,
+                    slots: {
+                        customRender: 'novelImg',
+                    },
                 },
                 {
                     title: '描述(简单)',
                     dataIndex: 'novelDesc',
                     key: 'novelDesc',
-                    width: 150,
+                    width: 250,
+                    ellipsis: true,
                 },
                 {
                     title: '介绍',
                     dataIndex: 'novelIntroduce',
                     key: 'novelIntroduce',
-                    width: 150,
+                    width: 250,
+                    ellipsis: true,
                 },
                 {
                     title: '发布日期',
                     dataIndex: 'publicTime',
                     key: 'publicTime',
-                    width: 150,
+                    width: 200,
                 },
                 {
                     title: '小说总章节数',
-                    dataIndex: 'novelIntroduce',
-                    key: 'novelIntroduce',
+                    dataIndex: 'totalWord',
+                    key: 'totalWord',
                     width: 150,
                 },
                 {
@@ -128,13 +138,13 @@
                     title: '创建时间',
                     dataIndex: 'createTime',
                     key: 'createTime',
-                    width: 150,
+                    width: 200,
                 },
                 {
                     title: '最后更新时间',
                     dataIndex: 'updateTime',
                     key: 'updateTime',
-                    width: 150,
+                    width: 200,
                 },
                 {
                     title: 'Action',
@@ -146,8 +156,24 @@
                     },
                 }
             ]
-            const data = []
-            let fileList = ref([])
+
+
+            //初始化
+            onMounted(()=>{
+                getNovelList();
+            })
+
+            //直接调用方法
+            const getNovelList = () => {
+                let param={
+                    page: page.value,
+                    pageSize: pageSize.value
+                }
+                api.novelApi.getNovelList(param).then(res=>{
+                    data.value = res.records
+                }).catch(err=>{})
+            }
+
 
             //快速上传弹窗
             const quickUploadModal = ref(false)
@@ -181,6 +207,12 @@
                 formData.append('file',fileList.value[0])
                 api.novelApi.quickUpload(formData).then(res=>{
                     util.success("上传成功")
+                    route.push({
+                        name: 'NovelInfo',
+                        query: {
+                            novelId: 'e05c70a6e84646eba3191b0b22a22371',
+                        }
+                    })
                 }).catch(err=>{})
             }
 
@@ -188,14 +220,15 @@
 
             return {
                 columns,
-                data,
                 quickUpload,
                 quickUploadModal,
                 closeUpload,
                 fileList,
+                data,
                 beforeUpload,
                 removeUpload,
-                submitQuickUpload
+                submitQuickUpload,
+                getNovelList
             }
         }
     }
