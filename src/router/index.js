@@ -33,7 +33,15 @@ const routes = [
         meta: {
           title: '小说管理'
         },
-        component: () => import('@/views/novel/NovelManager.vue')
+        component: () => import('@/views/novel/novelManager/NovelManager.vue'),
+      },
+      {
+        path: 'novelInfo',
+        name: 'NovelInfo',
+        meta: {
+          title: '小说详情'
+        },
+        component: () => import('@/views/novel/novelManager/children/NovelInfo.vue'),
       },
       {
         path: 'uploadRecord',
