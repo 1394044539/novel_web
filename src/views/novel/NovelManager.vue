@@ -1,18 +1,18 @@
 <template>
     <div class="content-div">
         <div class="content-header">
-            <a-button type="primary" size="large" style="margin-right: 10px" @click="quickUpload">
+            <a-button type="primary" style="margin-right: 10px" @click="quickUpload">
                 <component :is="$antIcons['UploadOutlined']"/>
                 快速上传
             </a-button>
-            <a-button type="primary" size="large">
+            <a-button type="primary">
                 <component :is="$antIcons['DiffOutlined']"/>
                 创建小说
             </a-button>
         </div>
         <a-divider />
         <div>
-            <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
+            <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500 }">
                 <template #action>
                     <a>action</a>
                 </template>
@@ -70,9 +70,20 @@
             //获取路由
             const route = useRouter();
 
-            // //直接调用方法
-            // api.novelApi.getNovelList({}).then(res=>{
-            // }).catch(err=>{})
+            //初始化钩子
+            onMounted(() => {
+                getNovelList();
+            })
+            let param = {
+                page: 1,
+                pageSize: 10,
+            }
+
+            const getNovelList = () => {
+                api.novelApi.getNovelList(param).then(res=>{
+                    data.value = res.records;
+                }).catch(err=>{})
+            }
 
             const columns = [
                 {
@@ -131,13 +142,13 @@
                     width: 150,
                 },
                 {
-                    title: '最后更新时间',
+                    title: '更新时间',
                     dataIndex: 'updateTime',
                     key: 'updateTime',
                     width: 150,
                 },
                 {
-                    title: 'Action',
+                    title: '操作',
                     key: 'operation',
                     fixed: 'right',
                     width: 100,
@@ -146,7 +157,7 @@
                     },
                 }
             ]
-            const data = []
+            const data = ref([]);
             let fileList = ref([])
 
             //快速上传弹窗
