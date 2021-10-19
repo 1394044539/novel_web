@@ -5,7 +5,7 @@
                 <component :is="$antIcons['UploadOutlined']"/>
                 快速上传
             </a-button>
-            <a-button type="primary" size="large" @click="getNovelList">
+            <a-button type="primary" size="large" @click="createNovel">
                 <component :is="$antIcons['DiffOutlined']"/>
                 创建小说
             </a-button>
@@ -16,7 +16,7 @@
                 <template #novelImg="{ record }">
                     <a-image
                             :width="50"
-                            :src="record.novelImg"
+                            :src="record.novelImg?'/img/'+record.novelImg:require('@/assets/img/notImg.png')"
                     />
                 </template>
                 <template #action>
@@ -56,6 +56,49 @@
                 <a-button :disabled="fileList.length===0" type="primary" size="large" @click="submitQuickUpload">上传</a-button>
             </div>
         </a-modal>
+        <a-modal
+            v-model:visible="showCreateNovel"
+            title="创建小说"
+            :footer="null"
+            @cancel="closeCreateNovel"
+            width="800px"
+        >
+            <div>
+                <a-form :model="formData">
+                    <a-form-item label="小说名">
+                        <a-input v-model:value="formData.novelName" />
+                    </a-form-item>
+                    <a-form-item label="作者">
+                        <a-input v-model:value="formData.novelAuthor" />
+                    </a-form-item>
+                    <a-form-item label="发布日期">
+                        <a-date-picker
+                                v-model:value="formData.publicTime"
+                                show-time
+                                type="date"
+                                placeholder="Pick a date"
+                                style="width: 100%"
+                        />
+                    </a-form-item>
+                    <a-form-item label="类型">
+                        <a-select v-model:value="formData.typeCodeList" placeholder="please select your zone">
+                            <a-select-option value="shanghai">Zone one</a-select-option>
+                            <a-select-option value="beijing">Zone two</a-select-option>
+                        </a-select>
+                    </a-form-item>
+                    <a-form-item label="封面">
+                        <a-input v-model:value="formData.novelImg" />
+                    </a-form-item>
+                    <a-form-item label="简介">
+                        <a-input v-model:value="formData.novelIntroduce" />
+                    </a-form-item>
+                    <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+                        <a-button type="primary">Create</a-button>
+                        <a-button style="margin-left: 10px">Cancel</a-button>
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-modal>
     </div>
 </template>
 
@@ -73,9 +116,17 @@
             InboxOutlined,
         ],
         setup(props,content){
+            //初始化
+            onMounted(()=>{
+                getNovelList();
+            })
             //获取路由
             const route = useRouter();
+
+            //快速上传功能
             let fileList = ref([])
+
+            //列表功能
             let page=ref(1);
             let pageSize=ref(10);
             let data = ref([])
@@ -156,13 +207,6 @@
                     },
                 }
             ]
-
-
-            //初始化
-            onMounted(()=>{
-                getNovelList();
-            })
-
             //直接调用方法
             const getNovelList = () => {
                 let param={
@@ -174,7 +218,7 @@
                 }).catch(err=>{})
             }
 
-
+            //快速上传功能
             //快速上传弹窗
             const quickUploadModal = ref(false)
             //快速上传弹窗
@@ -217,6 +261,22 @@
             }
 
 
+            //创建小数功能
+            let showCreateNovel = ref(false)
+            let formData = reactive({
+                novelName:'',
+                novelAuthor:'',
+                publicTime:'',
+                typeCodeList: [],
+                novelImg: '',
+                novelIntroduce: ''
+            })
+            const createNovel = () => {
+                showCreateNovel.value = true
+            }
+            const closeCreateNovel = () =>{
+
+            }
 
             return {
                 columns,
@@ -228,7 +288,11 @@
                 beforeUpload,
                 removeUpload,
                 submitQuickUpload,
-                getNovelList
+                getNovelList,
+                createNovel,
+                showCreateNovel,
+                closeCreateNovel,
+                formData
             }
         }
     }

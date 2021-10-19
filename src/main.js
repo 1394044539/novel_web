@@ -9,10 +9,15 @@ import 'ant-design-vue/dist/antd.css'
 import 'ant-design-vue/dist/antd.less'
 import * as antIcons from '@ant-design/icons-vue'
 import './common/index.less'
+import { createFromIconfontCN } from '@ant-design/icons-vue';
 
+const IconFont = createFromIconfontCN({
+    scriptUrl: '//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js',
+});
 
 const app = createApp(App)
 // 注册所有的icon
+app.component('IconFont',IconFont);
 Object.keys(antIcons).forEach(key => {
     app.component(key, antIcons[key])
 })

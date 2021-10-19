@@ -24,8 +24,7 @@ let method = {
     intersect(set1, set2) {
         let a = new Set(set1);
         return set2.filter(x => a.has(x.roleCode));
-
-    }
+    },
 }
 
 let date = {
