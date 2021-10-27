@@ -6,6 +6,9 @@ let method = {
     },
     getMenu() {
         let roleList = useStore().state.roleList
+        if(!roleList){
+            return []
+        }
         return this.recursionMenu(date.menu,roleList)
     },
     recursionMenu(menus,roleList){

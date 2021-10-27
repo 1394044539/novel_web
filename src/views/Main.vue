@@ -54,7 +54,7 @@
                     <a-breadcrumb-item v-for="(item,index) in breadList">{{item}}</a-breadcrumb-item>
                 </a-breadcrumb>
                 <a-layout-content
-                        :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px'}"
+                        :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '540px'}"
                 >
                     <router-view/>
                 </a-layout-content>
@@ -71,6 +71,7 @@
     import api from '../api/api'
     import util from '../utils/util'
     import constant from '../common/constant'
+    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "Main",

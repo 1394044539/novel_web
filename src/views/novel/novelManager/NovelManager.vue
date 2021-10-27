@@ -1,11 +1,11 @@
 <template>
     <div class="content-div">
         <div class="content-header">
-            <a-button type="primary" size="large" style="margin-right: 10px" @click="quickUpload">
+            <a-button type="primary" style="margin-right: 10px" @click="quickUpload(true)">
                 <component :is="$antIcons['UploadOutlined']"/>
                 快速上传
             </a-button>
-            <a-button type="primary" size="large" @click="createNovel">
+            <a-button type="primary" @click="createNovel(true)">
                 <component :is="$antIcons['DiffOutlined']"/>
                 创建小说
             </a-button>
@@ -13,108 +13,41 @@
         <a-divider />
         <div>
             <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
-                <template #novelImg="{ record }">
+                <template #novelName="{ text, record, index }">
+                    <a-tooltip>
+                        <template #title>{{text}}</template>
+                        <a class="custom-two-ellipsis">{{text}}</a>
+                    </a-tooltip>
+                </template>
+                <template #novelImg="{ text, record, index }">
                     <a-image
                             :width="50"
-                            :src="record.novelImg?'/img/'+record.novelImg:require('@/assets/img/notImg.png')"
+                            :src="'/img/'+record.novelImg"
+                            :fallback="require('@/assets/img/notImg.png')"
                     />
                 </template>
                 <template #action>
-                    <a>action</a>
+                    <a-button size="small">编辑</a-button>
+                    <a-button size="small">删除</a-button>
                 </template>
             </a-table>
         </div>
-
-        <a-modal
-            v-model:visible="quickUploadModal"
-            title="快速上传"
-            :footer="null"
-            @cancel="closeUpload"
-        >
-            <a-upload-dragger
-                    :fileList="fileList"
-                    accept=".txt,.epub"
-                    name="file"
-                    :multiple="false"
-                    :before-upload="beforeUpload"
-                    :remove="removeUpload"
-            >
-                <div v-if="fileList.length===0">
-                    <p class="ant-upload-drag-icon">
-                        <inbox-outlined></inbox-outlined>
-                    </p>
-                    <p class="ant-upload-text">点击或移动上传文件</p>
-                </div>
-                <div v-else>
-                    <p style="font-weight: bold">请点击下方按钮上传</p>
-                    <p>请注意</p>
-                    <p>快速上传会以文件名作为小说标题，其他各种属性会尽量从文件中取</p>
-                    <p>如数据不正确或缺失，需要您后续自行修改</p>
-                </div>
-            </a-upload-dragger>
-            <div class="upload-modal-upload">
-                <a-button :disabled="fileList.length===0" type="primary" size="large" @click="submitQuickUpload">上传</a-button>
-            </div>
-        </a-modal>
-        <a-modal
-            v-model:visible="showCreateNovel"
-            title="创建小说"
-            :footer="null"
-            @cancel="closeCreateNovel"
-            width="800px"
-        >
-            <div>
-                <a-form :model="formData">
-                    <a-form-item label="小说名">
-                        <a-input v-model:value="formData.novelName" />
-                    </a-form-item>
-                    <a-form-item label="作者">
-                        <a-input v-model:value="formData.novelAuthor" />
-                    </a-form-item>
-                    <a-form-item label="发布日期">
-                        <a-date-picker
-                                v-model:value="formData.publicTime"
-                                show-time
-                                type="date"
-                                placeholder="Pick a date"
-                                style="width: 100%"
-                        />
-                    </a-form-item>
-                    <a-form-item label="类型">
-                        <a-select v-model:value="formData.typeCodeList" placeholder="please select your zone">
-                            <a-select-option value="shanghai">Zone one</a-select-option>
-                            <a-select-option value="beijing">Zone two</a-select-option>
-                        </a-select>
-                    </a-form-item>
-                    <a-form-item label="封面">
-                        <a-input v-model:value="formData.novelImg" />
-                    </a-form-item>
-                    <a-form-item label="简介">
-                        <a-input v-model:value="formData.novelIntroduce" />
-                    </a-form-item>
-                    <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-                        <a-button type="primary">Create</a-button>
-                        <a-button style="margin-left: 10px">Cancel</a-button>
-                    </a-form-item>
-                </a-form>
-            </div>
-        </a-modal>
+        <QuickUpload :quickUploadModal="quickUploadModal" @closeForm="quickUpload(false)"/>
+        <CreateNovel :showCreateNovel="showCreateNovel" @closeForm="createNovel(false)"/>
     </div>
 </template>
 
 <script>
+    import '../../../views/novel/less/index.less'
     import { onMounted,reactive,ref } from 'vue'
-    import {} from 'vue'
-    import util from '../../../utils/util'
     import api from '../../../api/api'
     import { useRouter } from 'vue-router'
-    import { InboxOutlined } from '@ant-design/icons-vue';
+    import QuickUpload from "../../../components/novel/QuickUpload";
+    import CreateNovel from "../../../components/novel/CreateNovel";
 
     export default {
         name: "NovelManager",
-        components: [
-            InboxOutlined,
-        ],
+        components: {CreateNovel, QuickUpload},
         setup(props,content){
             //初始化
             onMounted(()=>{
@@ -137,6 +70,9 @@
                     dataIndex: 'novelName',
                     key: 'novelName',
                     fixed: 'left',
+                    slots: {
+                        customRender: 'novelName'
+                    }
                 },
                 {
                     title: '作者',
@@ -201,13 +137,13 @@
                     title: 'Action',
                     key: 'operation',
                     fixed: 'right',
-                    width: 100,
+                    width: 150,
                     slots: {
                         customRender: 'action',
                     },
                 }
             ]
-            //直接调用方法
+            //获取小说列表
             const getNovelList = () => {
                 let param={
                     page: page.value,
@@ -219,80 +155,26 @@
             }
 
             //快速上传功能
-            //快速上传弹窗
-            const quickUploadModal = ref(false)
-            //快速上传弹窗
-            const quickUpload = () =>{
-                quickUploadModal.value = true
+            let quickUploadModal = ref(false)
+            const quickUpload = (flag) =>{
+                quickUploadModal.value = flag
             }
-            //上传关闭回调
-            const closeUpload = (e) => {
-                fileList.value = []
-            }
-            // 上传前，file是当前的文件，files是批量文件，这里关闭了批量文件，所以files一直是一个
-            const beforeUpload = (file,files) => {
-                if(fileList.value.length===0){
-                    fileList.value = [...fileList.value, file];
-                }else {
-                    util.info("只能上传一个文件")
-                }
-                return false
-            }
-            //删除文件
-            const removeUpload = (file) => {
-                const index = fileList.value.indexOf(file);
-                const newFileList = fileList.value.slice();
-                newFileList.splice(index, 1);
-                fileList.value = newFileList;
-            }
-            //上传文件
-            const submitQuickUpload = () => {
-                let formData = new FormData()
-                formData.append('file',fileList.value[0])
-                api.novelApi.quickUpload(formData).then(res=>{
-                    util.success("上传成功")
-                    route.push({
-                        name: 'NovelInfo',
-                        query: {
-                            novelId: 'e05c70a6e84646eba3191b0b22a22371',
-                        }
-                    })
-                }).catch(err=>{})
-            }
-
 
             //创建小数功能
             let showCreateNovel = ref(false)
-            let formData = reactive({
-                novelName:'',
-                novelAuthor:'',
-                publicTime:'',
-                typeCodeList: [],
-                novelImg: '',
-                novelIntroduce: ''
-            })
-            const createNovel = () => {
-                showCreateNovel.value = true
-            }
-            const closeCreateNovel = () =>{
-
+            const createNovel = (flag) => {
+                showCreateNovel.value = flag
             }
 
             return {
                 columns,
                 quickUpload,
                 quickUploadModal,
-                closeUpload,
                 fileList,
                 data,
-                beforeUpload,
-                removeUpload,
-                submitQuickUpload,
                 getNovelList,
                 createNovel,
                 showCreateNovel,
-                closeCreateNovel,
-                formData
             }
         }
     }

@@ -32,6 +32,9 @@ const novelApi = {
     },
     quickUpload: (params,loading=false) =>{
         return http.post('/novel/quickUpload',params,loading)
+    },
+    createNovel: (params,loading=false)=>{
+        return http.post('/novel/addNovel',params,loading)
     }
 }
 
