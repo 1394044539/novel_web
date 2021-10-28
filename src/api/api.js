@@ -35,6 +35,9 @@ const novelApi = {
     },
     createNovel: (params,loading=false)=>{
         return http.post('/novel/addNovel',params,loading)
+    },
+    getNovelData: (params,loading=false)=> {
+        return http.get('/novel/getNovelInfo',params,loading)
     }
 }
 

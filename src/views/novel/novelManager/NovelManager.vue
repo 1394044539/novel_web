@@ -12,11 +12,11 @@
         </div>
         <a-divider />
         <div>
-            <a-table :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
+            <a-table :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
                 <template #novelName="{ text, record, index }">
                     <a-tooltip>
                         <template #title>{{text}}</template>
-                        <a class="custom-two-ellipsis">{{text}}</a>
+                        <a href="javascript:" @click="lookNovel(record)" class="custom-two-ellipsis">{{text}}</a>
                     </a-tooltip>
                 </template>
                 <template #novelImg="{ text, record, index }">
@@ -27,8 +27,8 @@
                     />
                 </template>
                 <template #action>
-                    <a-button size="small">编辑</a-button>
-                    <a-button size="small">删除</a-button>
+                    <a-button size="small" type="primary">编辑</a-button>
+                    <a-button style="margin-left: 5px" size="small">删除</a-button>
                 </template>
             </a-table>
         </div>
@@ -143,11 +143,28 @@
                     },
                 }
             ]
+            const pagination = {
+                current: page,
+                pageSize: pageSize,
+                showSizeChanger: true,
+                pageSizeOptions: ["10", "20", "50", "100"],//每页中显示的数据
+                showTotal: total => `共有 ${total} 条数据`,  //分页中显示总的数据
+                onShowSizeChange: (current, pageSize) => getNovelList(current,pageSize), // 改变每页数量时更新显示
+                onChange:(page,pageSize)=> getNovelList(page,pageSize),//点击页码事件
+            }
+            const lookNovel = (novel) => {
+                route.push({
+                    name: 'NovelInfo',
+                    query: {
+                        novelId: novel.novelId,
+                    }
+                })
+            }
             //获取小说列表
-            const getNovelList = () => {
+            const getNovelList = (page=1,pageSize=10) => {
                 let param={
-                    page: page.value,
-                    pageSize: pageSize.value
+                    page,
+                    pageSize,
                 }
                 api.novelApi.getNovelList(param).then(res=>{
                     data.value = res.records
@@ -175,6 +192,8 @@
                 getNovelList,
                 createNovel,
                 showCreateNovel,
+                lookNovel,
+                pagination,
             }
         }
     }

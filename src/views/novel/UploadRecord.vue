@@ -7,7 +7,7 @@
             </a-button>
         </div>
         <div>
-            <a-tabs activeKey="1" size="large ">
+            <a-tabs activeKey="1" size="large">
                 <a-tab-pane key="1" tab="上传记录">
                     <div class="upload-list-item">
                         <div class="upload-list-item-photo">
