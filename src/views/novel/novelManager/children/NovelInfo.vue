@@ -4,25 +4,27 @@
 
 <script>
     import { useRouter } from 'vue-router'
-    import {onMounted,ref,reactive} from "vue";
+    import {onMounted,ref,reactive,toRefs} from "vue";
     import api from "../../../../api/api";
 
     export default {
         name: "NovelInfo",
         setup(){
             const router = useRouter();
+            const state=reactive({
+                novelInfo: {},
+            })
             onMounted(()=>{
                 initNovelData();
             })
-            let novelInfo=reactive({novelId:''});
             const initNovelData = () => {
                 const routeValue = router.currentRoute.value
                 api.novelApi.getNovelData({novelId:routeValue.query.novelId}).then(res=>{
-                    novelInfo.novelId = res.novelId
+                    state.novelInfo = res
                 })
             }
             return {
-                novelInfo,
+                ...toRefs(state),
             }
         }
     }
