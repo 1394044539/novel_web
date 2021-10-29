@@ -107,7 +107,7 @@ const put = function (url, params, loading) {
 const Delete = function (url, params, loading) {
     return new Promise((resolve,reject)=>{
         instance.delete(url,{
-            params: params
+            data: params,
         }).then(res=>{
             resolve(res)
         }).catch(err=>{

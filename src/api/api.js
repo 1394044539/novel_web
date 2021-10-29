@@ -33,7 +33,13 @@ const sysApi = {
     },
     getDictInfo: (params,loading=false)=>{
         return http.get('/sysDict/getDictInfo',params,loading)
-    }
+    },
+    updateDict: (params,loading=false)=>{
+        return http.put('/sysDict/updateDict',params,loading)
+    },
+    deleteDict: (params,loading=false)=> {
+        return http.Delete('/sysDict/deleteDict',params,loading)
+    },
 }
 
 const novelApi = {
@@ -48,7 +54,7 @@ const novelApi = {
     },
     getNovelData: (params,loading=false)=> {
         return http.get('/novel/getNovelInfo',params,loading)
-    }
+    },
 }
 
 export default {userApi, sysApi, novelApi}

@@ -60,7 +60,7 @@
 </template>
 
 <script>
-    import {ref, reactive, toRefs, toRaw} from "vue";
+    import {ref, reactive, toRefs, toRaw,watch} from "vue";
 
     export default {
         name: "DictParamModal",
@@ -69,7 +69,9 @@
                 type: Boolean,
                 default: false,
             },
+            dictParamModalFlag: String,
             title: String,
+            dictParam: Object,
         },
         setup(props,content){
             const state = reactive({
@@ -79,6 +81,13 @@
                     paramValue: '',
                     paramOrder: '',
                     paramDesc: '',
+                }
+            })
+
+            // 监听flag
+            watch(()=>props.dictParamModalFlag,(newV,oldV)=>{
+                if(newV==='editDictParam'){
+                    state.dictParamFormData = {...props.dictParam}
                 }
             })
 
@@ -124,7 +133,11 @@
 
             const insertParam = () => {
                 dictParamFormRef.value.validate().then(()=>{
-                    content.emit("submitParam",toRaw(state.dictParamFormData))
+                    if(props.dictParamModalFlag==='editDictParam'){
+                        content.emit("editParam",toRaw(state.dictParamFormData))
+                    }else {
+                        content.emit("submitParam",toRaw(state.dictParamFormData))
+                    }
                     dictParamFormRef.value.resetFields();
                 })
 
