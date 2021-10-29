@@ -98,6 +98,14 @@ const routes = [
           title: '管理员中心'
         },
         component: () => import('@/views/system/AdminCenter.vue')
+      },
+      {
+        path: 'dictManager',
+        name: 'DictManager',
+        meta: {
+          title: '字典管理'
+        },
+        component: () => import('@/views/system/DictManager.vue')
       }
     ]
   },

@@ -24,7 +24,17 @@ const userApi = {
     }
 }
 
-const sysApi = {}
+const sysApi = {
+    getDictList: (params,loading=false)=>{
+        return http.post('/sysDict/getDictList',params,loading)
+    },
+    addDict: (params,loading=false)=>{
+        return http.post('/sysDict/addDict',params,loading)
+    },
+    getDictInfo: (params,loading=false)=>{
+        return http.get('/sysDict/getDictInfo',params,loading)
+    }
+}
 
 const novelApi = {
     getNovelList: (params, loading = false) => {

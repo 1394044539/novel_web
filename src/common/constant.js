@@ -94,6 +94,10 @@ let date = {
                 {
                     key: 'AdminCenter',
                     title: '管理员中心'
+                },
+                {
+                    key: 'DictManager',
+                    title: '字典管理'
                 }
             ]
         }
@@ -112,6 +116,7 @@ let date = {
         ['SafeSetting', '安全设置'],
         ['SystemSetting', '系统设置'],
         ['AdminCenter', '管理员中心'],
+        ['DictManager', '字典管理'],
     ]),
 }
 
