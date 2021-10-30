@@ -25,11 +25,23 @@ const userApi = {
     getUserInfoList: (params,loading=false)=>{
         return http.post('/sysUserInfo/getUserList',params,loading)
     },
+    getRoleList: (params,loading=false)=>{
+        return http.post('/sysRole/getRoleList',params,loading)
+    },
     getAllRoleList: (params,loading=false)=>{
         return http.post('/sysRole/getAllRoleList',params,loading)
     },
     addUser: (params,loading=false)=>{
         return http.post('/sysUser/addUser',params,loading)
+    },
+    addRole: (params,loading=false)=>{
+        return http.post('/sysRole/addRole',params,loading)
+    },
+    updateRole: (params,loading=false)=>{
+        return http.put('/sysRole/updateRole',params,loading)
+    },
+    geyRoleInfo: (params,loading=false)=>{
+        return http.get('/sysRole/getRoleInfo',params,loading)
     },
 }
 

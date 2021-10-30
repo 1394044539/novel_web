@@ -100,9 +100,13 @@ let date = {
                     title: '用户管理',
                 },
                 {
+                    key: 'RoleManager',
+                    title: '角色权限管理'
+                },
+                {
                     key: 'DictManager',
                     title: '字典管理'
-                }
+                },
             ]
         }
     ],
@@ -121,6 +125,7 @@ let date = {
         ['SystemSetting', '系统设置'],
         ['AdminCenter', '管理员中心'],
         ['UserManager', '用户管理'],
+        ['RoleManager', '角色权限管理'],
         ['DictManager', '字典管理'],
     ]),
 }

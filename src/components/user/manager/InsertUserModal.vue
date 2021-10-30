@@ -143,6 +143,7 @@
                     }
                     api.userApi.addUser(param).then(res=>{
                         util.success("添加成功")
+                        userFormRef.value.resetFields()
                         content.emit('success')
                     })
                 })

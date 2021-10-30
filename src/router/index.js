@@ -114,6 +114,14 @@ const routes = [
           title: '用户管理'
         },
         component: () => import('@/views/system/UserManager.vue')
+      },
+      {
+        path: 'roleManager',
+        name: 'RoleManager',
+        meta: {
+          title: '角色权限管理'
+        },
+        component: () => import('@/views/system/RoleManager.vue')
       }
     ]
   },
