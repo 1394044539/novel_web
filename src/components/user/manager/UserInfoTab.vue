@@ -25,6 +25,7 @@
             <template #action="{text,record,index}">
                 <a-button size="small" type="primary">修改角色</a-button>
                 <a-button style="margin-left: 5px" size="small" type="primary">分配空间</a-button>
+                <a-button v-if="record.userStatus==='1'" style="margin-left: 5px" size="small" @click="cancelDisable(record.userId)">解除禁用</a-button>
             </template>
         </a-table>
         <InsertUserModal
@@ -36,9 +37,12 @@
 </template>
 
 <script>
-    import {reactive,toRefs,onMounted} from "vue";
+    import {reactive,toRefs,onMounted,createVNode} from "vue";
     import api from '../../../api/api'
+    import util from '../../../utils/util'
     import InsertUserModal from "./InsertUserModal";
+    import {Modal} from "ant-design-vue";
+    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "UserInfoTab",
@@ -63,6 +67,8 @@
                 }
                 api.userApi.getUserInfoList(param).then(res=>{
                     state.userInfoList=res.records
+                    state.selectedRows=[]
+                    state.selectedRowKeys=[]
                 })
             }
 
@@ -122,7 +128,8 @@
                     title: '操作',
                     key: 'action',
                     fixed: 'right',
-                    width: 200,
+                    width: 300,
+                    align: 'center',
                     slots: {
                         customRender: 'action',
                     },
@@ -144,8 +151,46 @@
                 state.selectedRows = selectedRows
             }
 
+            // 禁用用户
             const disabledUser = () => {
-
+                if(state.selectedRowKeys.length>0){
+                    Modal.confirm({
+                        title: '确认禁用',
+                        content: '是否禁用选择用户',
+                        icon:createVNode(QuestionCircleOutlined),
+                        okText: '确认',
+                        cancelText: '取消',
+                        onOk(){
+                            let idList = state.selectedRows.map(e=>e.userId);
+                            api.userApi.disableUser(idList).then(res=>{
+                                util.success("禁用成功")
+                                getUserInfoList()
+                            })
+                        },
+                    })
+                }else {
+                    util.info("请选择要禁用的用户")
+                }
+            }
+            // 取消禁用
+            const cancelDisable = (userId) => {
+                Modal.confirm({
+                    title: '取消禁用',
+                    content: '是否解除用户禁用',
+                    icon:createVNode(QuestionCircleOutlined),
+                    okText: '确认',
+                    cancelText: '取消',
+                    onOk(){
+                        let param={
+                            userId: userId,
+                            userStatus: '0',
+                        }
+                        api.userApi.updateUser(param).then(res=>{
+                            util.success("解除成功")
+                            getUserInfoList()
+                        })
+                    }
+                })
             }
 
             const showInsertModal = (flag) => {
@@ -164,7 +209,8 @@
                 columns,
                 disabledUser,
                 showInsertModal,
-                insertSuccess
+                insertSuccess,
+                cancelDisable
             }
         }
     }

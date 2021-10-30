@@ -43,6 +43,18 @@ const userApi = {
     geyRoleInfo: (params,loading=false)=>{
         return http.get('/sysRole/getRoleInfo',params,loading)
     },
+    disableUser: (params,loading=false)=>{
+        return http.post('/sysUser/disableUser',params,loading)
+    },
+    updateUser: (params,loading=false)=>{
+        return http.put('/sysUser/updateUser',params,loading)
+    },
+    getApplyRegisterList: (params,loading=false)=>{
+        return http.post('/sysRegister/getApplyRegisterList',params,loading)
+    },
+    createRegInfo: (params,loading=false)=>{
+        return http.post('/sysRegister/createRegInfo',params,loading)
+    },
 }
 
 const sysApi = {
