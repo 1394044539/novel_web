@@ -54,7 +54,7 @@
                     <a-breadcrumb-item v-for="(item,index) in breadList">{{item}}</a-breadcrumb-item>
                 </a-breadcrumb>
                 <a-layout-content
-                        :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '540px'}"
+                        :style="{ background: '#fff', padding: '0 24px', margin: 0, minHeight: '540px'}"
                 >
                     <router-view/>
                 </a-layout-content>
@@ -64,10 +64,10 @@
 </template>
 
 <script>
-    import {createVNode, ref, watch, reactive} from 'vue';
+    import {createVNode, ref, watch, reactive,computed } from 'vue';
     import {Modal} from 'ant-design-vue'
     import {useStore} from 'vuex'
-    import {useRouter} from 'vue-router'
+    import {useRouter,} from 'vue-router'
     import api from '../api/api'
     import util from '../utils/util'
     import constant from '../common/constant'
@@ -126,6 +126,9 @@
                 //记录到缓存中去
                 localStorage.setItem("openKey", JSON.stringify(e))
             }
+            const menus = computed(()=>{
+                return constant.method.getMenu()
+            })
             return {
                 //目前选择的子菜单，根据路由进行选择
                 selectedKeys: ref([router.currentRoute.value.name]),
@@ -136,7 +139,7 @@
                 switchMenu,
                 openMenu,
                 breadList,
-                menus: reactive(constant.method.getMenu())
+                menus: menus
             };
         }
     }

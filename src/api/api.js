@@ -21,7 +21,16 @@ const userApi = {
     },
     logout: (loading=false)=>{
         return http.post('/sysUser/logout')
-    }
+    },
+    getUserInfoList: (params,loading=false)=>{
+        return http.post('/sysUserInfo/getUserList',params,loading)
+    },
+    getAllRoleList: (params,loading=false)=>{
+        return http.post('/sysRole/getAllRoleList',params,loading)
+    },
+    addUser: (params,loading=false)=>{
+        return http.post('/sysUser/addUser',params,loading)
+    },
 }
 
 const sysApi = {
@@ -39,6 +48,9 @@ const sysApi = {
     },
     deleteDict: (params,loading=false)=> {
         return http.Delete('/sysDict/deleteDict',params,loading)
+    },
+    getDictParamList: (params,loading=false)=>{
+        return http.post('/sysDictParam/getDictParamList',params,loading)
     },
 }
 

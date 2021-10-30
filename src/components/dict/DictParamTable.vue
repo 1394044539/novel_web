@@ -12,6 +12,7 @@
                      :pagination="false"
                      :data-source="dictParamData"
                      :columns="columns"
+                     :scroll="{y: 500}"
                      bordered>
             </a-table>
         </a-modal>

@@ -70,6 +70,7 @@
                                  :pagination="false"
                                  :data-source="dictParamData"
                                  :columns="columns"
+                                 :scroll="{y: 300}"
                                  bordered>
                         </a-table>
                         <DictParamModal

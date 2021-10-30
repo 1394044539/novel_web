@@ -1,5 +1,7 @@
 <template>
-    <div>
+    <div style="margin-top: 24px">
+        <div>
+        </div>
         <div>
             <div style="margin-bottom: 10px">
                 <a-row>
@@ -20,20 +22,20 @@
                     <div>{{record.dictType!=='1'?text:text==='1'?'开':'关'}}</div>
                 </template>
             </a-table>
-            <DictModal
-                    :showModal="showModal"
-                    :modalFlag="modalFlag"
-                    :updateDictId="updateDictId"
-                    :title="title"
-                    @closeForm="openInsertModal"
-                    @success="success"
-            />
-            <DictParamTable
+        </div>
+        <DictModal
+                :showModal="showModal"
+                :modalFlag="modalFlag"
+                :updateDictId="updateDictId"
+                :title="title"
+                @closeForm="openInsertModal"
+                @success="success"
+        />
+        <DictParamTable
                 :showParamTable="showParamTable"
                 :dictId="dictId"
                 @closeForm="showDictParamTableForm"
-            />
-        </div>
+        />
     </div>
 </template>
 

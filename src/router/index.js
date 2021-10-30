@@ -106,6 +106,14 @@ const routes = [
           title: '字典管理'
         },
         component: () => import('@/views/system/DictManager.vue')
+      },
+      {
+        path: 'userManager',
+        name: 'UserManager',
+        meta: {
+          title: '用户管理'
+        },
+        component: () => import('@/views/system/UserManager.vue')
       }
     ]
   },
