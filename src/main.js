@@ -10,6 +10,9 @@ import 'ant-design-vue/dist/antd.less'
 import * as antIcons from '@ant-design/icons-vue'
 import './common/index.less'
 import { createFromIconfontCN } from '@ant-design/icons-vue';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
 
 const IconFont = createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js',

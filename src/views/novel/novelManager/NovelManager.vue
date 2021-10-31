@@ -39,7 +39,7 @@
 
 <script>
     import '../../../views/novel/less/index.less'
-    import { onMounted,reactive,ref } from 'vue'
+    import { onMounted,reactive,ref,toRefs } from 'vue'
     import api from '../../../api/api'
     import { useRouter } from 'vue-router'
     import QuickUpload from "../../../components/novel/QuickUpload";
@@ -49,6 +49,13 @@
         name: "NovelManager",
         components: {CreateNovel, QuickUpload},
         setup(props,content){
+            const state = reactive({
+                page: 1,
+                pageSize: 10,
+                data: [],
+                quickUploadModal: false,
+                showCreateNovel: false,
+            })
             //初始化
             onMounted(()=>{
                 getNovelList();
@@ -56,13 +63,7 @@
             //获取路由
             const route = useRouter();
 
-            //快速上传功能
-            let fileList = ref([])
-
             //列表功能
-            let page=ref(1);
-            let pageSize=ref(10);
-            let data = ref([])
             const columns = [
                 {
                     title: '小说名',
@@ -144,13 +145,13 @@
                 }
             ]
             const pagination = {
-                current: page,
-                pageSize: pageSize,
+                current: state.page,
+                pageSize: state.pageSize,
                 showSizeChanger: true,
                 pageSizeOptions: ["10", "20", "50", "100"],//每页中显示的数据
                 showTotal: total => `共有 ${total} 条数据`,  //分页中显示总的数据
-                onShowSizeChange: (current, pageSize) => getNovelList(current,pageSize), // 改变每页数量时更新显示
-                onChange:(page,pageSize)=> getNovelList(page,pageSize),//点击页码事件
+                onShowSizeChange: (current, pageSize) => {}, // 改变每页数量时更新显示
+                onChange:(page,pageSize)=> {},//点击页码事件
             }
             const lookNovel = (novel) => {
                 route.push({
@@ -161,37 +162,32 @@
                 })
             }
             //获取小说列表
-            const getNovelList = (page=1,pageSize=10) => {
+            const getNovelList = () => {
                 let param={
-                    page,
-                    pageSize,
+                    page:state.page,
+                    pageSize:state.pageSize,
                 }
                 api.novelApi.getNovelList(param).then(res=>{
-                    data.value = res.records
+                    state.data = res.records
                 }).catch(err=>{})
             }
 
             //快速上传功能
-            let quickUploadModal = ref(false)
             const quickUpload = (flag) =>{
-                quickUploadModal.value = flag
+                state.quickUploadModal = flag
             }
 
             //创建小数功能
-            let showCreateNovel = ref(false)
             const createNovel = (flag) => {
-                showCreateNovel.value = flag
+                state.showCreateNovel = flag
             }
 
             return {
+                ...toRefs(state),
                 columns,
                 quickUpload,
-                quickUploadModal,
-                fileList,
-                data,
                 getNovelList,
                 createNovel,
-                showCreateNovel,
                 lookNovel,
                 pagination,
             }

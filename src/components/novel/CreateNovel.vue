@@ -9,6 +9,7 @@
         >
             <div style="padding-right: 10%">
                 <a-form :model="formData"
+                        :rules="rules"
                         ref="createNovelRef"
                 >
                     <a-row :gutter="16">
@@ -43,8 +44,7 @@
                                         v-model:value="formData.typeCodeList"
                                         mode="multiple"
                                         placeholder="选择小说类型">
-                                    <a-select-option value="shanghai">Zone one</a-select-option>
-                                    <a-select-option value="beijing">Zone two</a-select-option>
+                                    <a-select-option v-for="(item,index) in novelTypeList" :value="item.paramCode">{{item.paramValue}}</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
@@ -52,7 +52,21 @@
                     <a-row :gutter="16">
                         <a-col :span="24">
                             <a-form-item label="封面" name="novelImg" :label-col="{span: 4}">
-                                <a-input v-model:value="formData.novelImg" />
+                                <a-upload
+                                        :before-upload="beforeUpload"
+                                        accept=".jpg, .jpeg, .png"
+                                        list-type="picture-card"
+                                        v-model:file-list="fileList"
+                                        @preview="handlePreview"
+                                >
+                                    <div v-if="fileList.length < 1">
+                                        <plus-outlined />
+                                        <div class="ant-upload-text">Upload</div>
+                                    </div>
+                                </a-upload>
+                                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+                                    <img alt="example" style="width: 100%" :src="previewImage" />
+                                </a-modal>
                             </a-form-item>
                         </a-col>
                     </a-row>
@@ -84,7 +98,7 @@
 </template>
 
 <script>
-    import {reactive, ref} from "vue";
+    import {reactive, ref,onMounted,toRefs} from "vue";
     import api from "../../api/api";
     import util from "../../utils/util";
     import {useRouter} from "vue-router";
@@ -98,32 +112,83 @@
             }
         },
         setup(props,content){
+            const state = reactive({
+                formData: {
+                    novelName:'',
+                    novelAuthor:'',
+                    publicTime:'',
+                    typeCodeList: [],
+                    novelImg: '',
+                    novelIntroduce: ''
+                },
+                novelTypeList: [],
+                fileList: [],
+                previewVisible: false,
+                previewImage: ''
+            })
+            onMounted(()=>{
+                getNovelType();
+            })
+            const getNovelType = () => {
+                let param = {
+                    dictCode: 'NOVEL_TYPE'
+                }
+                api.sysApi.getDictParamList(param).then(res=>{
+                    state.novelTypeList=res
+                })
+            }
             //获取路由
             const route = useRouter();
-            let formData = reactive({
-                novelName:'',
-                novelAuthor:'',
-                publicTime:'',
-                typeCodeList: [],
-                novelImg: '',
-                novelIntroduce: ''
-            })
             const createNovelRef=ref();
+            const rules = {
+                novelName: [
+                    {
+                        required: true,
+                        message: '请填写小说名称'
+                    }
+                ]
+            }
             // 关闭弹窗
             const closeForm = () => {
                 createNovelRef.value.resetFields();
-                formData.typeCodeList=[]
+                state.formData.typeCodeList=[]
+                state.fileList = []
                 content.emit("closeForm");
+            }
+            // 上传前
+            const beforeUpload = (file, fileList) => {
+                return false
+            }
+            const handlePreview = async (file) => {
+                if (!file.url && !file.preview) {
+                    file.preview = await getBase64(file.originFileObj);
+                }
+                state.previewImage = file.url || file.preview;
+                state.previewVisible = true;
+            }
+            const handleCancel = () => {
+                state.previewVisible = false;
+            }
+            const getBase64 = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
             }
             // 提交表单
             const createNovel = () => {
                 createNovelRef.value.validate().then(res=>{
                     let formData = new FormData();
+                    debugger
                     formData.append("novelName",res.novelName);
                     formData.append("novelAuthor",res.novelAuthor);
                     formData.append("publicTime",res.publicTime?res.publicTime.format('YYYY-MM-DD'):'');
                     formData.append("typeCodeList",res.typeCodeList);
-                    formData.append("novelImg",res.novelImg);
+                    if(state.fileList.length>0){
+                        formData.append("imgFile",state.fileList[0].originFileObj);
+                    }
                     formData.append("novelIntroduce",res.novelIntroduce);
                     api.novelApi.createNovel(formData).then(res=>{
                         util.success("创建小说成功");
@@ -139,10 +204,14 @@
                 })
             }
             return{
-                formData,
+                ...toRefs(state),
                 closeForm,
                 createNovelRef,
+                rules,
                 createNovel,
+                beforeUpload,
+                handlePreview,
+                handleCancel,
             }
         }
     }
