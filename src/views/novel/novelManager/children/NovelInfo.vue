@@ -3,7 +3,12 @@
         <div>
             <a-descriptions bordered :labelStyle="{minWidth: '120px'}" :contentStyle="{minWidth: '200px'}">
                 <template #title>
-                    <div style="padding-left: 15px">小说详情</div>
+                    <div style="display: flex">
+                        <div style="padding-left: 15px">小说详情</div>
+                        <div style="display:table-cell;" @click="goBack">
+                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>
+                        </div>
+                    </div>
                 </template>
                 <a-descriptions-item label="小说名"><span style="font-weight: bold">{{novelInfo.novelName}}</span></a-descriptions-item>
                 <a-descriptions-item label="作者名">{{novelInfo.novelAuthor||'未知'}}</a-descriptions-item>
@@ -22,15 +27,28 @@
                     {{novelInfo.novelDesc||'-'}}
                 </a-descriptions-item>
                 <a-descriptions-item label="介绍">
-                    {{novelInfo.novelIntroduce||'-'}}
+                    <div class="custom-seven-ellipsis">
+                        <a-tooltip placement="leftTop">
+                            <template #title>{{novelInfo.novelIntroduce||'-'}}</template>
+                            {{novelInfo.novelIntroduce||'-'}}
+                        </a-tooltip>
+                    </div>
                 </a-descriptions-item>
             </a-descriptions>
         </div>
         <div style="background-color: #f4f4f4;margin-top: 24px">
             <div class="title-volume-list">
-                <span>小说分卷信息</span>
-                <component v-if="switchModel" class="switchIcon" @click="switchListModel" :is="$antIcons['AppstoreOutlined']"/>
-                <component v-if="!switchModel" class="switchIcon" @click="switchListModel" :is="$antIcons['BarsOutlined']"/>
+                <a-row>
+                    <a-col :span="12">
+                        <span>小说分卷信息</span>
+                        <component v-if="switchModel" class="switchIcon" @click="switchListModel" :is="$antIcons['AppstoreOutlined']"/>
+                        <component v-if="!switchModel" class="switchIcon" @click="switchListModel" :is="$antIcons['BarsOutlined']"/>
+                    </a-col>
+                    <a-col :span="12" style="text-align: right">
+                        <a-button size="small">调整排序</a-button>
+                        <a-button style="margin-left: 5px" size="small" @click="showUpload(true)">上传分卷</a-button>
+                    </a-col>
+                </a-row>
             </div>
             <div style="margin-left: 12px;margin-right: 12px;overflow-y: auto;overflow-x: hidden;max-height: 500px">
                 <a-list v-if="switchModel" :grid="{ gutter: 24, column: 4 }" :data-source="novelInfo.novelVolumeList">
@@ -53,7 +71,10 @@
                 </a-list>
             </div>
         </div>
-
+        <UploadVolume
+            :showUploadModal="showUploadModal"
+            @closeForm="showUpload(false)"
+        />
     </div>
 </template>
 
@@ -62,14 +83,17 @@
     import {onMounted,ref,reactive,toRefs} from "vue";
     import api from "../../../../api/api";
     import '../../../../common/index.less'
+    import UploadVolume from "../../../../components/novel/UploadVolume";
 
     export default {
         name: "NovelInfo",
+        components: {UploadVolume},
         setup(){
             const router = useRouter();
             const state=reactive({
                 novelInfo: {},
-                switchModel: false
+                switchModel: false,
+                showUploadModal: false,
             })
             onMounted(()=>{
                 initNovelData();
@@ -93,10 +117,18 @@
             const switchListModel = () => {
                 state.switchModel = !state.switchModel
             }
+            const goBack = () => {
+                router.go(-1)
+            }
+            const showUpload = (flag) => {
+                state.showUploadModal = flag
+            }
             return {
                 ...toRefs(state),
                 getNovelType,
                 switchListModel,
+                goBack,
+                showUpload,
             }
         }
     }

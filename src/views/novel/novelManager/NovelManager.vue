@@ -1,18 +1,29 @@
 <template>
     <div class="content-div">
         <div class="content-header">
-            <a-button type="primary" style="margin-right: 10px" @click="quickUpload(true)">
-                <component :is="$antIcons['UploadOutlined']"/>
-                快速上传
-            </a-button>
-            <a-button type="primary" @click="createNovel(true)">
-                <component :is="$antIcons['DiffOutlined']"/>
-                创建小说
-            </a-button>
         </div>
         <a-divider />
         <div>
-            <a-table :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
+            <div style="margin-bottom: 10px">
+                <a-row>
+                    <a-col :span="12">
+                        <a-button type="primary" @click="createNovel(true)">
+                            <component :is="$antIcons['DiffOutlined']"/>
+                            创建小说
+                        </a-button>
+                        <a-button type="primary" style="margin-left: 5px" @click="editNovel">编辑</a-button>
+                        <a-button style="margin-left: 5px" @click="deleteNovel">删除</a-button>
+                    </a-col>
+                    <a-col :span="12" style="text-align: right">
+                        <a-button type="primary" style="margin-right: 5px" @click="quickUpload(true)">
+                            <component :is="$antIcons['UploadOutlined']"/>
+                            快速上传
+                        </a-button>
+                    </a-col>
+                </a-row>
+            </div>
+            <a-table :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
+                     :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
                 <template #novelName="{ text, record, index }">
                     <a-tooltip>
                         <template #title>{{text}}</template>
@@ -26,9 +37,22 @@
                             :fallback="require('@/assets/img/notImg.png')"
                     />
                 </template>
+                <template #novelDesc="{ text, record, index }">
+                    <a-tooltip>
+                        <template #title>
+                            {{text}}
+                        </template>
+                        <div class="custom-two-ellipsis">{{text}}</div>
+                    </a-tooltip>
+                </template>
+                <template #novelIntroduce="{ text, record, index }">
+                    <a-tooltip>
+                        <template #title>{{text}}</template>
+                        <div class="custom-two-ellipsis">{{text}}</div>
+                    </a-tooltip>
+                </template>
                 <template #action>
-                    <a-button size="small" type="primary">编辑</a-button>
-                    <a-button style="margin-left: 5px" size="small">删除</a-button>
+                    <a-button size="small" type="primary">查看分卷</a-button>
                 </template>
             </a-table>
         </div>
@@ -39,11 +63,14 @@
 
 <script>
     import '../../../views/novel/less/index.less'
-    import { onMounted,reactive,ref,toRefs } from 'vue'
+    import {createVNode, onMounted, reactive, ref, toRefs} from 'vue'
+    import { Modal } from 'ant-design-vue'
     import api from '../../../api/api'
+    import util from '../../../utils/util'
     import { useRouter } from 'vue-router'
     import QuickUpload from "../../../components/novel/QuickUpload";
     import CreateNovel from "../../../components/novel/CreateNovel";
+    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "NovelManager",
@@ -53,6 +80,8 @@
                 page: 1,
                 pageSize: 10,
                 data: [],
+                selectedRowKeys: [],
+                selectedRows: [],
                 quickUploadModal: false,
                 showCreateNovel: false,
             })
@@ -95,14 +124,18 @@
                     dataIndex: 'novelDesc',
                     key: 'novelDesc',
                     width: 250,
-                    ellipsis: true,
+                    slots: {
+                        customRender: 'novelDesc',
+                    },
                 },
                 {
                     title: '介绍',
                     dataIndex: 'novelIntroduce',
                     key: 'novelIntroduce',
                     width: 250,
-                    ellipsis: true,
+                    slots: {
+                        customRender: 'novelIntroduce',
+                    },
                 },
                 {
                     title: '发布日期',
@@ -153,6 +186,10 @@
                 onShowSizeChange: (current, pageSize) => {}, // 改变每页数量时更新显示
                 onChange:(page,pageSize)=> {},//点击页码事件
             }
+            const onSelectChange = (selectedRowKeys,selectedRows) => {
+                state.selectedRowKeys = selectedRowKeys
+                state.selectedRows = selectedRows
+            }
             const lookNovel = (novel) => {
                 route.push({
                     name: 'NovelInfo',
@@ -181,6 +218,34 @@
             const createNovel = (flag) => {
                 state.showCreateNovel = flag
             }
+            //修改小说功能
+            const editNovel = () => {
+                if(state.selectedRowKeys.length===1){
+                    util.success("修改成功！")
+                }else {
+                    util.info("请选择一个小说")
+                }
+            }
+            const deleteNovel = () => {
+                if(state.selectedRowKeys.length===0){
+                    util.info("请选择要删除的小说")
+                }else {
+                    Modal.confirm({
+                        title: '确认删除',
+                        content: '是否删除选中小说（分卷、章节等信息将一并删除）',
+                        icon:createVNode(QuestionCircleOutlined),
+                        okText: '确认',
+                        cancelText: '取消',
+                        onOk(){
+                            let ids = state.selectedRows.map(e=>e.novelId);
+                            api.novelApi.deleteNovel(ids).then(res=>{
+                                util.success("删除成功")
+                                getNovelList()
+                            })
+                        }
+                    })
+                }
+            }
 
             return {
                 ...toRefs(state),
@@ -188,8 +253,11 @@
                 quickUpload,
                 getNovelList,
                 createNovel,
+                editNovel,
+                deleteNovel,
                 lookNovel,
                 pagination,
+                onSelectChange,
             }
         }
     }

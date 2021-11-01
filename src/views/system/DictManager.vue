@@ -159,7 +159,7 @@
                 }else {
                     Modal.confirm({
                         title: '确认删除',
-                        content: '是否删除选中子项',
+                        content: '是否删除选中字典',
                         icon:createVNode(QuestionCircleOutlined),
                         okText: '确认',
                         cancelText: '取消',

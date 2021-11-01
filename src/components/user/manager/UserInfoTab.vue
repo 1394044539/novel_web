@@ -9,7 +9,7 @@
             </a-row>
         </div>
         <a-table :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
-                 :pagination="pagination" :columns="columns" :data-source="userInfoList">
+                 :pagination="pagination" :columns="columns" :data-source="userInfoList" :scroll="{x: 1400}">
             <template #photo="{ text,record,index }">
                 <a-image
                         v-if="text"

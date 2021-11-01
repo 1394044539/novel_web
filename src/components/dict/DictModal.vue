@@ -238,12 +238,14 @@
                         api.sysApi.addDict(param).then(res=>{
                             dictFormRef.value.resetFields();
                             state.dictParamData=[];
+                            util.success("新增成功")
                             content.emit("success")
                         })
                     }else if(props.modalFlag==='editDict'){
                         api.sysApi.updateDict(param).then(res=>{
                             dictFormRef.value.resetFields();
                             state.dictParamData=[];
+                            util.success("修改成功")
                             content.emit("success")
                         })
                     }

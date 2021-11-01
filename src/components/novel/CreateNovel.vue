@@ -61,7 +61,7 @@
                                 >
                                     <div v-if="fileList.length < 1">
                                         <plus-outlined />
-                                        <div class="ant-upload-text">Upload</div>
+                                        <div class="ant-upload-text">点击上传封面</div>
                                     </div>
                                 </a-upload>
                                 <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">

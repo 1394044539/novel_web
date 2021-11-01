@@ -91,6 +91,9 @@ const novelApi = {
     getNovelData: (params,loading=false)=> {
         return http.get('/novel/getNovelInfo',params,loading)
     },
+    deleteNovel: (params,loading=false)=> {
+        return http.Delete('/novel/deleteNovel',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}

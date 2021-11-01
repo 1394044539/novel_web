@@ -28,7 +28,7 @@
                 </div>
             </a-upload-dragger>
             <div class="upload-modal-upload">
-                <a-button :disabled="fileList.length===0" type="primary" @click="submitQuickUpload">上传</a-button>
+                <a-button :disabled="fileList.length===0" type="primary" @click="submitQuickUpload" :loading="uploading">上传</a-button>
             </div>
         </a-modal>
     </div>
@@ -37,7 +37,7 @@
 <script>
     import util from "../../utils/util";
     import api from "../../api/api";
-    import {ref,watch} from "vue";
+    import {ref,reactive,watch,toRefs} from "vue";
     import {useRouter} from "vue-router";
 
     export default {
@@ -49,6 +49,9 @@
             }
         },
         setup(props,content){
+            const state = reactive({
+                uploading: false
+            })
             //获取路由
             const route = useRouter();
             //获取props
@@ -76,20 +79,23 @@
             }
             //上传文件
             const submitQuickUpload = () => {
+                state.uploading = true
                 let formData = new FormData()
                 formData.append('file',fileList.value[0])
                 api.novelApi.quickUpload(formData).then(res=>{
                     util.success("上传成功")
+                    state.uploading = false
                     route.push({
                         name: 'NovelInfo',
                         query: {
-                            novelId: 'e05c70a6e84646eba3191b0b22a22371',
+                            novelId: res.novelId,
                         }
                     })
                 }).catch(err=>{})
             }
 
             return {
+                ...toRefs(state),
                 fileList,
                 closeUpload,
                 beforeUpload,
