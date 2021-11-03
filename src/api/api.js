@@ -94,6 +94,9 @@ const novelApi = {
     deleteNovel: (params,loading=false)=> {
         return http.Delete('/novel/deleteNovel',params,loading)
     },
+    batchUploadVolume: (params,loading=false)=> {
+        return http.post('/novelVolume/batchUploadVolume',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}

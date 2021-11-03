@@ -9,7 +9,6 @@
             <a-upload-dragger
                     :fileList="fileList"
                     accept=".txt,.epub"
-                    name="file"
                     :multiple="false"
                     :before-upload="beforeUpload"
                     :remove="removeUpload"

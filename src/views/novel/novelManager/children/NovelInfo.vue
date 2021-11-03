@@ -74,6 +74,7 @@
         <UploadVolume
             :showUploadModal="showUploadModal"
             @closeForm="showUpload(false)"
+            @success="reloadPage"
         />
     </div>
 </template>
@@ -123,12 +124,17 @@
             const showUpload = (flag) => {
                 state.showUploadModal = flag
             }
+            const reloadPage = () => {
+                state.showUploadModal = false
+                initNovelData();
+            }
             return {
                 ...toRefs(state),
                 getNovelType,
                 switchListModel,
                 goBack,
                 showUpload,
+                reloadPage,
             }
         }
     }
