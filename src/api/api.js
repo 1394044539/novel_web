@@ -97,6 +97,12 @@ const novelApi = {
     batchUploadVolume: (params,loading=false)=> {
         return http.post('/novelVolume/batchUploadVolume',params,loading)
     },
+    getVolumeInfo: (params,loading=false)=> {
+        return http.get('/novelVolume/getVolumeInfo',params,loading)
+    },
+    getChapterContent: (params,loading=false)=> {
+        return http.get('/novelChapter/getChapterContent',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}

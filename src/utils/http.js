@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from '../router/index'
 import util from '../utils/util'
 
 const instance =axios.create({})
@@ -15,10 +16,11 @@ instance.interceptors.request.use(config =>{
 //处理响应
 instance.interceptors.response.use(response => {
     const res = response.data;
-    // if(res.code === -10000){
-    //     //未登录
-    //     return Promise.reject(res.msg);
-    // }
+    if(res.code === -10000){
+        //未登录
+        router.push({name: 'Login'})
+        return Promise.reject(res.msg);
+    }
     if(res.code === 200){
         return res.data;
     }

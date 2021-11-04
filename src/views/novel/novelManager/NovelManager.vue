@@ -191,12 +191,13 @@
                 state.selectedRows = selectedRows
             }
             const lookNovel = (novel) => {
-                route.push({
-                    name: 'NovelInfo',
+                const { href } = route.resolve({
+                    path: '/main/novelInfo',
                     query: {
                         novelId: novel.novelId,
                     }
                 })
+                window.open(href, '_blank');
             }
             //获取小说列表
             const getNovelList = () => {

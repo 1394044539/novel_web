@@ -152,7 +152,7 @@
 </template>
 
 <script>
-    import {ref, reactive, toRefs, toRaw, createVNode} from 'vue'
+    import {ref, reactive, toRefs, toRaw, createVNode,inject } from 'vue'
     import {Modal} from 'ant-design-vue'
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import api from '../../api/api'
@@ -164,7 +164,7 @@
             showUploadModal: {
                 type: Boolean,
                 default: false,
-            }
+            },
         },
         components: {QuestionCircleOutlined},
         setup(props,content){
@@ -178,6 +178,7 @@
                 previewImage: '',
                 uploadStatus: true,
             })
+            let novelId = inject('novelId');
             const resetPage = () =>{
                 state.showSingleModal= false
                 state.showBatchModal= false
@@ -233,19 +234,16 @@
                     cancelText: '取消',
                     onOk(){
                         state.uploadStatus=false
-                        setTimeout(()=>{
-                            let files = state.fileList.map(e=>e.originFileObj)
-                            console.log(files)
+                        let formData = new FormData();
+                        formData.append("novelId",novelId)
+                        state.fileList.forEach(e=> {
+                            formData.append("files",e.originFileObj)
+                        })
+                        api.novelApi.batchUploadVolume(formData).then(res=>{
                             state.uploadStatus=true
                             util.success("上传成功")
                             success();
-                        },3000)
-
-                        // api.novelApi.batchUploadVolume(param).then(res=>{
-                        //     state.uploadStatus=true
-                        //     util.success("上传成功")
-                        //     success();
-                        // })
+                        })
                     }
                 });
             }

@@ -44,6 +44,22 @@ const routes = [
         component: () => import('@/views/novel/novelManager/children/NovelInfo.vue'),
       },
       {
+        path: 'volumeInfo',
+        name: 'VolumeInfo',
+        meta: {
+          title: '分卷详情'
+        },
+        component: () => import('@/views/novel/novelManager/children/VolumeInfo.vue'),
+      },
+      {
+        path: 'chapterContent',
+        name: 'ChapterContent',
+        meta: {
+          title: '小说内容'
+        },
+        component: () => import('@/views/novel/chapter/ChapterContent.vue'),
+      },
+      {
         path: 'uploadRecord',
         name: 'UploadRecord',
         meta: {
@@ -125,6 +141,14 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/novel/contentPage',
+    name: 'ContentPage',
+    meta: {
+      title: '小说阅读页面'
+    },
+    component: () => import('@/views/ContentPage.vue')
+  }
 ]
 
 const router = createRouter({

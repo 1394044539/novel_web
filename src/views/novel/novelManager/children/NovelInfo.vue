@@ -3,10 +3,13 @@
         <div>
             <a-descriptions bordered :labelStyle="{minWidth: '120px'}" :contentStyle="{minWidth: '200px'}">
                 <template #title>
-                    <div style="display: flex">
+                    <div style="display: flex;justify-content: space-between">
                         <div style="padding-left: 15px">小说详情</div>
-                        <div style="display:table-cell;" @click="goBack">
-                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>
+<!--                        <div style="display:table-cell;" @click="goBack">-->
+<!--                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>-->
+<!--                        </div>-->
+                        <div>
+                            <a-button type="primary">编辑</a-button>
                         </div>
                     </div>
                 </template>
@@ -45,8 +48,9 @@
                         <component v-if="!switchModel" class="switchIcon" @click="switchListModel" :is="$antIcons['BarsOutlined']"/>
                     </a-col>
                     <a-col :span="12" style="text-align: right">
-                        <a-button size="small">调整排序</a-button>
-                        <a-button style="margin-left: 5px" size="small" @click="showUpload(true)">上传分卷</a-button>
+                        <a-button size="small" @click="showUpload(true)">上传分卷</a-button>
+                        <a-button style="margin-left: 5px" size="small">调整排序</a-button>
+                        <a-button style="margin-left: 5px" size="small">删除分卷</a-button>
                     </a-col>
                 </a-row>
             </div>
@@ -54,7 +58,7 @@
                 <a-list v-if="switchModel" :grid="{ gutter: 24, column: 4 }" :data-source="novelInfo.novelVolumeList">
                     <template #renderItem="{ item }">
                         <div style="padding: 5px">
-                            <a-card :hoverable='true' :bodyStyle="{padding: '10px',textAlign: 'center'}">
+                            <a-card @click="jumpVolumeInfo(item)" :hoverable='true' :bodyStyle="{padding: '10px',textAlign: 'center'}">
                                 {{item.volumeName}}
                             </a-card>
                         </div>
@@ -63,7 +67,7 @@
                 <a-list v-if="!switchModel" :grid="{ gutter: 24, column: 1 }" :data-source="novelInfo.novelVolumeList">
                     <template #renderItem="{ item,index }">
                         <div style="padding: 5px">
-                            <a-card :hoverable='true' :bodyStyle="{padding: '10px'}">
+                            <a-card @click="jumpVolumeInfo(item)" :hoverable='true' :bodyStyle="{padding: '10px'}">
                                 {{'第'+(index+1)+'卷 '}}{{item.volumeName}}
                             </a-card>
                         </div>
@@ -81,7 +85,7 @@
 
 <script>
     import { useRouter } from 'vue-router'
-    import {onMounted,ref,reactive,toRefs} from "vue";
+    import {onMounted,ref,reactive,toRefs,provide } from "vue";
     import api from "../../../../api/api";
     import '../../../../common/index.less'
     import UploadVolume from "../../../../components/novel/UploadVolume";
@@ -99,6 +103,7 @@
             onMounted(()=>{
                 initNovelData();
             })
+            provide("novelId",router.currentRoute.value.query.novelId)
             const initNovelData = () => {
                 const routeValue = router.currentRoute.value
                 api.novelApi.getNovelData({novelId:routeValue.query.novelId}).then(res=>{
@@ -128,6 +133,16 @@
                 state.showUploadModal = false
                 initNovelData();
             }
+            const jumpVolumeInfo = (volume) => {
+                const { href } = router.resolve({
+                    path: '/main/volumeInfo',
+                    query:{
+                        novelId: volume.novelId,
+                        volumeId: volume.volumeId
+                    }
+                })
+                window.open(href, '_blank');
+            }
             return {
                 ...toRefs(state),
                 getNovelType,
@@ -135,6 +150,7 @@
                 goBack,
                 showUpload,
                 reloadPage,
+                jumpVolumeInfo,
             }
         }
     }

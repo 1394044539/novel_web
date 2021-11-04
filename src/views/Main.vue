@@ -29,13 +29,13 @@
             </div>
         </a-layout-header>
         <a-layout :style="{ marginTop: '64px' }">
-            <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0}"  width="200" style="background: #fff" v-model:collapsed="collapsed" collapsible>
+            <a-layout-sider :style="{ overflowY: 'auto', height: '100vh', position: 'fixed', left: 0}"  width="200" style="background: #fff" v-model:collapsed="collapsed" collapsible>
                 <a-menu
                         theme="dark"
                         mode="inline"
                         v-model:selectedKeys="selectedKeys"
                         v-model:openKeys="openKeys"
-                        :style="{ height: '100%', borderRight: 0 }"
+                        :style="{ height: '100%', borderRight: 0}"
                         @click="switchMenu"
                         @openChange="openMenu"
                 >
