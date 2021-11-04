@@ -63,7 +63,7 @@
                     <template #renderItem="{ item,index }">
                         <div style="padding: 5px">
                             <a-card @click="jumpChapter(item)" :hoverable='true' :bodyStyle="{padding: '10px'}">
-                                {{'第'+(index+1)+'卷 '}}{{item.chapterName}}
+                                {{'第'+(index+1)+'章 '}}{{item.chapterName}}
                             </a-card>
                         </div>
                     </template>
