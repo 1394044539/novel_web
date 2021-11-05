@@ -9,7 +9,10 @@
 <!--                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>-->
 <!--                        </div>-->
                         <div>
-                            <a-button type="primary">编辑</a-button>
+                            <a-button type="primary">加入收藏</a-button>
+                            <a-button style="margin-left: 5px" type="primary">全部下载</a-button>
+                            <a-button style="margin-left: 5px" type="primary">编辑</a-button>
+                            <a-button style="margin-left: 5px" type="primary">删除</a-button>
                         </div>
                     </div>
                 </template>
@@ -49,8 +52,8 @@
                     </a-col>
                     <a-col :span="12" style="text-align: right">
                         <a-button size="small" @click="showUpload(true)">上传分卷</a-button>
-                        <a-button style="margin-left: 5px" size="small">调整排序</a-button>
-                        <a-button style="margin-left: 5px" size="small">删除分卷</a-button>
+                        <a-button style="margin-left: 5px" size="small" @click="showTransferOrder(true)">调整排序</a-button>
+                        <a-button style="margin-left: 5px" size="small" @click="showDeleteForm(true)">删除分卷</a-button>
                     </a-col>
                 </a-row>
             </div>
@@ -80,6 +83,18 @@
             @closeForm="showUpload(false)"
             @success="reloadPage"
         />
+        <TransferOrder
+            :novelVolumeList="novelInfo.novelVolumeList"
+            :showTransfer="showTransfer"
+            @closeForm="showTransferOrder"
+            @success="successOrder"
+        />
+        <DeleteVolume
+            :novelVolumeList="novelInfo.novelVolumeList"
+            :showDelete="showDelete"
+            @closeForm="showDeleteForm"
+            @success="successOrder"
+        />
     </div>
 </template>
 
@@ -89,16 +104,20 @@
     import api from "../../../../api/api";
     import '../../../../common/index.less'
     import UploadVolume from "../../../../components/novel/UploadVolume";
+    import TransferOrder from "../../../../components/novel/TransferOrder";
+    import DeleteVolume from "../../../../components/novel/DeleteVolume";
 
     export default {
         name: "NovelInfo",
-        components: {UploadVolume},
+        components: {DeleteVolume, TransferOrder, UploadVolume},
         setup(){
             const router = useRouter();
             const state=reactive({
                 novelInfo: {},
                 switchModel: false,
                 showUploadModal: false,
+                showTransfer: false,
+                showDelete: false,
             })
             onMounted(()=>{
                 initNovelData();
@@ -143,6 +162,18 @@
                 })
                 window.open(href, '_blank');
             }
+            const showTransferOrder = (flag) => {
+                state.showTransfer = flag
+            }
+            const showDeleteForm = (flag) => {
+                state.showDelete = flag
+            }
+            const successOrder = () => {
+                showTransferOrder(false)
+                showDeleteForm(false)
+                initNovelData()
+            }
+
             return {
                 ...toRefs(state),
                 getNovelType,
@@ -151,6 +182,9 @@
                 showUpload,
                 reloadPage,
                 jumpVolumeInfo,
+                showTransferOrder,
+                successOrder,
+                showDeleteForm,
             }
         }
     }

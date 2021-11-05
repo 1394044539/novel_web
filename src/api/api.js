@@ -103,6 +103,12 @@ const novelApi = {
     getChapterContent: (params,loading=false)=> {
         return http.get('/novelChapter/getChapterContent',params,loading)
     },
+    updateOrder: (params,loading=false)=> {
+        return http.put('/novelVolume/updateOrder',params,loading)
+    },
+    deleteVolume: (params,loading=false)=> {
+        return http.Delete('/novelVolume/deleteVolume',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}
