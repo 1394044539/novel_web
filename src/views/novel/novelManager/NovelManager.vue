@@ -51,13 +51,17 @@
                         <div class="custom-two-ellipsis">{{text}}</div>
                     </a-tooltip>
                 </template>
-                <template #action>
-                    <a-button size="small" type="primary">查看分卷</a-button>
+                <template #operation="{ text, record, index }">
+                    <a-button size="small" type="primary" @click="showVolumeModal(true,record)">查看分卷</a-button>
                 </template>
             </a-table>
         </div>
         <QuickUpload :quickUploadModal="quickUploadModal" @closeForm="quickUpload(false)"/>
         <CreateNovel :showCreateNovel="showCreateNovel" @closeForm="createNovel(false)"/>
+        <VolumeTable
+                :showVolumeTable="showVolume"
+                :novelInfo="novelInfo"
+                @closeForm="showVolumeModal"/>
     </div>
 </template>
 
@@ -71,10 +75,11 @@
     import QuickUpload from "../../../components/novel/QuickUpload";
     import CreateNovel from "../../../components/novel/CreateNovel";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+    import VolumeTable from "../../../components/novel/VolumeTable";
 
     export default {
         name: "NovelManager",
-        components: {CreateNovel, QuickUpload},
+        components: {VolumeTable, CreateNovel, QuickUpload},
         setup(props,content){
             const state = reactive({
                 page: 1,
@@ -84,6 +89,8 @@
                 selectedRows: [],
                 quickUploadModal: false,
                 showCreateNovel: false,
+                showVolume: false,
+                novelInfo: {}
             })
             //初始化
             onMounted(()=>{
@@ -168,12 +175,12 @@
                     width: 200,
                 },
                 {
-                    title: 'Action',
+                    title: '操作',
                     key: 'operation',
                     fixed: 'right',
                     width: 150,
                     slots: {
-                        customRender: 'action',
+                        customRender: 'operation',
                     },
                 }
             ]
@@ -248,6 +255,11 @@
                 }
             }
 
+            const showVolumeModal = (flag,novelInfo = {}) => {
+                state.showVolume = flag
+                state.novelInfo = novelInfo
+            }
+
             return {
                 ...toRefs(state),
                 columns,
@@ -259,6 +271,7 @@
                 lookNovel,
                 pagination,
                 onSelectChange,
+                showVolumeModal,
             }
         }
     }

@@ -181,7 +181,6 @@
             const createNovel = () => {
                 createNovelRef.value.validate().then(res=>{
                     let formData = new FormData();
-                    debugger
                     formData.append("novelName",res.novelName);
                     formData.append("novelAuthor",res.novelAuthor);
                     formData.append("publicTime",res.publicTime?res.publicTime.format('YYYY-MM-DD'):'');

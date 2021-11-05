@@ -20,7 +20,7 @@
                             <span style="color: grey">简介：</span>
 <!--                            <a-tooltip arrowPointAtCenter placement="bottomRight">-->
 <!--                                <template #title>{{volumeInfo.volumeDesc}}</template>-->
-                            <p :title="volumeInfo.volumeDesc" style="text-indent:2em;padding-right: 20%" class="custom-two-ellipsis">{{volumeInfo.volumeDesc}}</p>
+                            <p :title="volumeInfo.volumeDesc" style="text-indent:2em;padding-right: 20%;font-size: 12px" class="custom-three-ellipsis">{{volumeInfo.volumeDesc}}</p>
 <!--                            </a-tooltip>-->
                         </div>
                     </a-row>
@@ -45,7 +45,7 @@
                         <component v-if="!switchModel" class="switchIcon" @click="()=>switchModel=!switchModel" :is="$antIcons['BarsOutlined']"/>
                     </a-col>
                     <a-col :span="12" style="text-align: right">
-                        <a-checkbox v-model:checked="readModel"><span style="">小框口阅读模式</span></a-checkbox>
+                        <a-checkbox v-model:checked="readModel"><span style="">小框口模式阅读</span></a-checkbox>
                     </a-col>
                 </a-row>
             </div>

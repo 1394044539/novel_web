@@ -100,6 +100,9 @@ const novelApi = {
     getVolumeInfo: (params,loading=false)=> {
         return http.get('/novelVolume/getVolumeInfo',params,loading)
     },
+    getVolumeList: (params,loading=false)=> {
+        return http.get('/novelVolume/getVolumeList',params,loading)
+    },
     getChapterContent: (params,loading=false)=> {
         return http.get('/novelChapter/getChapterContent',params,loading)
     },

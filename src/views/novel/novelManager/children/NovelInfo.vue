@@ -9,10 +9,10 @@
 <!--                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>-->
 <!--                        </div>-->
                         <div>
-                            <a-button type="primary">加入收藏</a-button>
+                            <a-button type="primary">加入书架</a-button>
                             <a-button style="margin-left: 5px" type="primary">全部下载</a-button>
                             <a-button style="margin-left: 5px" type="primary">编辑</a-button>
-                            <a-button style="margin-left: 5px" type="primary">删除</a-button>
+                            <a-button style="margin-left: 5px" type="primary" @click="deleteNovel">删除</a-button>
                         </div>
                     </div>
                 </template>
@@ -100,12 +100,15 @@
 
 <script>
     import { useRouter } from 'vue-router'
-    import {onMounted,ref,reactive,toRefs,provide } from "vue";
+    import {onMounted, ref, reactive, toRefs, provide, createVNode} from "vue";
     import api from "../../../../api/api";
     import '../../../../common/index.less'
     import UploadVolume from "../../../../components/novel/UploadVolume";
     import TransferOrder from "../../../../components/novel/TransferOrder";
     import DeleteVolume from "../../../../components/novel/DeleteVolume";
+    import {Modal} from "ant-design-vue";
+    import util from "../../../../utils/util";
+    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "NovelInfo",
@@ -173,6 +176,24 @@
                 showDeleteForm(false)
                 initNovelData()
             }
+            const deleteNovel = () => {
+                Modal.confirm({
+                    title: '确认删除',
+                    content: '是否删除小说（分卷、章节等信息将一并删除）',
+                    icon:createVNode(QuestionCircleOutlined),
+                    okText: '确认',
+                    cancelText: '取消',
+                    onOk(){
+                        let ids = [router.currentRoute.value.query.novelId];
+                        api.novelApi.deleteNovel(ids).then(res=>{
+                            util.success("删除成功")
+                            router.push({
+                                name: 'Main',
+                            })
+                        })
+                    }
+                })
+            }
 
             return {
                 ...toRefs(state),
@@ -185,6 +206,7 @@
                 showTransferOrder,
                 successOrder,
                 showDeleteForm,
+                deleteNovel,
             }
         }
     }
