@@ -61,7 +61,8 @@
         <VolumeTable
                 :showVolumeTable="showVolume"
                 :novelInfo="novelInfo"
-                @closeForm="showVolumeModal"/>
+                @closeForm="showVolumeModal"
+        />
     </div>
 </template>
 
