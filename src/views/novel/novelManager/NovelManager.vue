@@ -63,6 +63,12 @@
                 :novelInfo="novelInfo"
                 @closeForm="showVolumeModal"
         />
+        <UpdateNovel
+            :show-update-modal="showUpdateModal"
+            :novel-info="novelInfo"
+            @closeForm="showUpdateForm"
+            @success="updateNovelSubmit"
+        />
     </div>
 </template>
 
@@ -77,10 +83,11 @@
     import CreateNovel from "../../../components/novel/CreateNovel";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import VolumeTable from "../../../components/novel/VolumeTable";
+    import UpdateNovel from "../../../components/novel/UpdateNovel";
 
     export default {
         name: "NovelManager",
-        components: {VolumeTable, CreateNovel, QuickUpload},
+        components: {UpdateNovel, VolumeTable, CreateNovel, QuickUpload},
         setup(props,content){
             const state = reactive({
                 page: 1,
@@ -91,7 +98,8 @@
                 quickUploadModal: false,
                 showCreateNovel: false,
                 showVolume: false,
-                novelInfo: {}
+                novelInfo: {},
+                showUpdateModal: false,
             })
             //初始化
             onMounted(()=>{
@@ -230,7 +238,8 @@
             //修改小说功能
             const editNovel = () => {
                 if(state.selectedRowKeys.length===1){
-                    util.success("修改成功！")
+                    state.novelInfo = state.selectedRows[0]
+                    state.showUpdateModal = true
                 }else {
                     util.info("请选择一个小说")
                 }
@@ -256,6 +265,14 @@
                 }
             }
 
+            const showUpdateForm = (flag)=>{
+                state.showUpdateModal =flag
+            }
+            const updateNovelSubmit = () => {
+                showUpdateForm(false)
+                getNovelList()
+            }
+
             const showVolumeModal = (flag,novelInfo = {}) => {
                 state.showVolume = flag
                 state.novelInfo = novelInfo
@@ -273,6 +290,8 @@
                 pagination,
                 onSelectChange,
                 showVolumeModal,
+                showUpdateForm,
+                updateNovelSubmit
             }
         }
     }
