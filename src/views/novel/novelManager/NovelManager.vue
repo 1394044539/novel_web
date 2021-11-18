@@ -7,11 +7,11 @@
             <div style="margin-bottom: 10px">
                 <a-row>
                     <a-col :span="12">
-                        <a-button type="primary" @click="createNovel(true)">
+                        <a-button type="primary" @click="createNovel(true,'create')">
                             <component :is="$antIcons['DiffOutlined']"/>
                             创建小说
                         </a-button>
-                        <a-button type="primary" style="margin-left: 5px" @click="editNovel">编辑</a-button>
+                        <a-button type="primary" style="margin-left: 5px" @click="editNovel()">编辑</a-button>
                         <a-button style="margin-left: 5px" @click="deleteNovel">删除</a-button>
                     </a-col>
                     <a-col :span="12" style="text-align: right">
@@ -57,7 +57,7 @@
             </a-table>
         </div>
         <QuickUpload :quickUploadModal="quickUploadModal" @closeForm="quickUpload(false)"/>
-        <CreateNovel :showCreateNovel="showCreateNovel" @closeForm="createNovel(false)"/>
+        <CreateNovel :showCreateNovel="showCreateNovel" :modal-flag="modalFlag" :novel-info="novelInfo" @closeForm="createNovel(false)"/>
         <VolumeTable
                 :showVolumeTable="showVolume"
                 :novelInfo="novelInfo"
@@ -100,6 +100,7 @@
                 showVolume: false,
                 novelInfo: {},
                 showUpdateModal: false,
+                modalFlag: '',
             })
             //初始化
             onMounted(()=>{
@@ -232,14 +233,16 @@
             }
 
             //创建小数功能
-            const createNovel = (flag) => {
+            const createNovel = (flag,modalflag='') => {
                 state.showCreateNovel = flag
+                state.modalFlag = modalflag
             }
             //修改小说功能
             const editNovel = () => {
                 if(state.selectedRowKeys.length===1){
+                    state.modalFlag = 'edit'
                     state.novelInfo = state.selectedRows[0]
-                    state.showUpdateModal = true
+                    state.showCreateNovel = true
                 }else {
                     util.info("请选择一个小说")
                 }

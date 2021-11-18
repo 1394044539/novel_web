@@ -2,7 +2,7 @@
     <div>
         <a-modal
                 v-model:visible="showCreateNovel"
-                title="创建小说"
+                :title="modalFlag==='create'?'创建小说':'编辑小说'"
                 :footer="null"
                 @cancel="closeForm"
                 width="800px"
@@ -86,7 +86,8 @@
                     <a-row :gutter="16">
                         <a-col :span="24">
                             <div style="text-align: center">
-                                <a-button type="primary" @click="createNovel">创建</a-button>
+                                <a-button v-if="modalFlag==='create'" type="primary" @click="createNovel">创建</a-button>
+                                <a-button v-if="modalFlag==='edit'" type="primary" @click="createNovel">修改</a-button>
                                 <a-button @click="closeForm" style="margin-left: 10px">取消</a-button>
                             </div>
                         </a-col>
@@ -98,7 +99,7 @@
 </template>
 
 <script>
-    import {reactive, ref,onMounted,toRefs} from "vue";
+    import {reactive, ref,onMounted,toRefs,watch} from "vue";
     import api from "../../api/api";
     import util from "../../utils/util";
     import {useRouter} from "vue-router";
@@ -109,6 +110,13 @@
             showCreateNovel: {
                 default: false,
                 type: Boolean,
+            },
+            modalFlag: {
+                default: '', //create edit
+                type: String,
+            },
+            novelInfo: {
+                type: Object,
             }
         },
         setup(props,content){
@@ -128,6 +136,20 @@
             })
             onMounted(()=>{
                 getNovelType();
+            })
+            watch(()=>props.showCreateNovel,(newV,oldV)=>{
+                if(newV && props.modalFlag==='edit'){
+                    state.formData = {...state.formData,...props.novelInfo}
+                }else if(newV && props.modalFlag==='create'){
+                    state.formData = {
+                        novelName:'',
+                        novelAuthor:'',
+                        publicTime:'',
+                        typeCodeList: [],
+                        novelImg: '',
+                        novelIntroduce: ''
+                    }
+                }
             })
             const getNovelType = () => {
                 let param = {
