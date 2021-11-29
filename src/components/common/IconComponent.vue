@@ -4,11 +4,11 @@
 
 <script>
     export default {
-        name: "IconComponet",
+        name: "IconComponent",
+        props:{
+          name: String
+        },
         setup(props,content){
-            return {
-                name: props.name
-            }
         }
     }
 </script>

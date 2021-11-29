@@ -3,7 +3,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect:{ path: '/main' }
+    redirect:{ path: '/novel/mainPage' }
   },
   {
     path: '/main',
@@ -148,6 +148,14 @@ const routes = [
       title: '小说阅读页面'
     },
     component: () => import('@/views/ContentPage.vue')
+  },
+  {
+    path: '/novel/mainPage',
+    name: 'MainPage',
+    meta: {
+      title: '小说阅读页面'
+    },
+    component: () => import('@/views/main/MainPage.vue')
   }
 ]
 
