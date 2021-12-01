@@ -1,5 +1,5 @@
 <template>
-    <a-layout>
+    <a-layout style="height: 100%">
         <a-layout-header class="header" :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
             <div class="logo">没有名字的系统</div>
             <div style="display: flex">
@@ -59,10 +59,10 @@
                 </a-dropdown>
             </div>
         </a-layout-header>
-        <a-layout-content :style="{ marginTop: '64px' }">
+        <a-layout-content :style="{ marginTop: '64px',paddingBottom: '40px' }">
             <div class="main-list">
                 <div class="main-list-header">
-                    <div>
+                    <div style="display: flex;align-items: center;">
                         <a-breadcrumb>
                             <span class="breadcrumb-catalog">刷新<IconComponent :name="'ReloadOutlined'"/></span>
                             <a-breadcrumb-item style="margin-left: 15px" href="javascript:void(0);" class="breadcrumb-catalog">图书列表</a-breadcrumb-item>
@@ -112,7 +112,11 @@
                     </div>
                 </div>
                 <a-divider />
-                <div></div>
+                <div>
+                    <div class="novel-list-item">
+                        <div style="height: 200px;width: 160px"></div>
+                    </div>
+                </div>
             </div>
         </a-layout-content>
         <a-layout-footer class="main-footer">
@@ -243,6 +247,9 @@
         bottom: 0;
         left: 0;
         right: 0;
+        background-color: #ffffff;
+        height: 40px;
+        padding-top: 8px;
 
         .main-footer-span{
             span{
@@ -252,5 +259,9 @@
                 color: #999999;
             }
         }
+    }
+
+    .novel-list-item{
+        width: 20%;
     }
 </style>
