@@ -112,9 +112,31 @@
                     </div>
                 </div>
                 <a-divider />
-                <div>
-                    <div class="novel-list-item">
-                        <div style="height: 200px;width: 160px"></div>
+                <div class="main-list-content">
+                    <div class="novel-list-item" v-for="index in 50" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
+                        <div style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:2021-12-1 12:00:00</div>
+                        <a-dropdown :trigger="['contextmenu']" @contextmenu="openNovel">
+                            <div :style="{textAlign: 'center',height: '180px',width: '150px',position: 'relative'}">
+                                <div class="item-tag">
+                                    <transition name="slide-fade">
+                                        <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">小说</a-tag>
+                                    </transition>
+                                </div>
+                                <div class="item-image">
+                                    <a-image :preview="false" height="180px" width="150px" src="/img/novelImg/0fb57067a64f446882b66ca8dc9c81bc/dagong.jpg" @click="openNovel" />
+                                </div>
+                            </div>
+                            <template #overlay>
+                                <a-menu style="width: 100px">
+                                    <a-menu-item key="1">下载</a-menu-item>
+                                    <a-menu-item key="2">复制</a-menu-item>
+                                    <a-menu-item key="3">移动</a-menu-item>
+                                    <a-menu-item key="3">重命名</a-menu-item>
+                                    <a-menu-item key="3">删除</a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                        <div class="novel-list-item-name">实力至上注意的教师</div>
                     </div>
                 </div>
             </div>
@@ -147,6 +169,8 @@
                 indeterminate: false,
                 searchType: ['A','B','C'],
                 filterTypeShow: false,
+                show: true,
+                mouseIndex: -1
             })
             //右上角用户信息部分
             const handleMenuClick = ({key}) => {
@@ -189,16 +213,37 @@
                 }
             })
 
+            const openNovel = () => {
+                console.log("hhh")
+            }
+
+            const showTag = (show,index=-1) => {
+                state.show = show
+                state.mouseIndex = index
+            }
+
             return{
                 ...toRefs(state),
                 handleMenuClick,
                 onCheckAllChange,
+                openNovel,
+                showTag,
             }
         }
     }
 </script>
 
 <style scoped lang="less">
+    .slide-fade-enter-active {
+        opacity: 0;
+        transition: all .3s ease;
+    }
+    .slide-fade-enter-to
+        /* .slide-fade-leave-active for below version 2.1.8 */ {
+        transform: translateX(-5px);
+        opacity: 1;
+    }
+
     .header{
         display: flex;
         justify-content: space-between;
@@ -231,6 +276,13 @@
         justify-content: space-between;
     }
 
+    .main-list-content{
+        max-height: 700px;
+        overflow-y: auto;
+        display: flex;
+        flex-wrap: wrap
+    }
+
     .breadcrumb-catalog {
         font-size: 16px;
         &:hover {
@@ -242,7 +294,8 @@
         display: flex;
         justify-content: space-between;
         text-align: center;
-        position: absolute;
+        position: fixed;
+        clear: both;
         width: 100%;
         bottom: 0;
         left: 0;
@@ -263,5 +316,27 @@
 
     .novel-list-item{
         width: 20%;
+        margin-bottom: 25px;
+        overflow-y: auto;
+    }
+
+    .item-tag{
+        position: absolute;
+        top: -5px;
+        right: -10px;
+        z-index: 2;
+    }
+
+    .item-image{
+        &:hover{
+            transition-duration: .3s;
+            box-shadow:0 0 10px #000;
+        }
+    }
+
+    .novel-list-item-name{
+        margin-top: 5px;
+        font-size: 15px;
+        color: #333333;
     }
 </style>
