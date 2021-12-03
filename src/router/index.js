@@ -3,13 +3,13 @@ import {createRouter, createWebHistory} from 'vue-router'
 const routes = [
   {
     path: '/',
-    redirect:{ path: '/novel/mainPage' }
+    redirect:{ path: '/mainPage' }
   },
   {
     path: '/main',
     name: 'Main',
     redirect:{name: 'MyNovel'},
-    component: () => import(/* webpackChunkName: "about" */ '../views/Main.vue'),
+    component: () => import('../views/Main.vue'),
     children:[
       {
         path: '/login',
@@ -150,12 +150,20 @@ const routes = [
     component: () => import('@/views/ContentPage.vue')
   },
   {
-    path: '/novel/mainPage',
+    path: '/mainPage',
     name: 'MainPage',
-    meta: {
-      title: '小说阅读页面'
-    },
-    component: () => import('@/views/main/MainPage.vue')
+    redirect:{path: '/mainPage/listPage'},
+    component: () => import('@/views/main/MainPage.vue'),
+    children: [
+      {
+        path: 'listPage',
+        name: 'ListPage',
+        meta: {
+          title: '收藏列表'
+        },
+        component: () => import('@/views/main/ListPage.vue')
+      },
+    ],
   }
 ]
 
