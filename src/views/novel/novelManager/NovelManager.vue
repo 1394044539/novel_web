@@ -37,6 +37,9 @@
                             :fallback="require('@/assets/img/notImg.png')"
                     />
                 </template>
+                <template #typeList="{ text, record, index }">
+                    {{getNovelTypeName(text)}}
+                </template>
                 <template #novelDesc="{ text, record, index }">
                     <a-tooltip>
                         <template #title>
@@ -57,24 +60,20 @@
             </a-table>
         </div>
         <QuickUpload :quickUploadModal="quickUploadModal" @closeForm="quickUpload(false)"/>
-        <CreateNovel :showCreateNovel="showCreateNovel" :modal-flag="modalFlag" :novel-info="novelInfo" @closeForm="createNovel(false)"/>
+        <CreateNovel :showCreateNovel="showCreateNovel" :modal-flag="modalFlag" :novel-info="novelInfo"
+                     @closeForm="createNovel(false)"
+                     @success="successCall"/>
         <VolumeTable
                 :showVolumeTable="showVolume"
                 :novelInfo="novelInfo"
                 @closeForm="showVolumeModal"
-        />
-        <UpdateNovel
-            :show-update-modal="showUpdateModal"
-            :novel-info="novelInfo"
-            @closeForm="showUpdateForm"
-            @success="updateNovelSubmit"
         />
     </div>
 </template>
 
 <script>
     import '../../../views/novel/less/index.less'
-    import {createVNode, onMounted, reactive, ref, toRefs} from 'vue'
+    import {createVNode, onMounted, reactive, toRefs} from 'vue'
     import { Modal } from 'ant-design-vue'
     import api from '../../../api/api'
     import util from '../../../utils/util'
@@ -83,11 +82,10 @@
     import CreateNovel from "../../../components/novel/CreateNovel";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import VolumeTable from "../../../components/novel/VolumeTable";
-    import UpdateNovel from "../../../components/novel/UpdateNovel";
 
     export default {
         name: "NovelManager",
-        components: {UpdateNovel, VolumeTable, CreateNovel, QuickUpload},
+        components: { VolumeTable, CreateNovel, QuickUpload},
         setup(props,content){
             const state = reactive({
                 page: 1,
@@ -99,7 +97,6 @@
                 showCreateNovel: false,
                 showVolume: false,
                 novelInfo: {},
-                showUpdateModal: false,
                 modalFlag: '',
             })
             //初始化
@@ -134,6 +131,15 @@
                     width: 150,
                     slots: {
                         customRender: 'novelImg',
+                    },
+                },
+                {
+                    title: '小说类型',
+                    dataIndex: 'typeList',
+                    key: 'typeList',
+                    width: 150,
+                    slots: {
+                        customRender: 'typeList',
                     },
                 },
                 {
@@ -207,6 +213,17 @@
                 state.selectedRowKeys = selectedRowKeys
                 state.selectedRows = selectedRows
             }
+
+            const getNovelTypeName = (types) =>{
+                if(types){
+                    let name = ''
+                    types.forEach(e=>{
+                        name += e.paramName + ','
+                    })
+                    return name.substring(0,name.length-1)
+                }
+                return ''
+            }
             const lookNovel = (novel) => {
                 const { href } = route.resolve({
                     path: '/main/novelInfo',
@@ -224,6 +241,8 @@
                 }
                 api.novelApi.getNovelList(param).then(res=>{
                     state.data = res.records
+                    state.selectedRowKeys=[]
+                    state.selectedRows=[]
                 }).catch(err=>{})
             }
 
@@ -233,9 +252,14 @@
             }
 
             //创建小数功能
-            const createNovel = (flag,modalflag='') => {
+            const createNovel = (flag,modalFlag='') => {
                 state.showCreateNovel = flag
-                state.modalFlag = modalflag
+                state.modalFlag = modalFlag
+            }
+            // 修改成功回调
+            const successCall = () => {
+                createNovel(false)
+                getNovelList()
             }
             //修改小说功能
             const editNovel = () => {
@@ -268,14 +292,6 @@
                 }
             }
 
-            const showUpdateForm = (flag)=>{
-                state.showUpdateModal =flag
-            }
-            const updateNovelSubmit = () => {
-                showUpdateForm(false)
-                getNovelList()
-            }
-
             const showVolumeModal = (flag,novelInfo = {}) => {
                 state.showVolume = flag
                 state.novelInfo = novelInfo
@@ -293,8 +309,8 @@
                 pagination,
                 onSelectChange,
                 showVolumeModal,
-                showUpdateForm,
-                updateNovelSubmit
+                successCall,
+                getNovelTypeName
             }
         }
     }

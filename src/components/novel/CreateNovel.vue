@@ -122,6 +122,7 @@
         setup(props,content){
             const state = reactive({
                 formData: {
+                    novelId: '',
                     novelName:'',
                     novelAuthor:'',
                     publicTime:'',
@@ -139,7 +140,13 @@
             })
             watch(()=>props.showCreateNovel,(newV,oldV)=>{
                 if(newV && props.modalFlag==='edit'){
-                    state.formData = {...state.formData,...props.novelInfo}
+                    state.formData = {
+                        ...state.formData,
+                        ...props.novelInfo,
+                    }
+                    if(props.novelInfo.typeList){
+                        state.formData.typeCodeList = props.novelInfo.typeList.map(e=> e.paramCode)
+                    }
                 }else if(newV && props.modalFlag==='create'){
                     state.formData = {
                         novelName:'',
@@ -205,21 +212,34 @@
                     let formData = new FormData();
                     formData.append("novelName",res.novelName);
                     formData.append("novelAuthor",res.novelAuthor);
-                    formData.append("publicTime",res.publicTime?res.publicTime.format('YYYY-MM-DD'):'');
+                    if(res.publicTime){
+                        let time = typeof res.publicTime === 'string' ?res.publicTime : res.publicTime.format('YYYY-MM-DD')
+                        formData.append("publicTime",time);
+                    }
                     formData.append("typeCodeList",res.typeCodeList);
                     if(state.fileList.length>0){
                         formData.append("imgFile",state.fileList[0].originFileObj);
                     }
                     formData.append("novelIntroduce",res.novelIntroduce);
-                    api.novelApi.createNovel(formData).then(res=>{
-                        util.success("创建小说成功");
-                        route.push({
-                            name: 'NovelInfo',
-                            query: {
-                                novelId: res.novelId,
-                            }
+                    if(props.modalFlag==='create'){
+                        api.novelApi.createNovel(formData).then(res=>{
+                            util.success("创建小说成功");
+                            route.push({
+                                name: 'NovelInfo',
+                                query: {
+                                    novelId: res.novelId,
+                                }
+                            })
                         })
-                    })
+                    }else {
+                        formData.append("novelId",props.novelInfo.novelId)
+                        api.novelApi.updateNovel(formData).then(res=>{
+                            state.formData.typeCodeList=[]
+                            state.fileList = []
+                            util.success("修改成功")
+                            content.emit('success')
+                        }).catch(err=>{})
+                    }
                 }).catch(err=>{
                     console.log(err);
                 })

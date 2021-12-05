@@ -30,7 +30,8 @@
                             <a-button type="primary" style="margin-left: 5px">继续阅读</a-button>
                         </a-col>
                         <a-col style="text-align: right">
-                            <a-button type="primary">编辑</a-button>
+                            <a-button type="primary" @click="updateVolume(true)">编辑</a-button>
+                            <a-button style="margin-left: 5px" @click="deleteVolume">删除</a-button>
                         </a-col>
                     </a-row>
                 </a-col>
@@ -70,22 +71,34 @@
                 </a-list>
             </div>
         </div>
+        <UpdateVolume
+            :show-update-volume="showUpdateForm"
+            :volume-info="volumeInfo"
+            @closeForm="updateVolume"
+            @success="updateCall"
+        />
     </div>
 </template>
 
 <script>
-    import { reactive,toRefs,toRaw,onMounted } from 'vue'
+    import { reactive,toRefs,toRaw,onMounted,createVNode } from 'vue'
     import { useRouter } from 'vue-router'
+    import { Modal } from 'ant-design-vue'
     import api from "../../../../api/api";
+    import util from "../../../../utils/util"
     import '../../../../common/index.less'
+    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+    import UpdateVolume from "../../../../components/novel/UpdateVolume";
 
     export default {
         name: "VolumeInfo",
+        components: {UpdateVolume},
         setup(props,content){
             const state = reactive({
                 volumeInfo: {},
                 switchModel: false,
-                readModel: false
+                readModel: false,
+                showUpdateForm: false,
             })
             const route = useRouter()
             let query = route.currentRoute.value.query
@@ -119,9 +132,47 @@
                 }
             }
 
+            //删除
+            const deleteVolume = () => {
+                Modal.confirm({
+                    title: '确认删除',
+                    content: '是否确认删除当前分卷（相关数据会一并删除）',
+                    icon:createVNode(QuestionCircleOutlined),
+                    okText: '确认',
+                    cancelText: '取消',
+                    onOk(){
+                        let volumeIds = []
+                        volumeIds.push(query.volumeId)
+                        api.novelApi.deleteVolume(volumeIds).then(res=>{
+                            util.success("删除成功")
+                            route.push({
+                                path: '/main/novelInfo',
+                                query: {
+                                    novelId: query.novelId,
+                                }
+                            })
+                        })
+                    }
+                })
+            }
+
+            // 编辑
+            const updateVolume = (flag) => {
+                state.showUpdateForm = flag
+            }
+
+            // 编辑回调
+            const updateCall = () => {
+                updateVolume(false)
+                getVolumeInfo()
+            }
+
             return{
                 ...toRefs(state),
-                jumpChapter
+                jumpChapter,
+                deleteVolume,
+                updateVolume,
+                updateCall
             }
         }
     }

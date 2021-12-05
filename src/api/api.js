@@ -88,6 +88,9 @@ const novelApi = {
     createNovel: (params,loading=false)=>{
         return http.post('/novel/addNovel',params,loading)
     },
+    updateNovel: (params,loading=false)=>{
+        return http.put('/novel/updateNovel',params,loading)
+    },
     getNovelData: (params,loading=false)=> {
         return http.get('/novel/getNovelInfo',params,loading)
     },
@@ -111,6 +114,12 @@ const novelApi = {
     },
     deleteVolume: (params,loading=false)=> {
         return http.Delete('/novelVolume/deleteVolume',params,loading)
+    },
+    addVolume: (params,loading=false)=> {
+        return http.put('/novelVolume/addVolume',params,loading)
+    },
+    updateVolume: (params,loading=false)=> {
+        return http.post('/novelVolume/updateVolume',params,loading)
     },
 }
 

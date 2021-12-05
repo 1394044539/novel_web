@@ -108,7 +108,7 @@
                 </a-row>
                 <a-row>
                     <a-col :span="24">
-                        <a-button type="primary">上传</a-button>
+                        <a-button type="primary" @click="uploadSingleFile">上传</a-button>
                         <a-button style="margin-left: 5px" @click="showSingleFile(false)">取消</a-button>
                     </a-col>
                 </a-row>
@@ -172,7 +172,12 @@
                 showSingleModal: false,
                 showBatchModal: false,
                 fileList: [],
-                volumeFormData: {},
+                volumeFormData: {
+                    volumeName: '',
+                    publicTime: '',
+                    volumeOrder: '',
+                    volumeDesc: '',
+                },
                 volumeImgFiles: [],
                 previewVisible: false,
                 previewImage: '',
@@ -183,7 +188,12 @@
                 state.showSingleModal= false
                 state.showBatchModal= false
                 state.fileList= []
-                state.volumeFormData= {}
+                state.volumeFormData= {
+                    volumeName: '',
+                    publicTime: '',
+                    volumeOrder: '',
+                    volumeDesc: '',
+                }
                 state.volumeImgFiles= []
                 state.previewVisible= false
                 state.previewImage= ''
@@ -251,6 +261,28 @@
             const volumeFormRef = ref();
             const volumeRules = {
             }
+            const uploadSingleFile = () => {
+                if(state.fileList.length===0){
+                    util.info("请选择文件")
+                }else {
+                    state.uploadStatus=false
+                    let formData = new FormData();
+                    formData.append("novelId",novelId)
+                    formData.append("volumeName",state.volumeFormData.volumeName)
+                    formData.append("publicTime",state.volumeFormData.publicTime?state.volumeFormData.publicTime.format('YYYY-MM-DD'):'')
+                    formData.append("volumeOrder",state.volumeFormData.volumeOrder)
+                    formData.append("volumeDesc",state.volumeFormData.volumeDesc)
+                    formData.append("volumeFile",state.fileList[0].originFileObj)
+                    if(state.volumeImgFiles.length>0){
+                        formData.append("imgFile",state.volumeImgFiles[0].originFileObj)
+                    }
+                    api.novelApi.addVolume(formData).then(res=>{
+                        state.uploadStatus=true
+                        util.success("上传成功")
+                        success();
+                    }).catch(err=>{})
+                }
+            }
             // 选择图片
             const beforeUploadImg = (file,fileList) => {
                 return false;
@@ -297,6 +329,7 @@
                 handlePreview,
                 handleCancel,
                 handleChange,
+                uploadSingleFile,
             }
         }
     }

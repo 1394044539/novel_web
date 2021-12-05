@@ -86,9 +86,12 @@
 <script>
     import { createVNode,reactive,toRefs } from 'vue'
     import { useRouter } from 'vue-router'
+    import { useStore } from 'vuex'
     import IconComponent from "../../components/common/IconComponent";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import {Modal} from "ant-design-vue";
+    import api from "../../api/api"
+    import util from "../../utils/util"
 
     export default {
         name: "MainPage",
@@ -97,6 +100,7 @@
             const state=reactive({
             })
             const route = useRouter()
+            const store = useStore()
             //右上角用户信息部分
             const handleMenuClick = ({key}) => {
                 if (key === 'logout') {
@@ -118,7 +122,7 @@
                                     reject()
                                 })
                             }).then(() => {
-                                router.push({name: 'Login'})
+                                route.push({name: 'Login'})
                             }).catch(() => {
                             });
                         }

@@ -11,7 +11,7 @@
                         <div>
                             <a-button type="primary">加入书架</a-button>
                             <a-button style="margin-left: 5px" type="primary">全部下载</a-button>
-                            <a-button style="margin-left: 5px" type="primary">编辑</a-button>
+                            <a-button style="margin-left: 5px" type="primary" @click="createNovel">编辑</a-button>
                             <a-button style="margin-left: 5px" type="primary" @click="deleteNovel">删除</a-button>
                         </div>
                     </div>
@@ -95,6 +95,9 @@
             @closeForm="showDeleteForm"
             @success="successOrder"
         />
+        <CreateNovel :showCreateNovel="showCreateNovel" :modal-flag="modalFlag" :novel-info="novelInfo"
+                     @closeForm="createNovel"
+                     @success="successCall"/>
     </div>
 </template>
 
@@ -109,10 +112,11 @@
     import {Modal} from "ant-design-vue";
     import util from "../../../../utils/util";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+    import CreateNovel from "../../../../components/novel/CreateNovel";
 
     export default {
         name: "NovelInfo",
-        components: {DeleteVolume, TransferOrder, UploadVolume},
+        components: {CreateNovel, DeleteVolume, TransferOrder, UploadVolume},
         setup(){
             const router = useRouter();
             const state=reactive({
@@ -121,6 +125,8 @@
                 showUploadModal: false,
                 showTransfer: false,
                 showDelete: false,
+                showCreateNovel: false,
+                modalFlag: 'edit',
             })
             onMounted(()=>{
                 initNovelData();
@@ -195,6 +201,15 @@
                 })
             }
 
+            const createNovel = (flag) => {
+                state.showCreateNovel = flag
+            }
+
+            const successCall = () => {
+                createNovel(false)
+                initNovelData()
+            }
+
             return {
                 ...toRefs(state),
                 getNovelType,
@@ -207,6 +222,8 @@
                 successOrder,
                 showDeleteForm,
                 deleteNovel,
+                createNovel,
+                successCall,
             }
         }
     }

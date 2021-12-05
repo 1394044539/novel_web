@@ -1,7 +1,7 @@
 <template>
     <a-layout>
         <a-layout-header class="header"  :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-            <div class="logo">没有名字的系统</div>
+            <div class="logo" @click="jumpMain">没有名字的系统</div>
             <div style="float: right">
                 <a-dropdown placement="bottomCenter" :overlay-style="{paddingTop:'20px'}">
                     <a class="ant-dropdown-link" @click.prevent>
@@ -129,6 +129,9 @@
             const menus = computed(()=>{
                 return constant.method.getMenu()
             })
+            const jumpMain = () =>{
+                router.push({name: 'MainPage'})
+            }
             return {
                 //目前选择的子菜单，根据路由进行选择
                 selectedKeys: ref([router.currentRoute.value.name]),
@@ -139,7 +142,8 @@
                 switchMenu,
                 openMenu,
                 breadList,
-                menus: menus
+                menus: menus,
+                jumpMain
             };
         }
     }
@@ -157,6 +161,7 @@
         text-align: center;
         letter-spacing: 2px;
         font-weight: bold;
+        cursor: pointer;
     }
 
     .ant-row-rtl .logo {
