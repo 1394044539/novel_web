@@ -9,7 +9,8 @@
 <!--                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>-->
 <!--                        </div>-->
                         <div>
-                            <a-button type="primary">加入书架</a-button>
+                            <a-button v-if="!collectionInfo" type="primary" @click="addCollection">加入书架</a-button>
+                            <a-button v-if="collectionInfo" @click="deleteCollection">取消收藏</a-button>
                             <a-button style="margin-left: 5px" type="primary">全部下载</a-button>
                             <a-button style="margin-left: 5px" type="primary" @click="createNovel">编辑</a-button>
                             <a-button style="margin-left: 5px" type="primary" @click="deleteNovel">删除</a-button>
@@ -119,6 +120,7 @@
         components: {CreateNovel, DeleteVolume, TransferOrder, UploadVolume},
         setup(){
             const router = useRouter();
+            const novelId = router.currentRoute.value.query.novelId;
             const state=reactive({
                 novelInfo: {},
                 switchModel: false,
@@ -127,15 +129,26 @@
                 showDelete: false,
                 showCreateNovel: false,
                 modalFlag: 'edit',
+                collectionInfo: {},
             })
             onMounted(()=>{
                 initNovelData();
+                getCollection();
             })
-            provide("novelId",router.currentRoute.value.query.novelId)
+            provide("novelId",novelId)
             const initNovelData = () => {
-                const routeValue = router.currentRoute.value
-                api.novelApi.getNovelData({novelId:routeValue.query.novelId}).then(res=>{
+                api.novelApi.getNovelData({novelId:novelId}).then(res=>{
                     state.novelInfo = res
+                })
+            }
+            // 获取信息
+            const getCollection = () => {
+                let param={
+                    id: novelId,
+                    collectionType: '1', //小说
+                }
+                api.novelApi.getCollection(param).then(res=>{
+                    state.collectionInfo=res
                 })
             }
             const getNovelType = (typeList) => {
@@ -148,19 +161,24 @@
                 }
                 return value||'其他'
             }
+            // 分卷列表展示方式
             const switchListModel = () => {
                 state.switchModel = !state.switchModel
             }
+            //返回
             const goBack = () => {
                 router.go(-1)
             }
+            // 打开/关闭上传分卷的弹窗
             const showUpload = (flag) => {
                 state.showUploadModal = flag
             }
+            // 上传分卷信息成功后的回调
             const reloadPage = () => {
                 state.showUploadModal = false
                 initNovelData();
             }
+            // 跳转分卷信息
             const jumpVolumeInfo = (volume) => {
                 const { href } = router.resolve({
                     path: '/main/volumeInfo',
@@ -171,17 +189,21 @@
                 })
                 window.open(href, '_blank');
             }
+            // 打开/关闭分卷弹窗
             const showTransferOrder = (flag) => {
                 state.showTransfer = flag
             }
+            // 打开/关闭删除分卷
             const showDeleteForm = (flag) => {
                 state.showDelete = flag
             }
+            // 排序/删除弹窗成功回调
             const successOrder = () => {
                 showTransferOrder(false)
                 showDeleteForm(false)
                 initNovelData()
             }
+            // 删除分卷信息
             const deleteNovel = () => {
                 Modal.confirm({
                     title: '确认删除',
@@ -200,11 +222,32 @@
                     }
                 })
             }
-
+            // 加入收藏
+            const addCollection = () =>{
+                let param = {
+                    collectionType: '1', //小说
+                    novelId,
+                }
+                api.novelApi.addCollection(param).then(res=>{
+                    util.success("收藏成功")
+                    getCollection();
+                })
+            }
+            // 取消收藏
+            const deleteCollection = () => {
+                let param = {
+                    collectionId: state.collectionInfo.collectionId,
+                }
+                api.novelApi.deleteCollection(param).then(res=>{
+                    util.success("取消成功")
+                    getCollection();
+                })
+            }
+            // 弹出/关闭编辑弹窗
             const createNovel = (flag) => {
                 state.showCreateNovel = flag
             }
-
+            // 编辑回调
             const successCall = () => {
                 createNovel(false)
                 initNovelData()
@@ -224,6 +267,8 @@
                 deleteNovel,
                 createNovel,
                 successCall,
+                addCollection,
+                deleteCollection,
             }
         }
     }

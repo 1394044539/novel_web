@@ -121,6 +121,18 @@ const novelApi = {
     updateVolume: (params,loading=false)=> {
         return http.post('/novelVolume/updateVolume',params,loading)
     },
+    addCollection: (params,loading=false)=> {
+        return http.put('/userCollection/addCollection',params,loading)
+    },
+    getCollection: (params,loading=false)=> {
+        return http.get('/userCollection/getCollection',params,loading)
+    },
+    deleteCollection: (params,loading=false)=> {
+        return http.Delete('/userCollection/deleteCollection',params,loading)
+    },
+    getCollectionList: (params,loading=false)=> {
+        return http.post('/userCollection/getCollectionList',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}

@@ -28,6 +28,8 @@
                         <a-col>
                             <a-button type="primary">开始阅读/重头阅读</a-button>
                             <a-button type="primary" style="margin-left: 5px">继续阅读</a-button>
+                            <a-button v-if="!collectionInfo" type="primary" @click="addCollection" style="margin-left: 5px">加入书架</a-button>
+                            <a-button v-if="collectionInfo" @click="deleteCollection" style="margin-left: 5px">取消收藏</a-button>
                         </a-col>
                         <a-col style="text-align: right">
                             <a-button type="primary" @click="updateVolume(true)">编辑</a-button>
@@ -99,11 +101,13 @@
                 switchModel: false,
                 readModel: false,
                 showUpdateForm: false,
+                collectionInfo: {},
             })
             const route = useRouter()
             let query = route.currentRoute.value.query
             onMounted(()=>{
                 getVolumeInfo()
+                getCollection()
             })
             const getVolumeInfo = () => {
                 let param = { volumeId: query.volumeId }
@@ -167,12 +171,46 @@
                 getVolumeInfo()
             }
 
+            // 加入收藏
+            const addCollection = () =>{
+                let param = {
+                    collectionType: '0', //分卷
+                    volumeId: state.volumeInfo.volumeId,
+                }
+                api.novelApi.addCollection(param).then(res=>{
+                    util.success("收藏成功")
+                    getCollection();
+                })
+            }
+            // 取消收藏
+            const deleteCollection = () => {
+                let param = {
+                    collectionId: state.collectionInfo.collectionId,
+                }
+                api.novelApi.deleteCollection(param).then(res=>{
+                    util.success("取消成功")
+                    getCollection();
+                })
+            }
+            // 获取信息
+            const getCollection = () => {
+                let param={
+                    id: query.volumeId,
+                    collectionType: '0', //分卷
+                }
+                api.novelApi.getCollection(param).then(res=>{
+                    state.collectionInfo=res
+                })
+            }
+
             return{
                 ...toRefs(state),
                 jumpChapter,
                 deleteVolume,
                 updateVolume,
-                updateCall
+                updateCall,
+                addCollection,
+                deleteCollection,
             }
         }
     }

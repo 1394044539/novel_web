@@ -30,21 +30,21 @@
                                 <a-menu-divider />
                                 <a-checkbox-group v-model:value="searchType">
                                     <a-menu-item>
-                                        <a-checkbox value="A">小说</a-checkbox>
+                                        <a-checkbox value="1">小说</a-checkbox>
                                     </a-menu-item>
                                     <a-menu-item>
-                                        <a-checkbox value="B">分卷</a-checkbox>
+                                        <a-checkbox value="0">分卷</a-checkbox>
                                     </a-menu-item>
                                     <a-menu-item>
-                                        <a-checkbox value="C">目录</a-checkbox>
+                                        <a-checkbox value="2">目录</a-checkbox>
                                     </a-menu-item>
                                 </a-checkbox-group>
                             </a-menu>
                         </template>
                     </a-dropdown>
                 </div>
-                <a-input v-model:value="novelName" placeholder="请输入小说名" />
-                <a-button type="primary">查询</a-button>
+                <a-input v-model:value="searchForm.catalogName" placeholder="请输入小说名" />
+                <a-button type="primary" @click="getCollectionList">查询</a-button>
             </div>
             <div>
                 <a-button type="primary" shape="round">
@@ -57,55 +57,80 @@
         </div>
         <a-divider />
         <div class="main-list-content">
-            <div class="novel-list-item" v-for="index in 50" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
-                <div style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:2021-12-1 12:00:00</div>
+            <div class="novel-list-item" v-for="(item,index)  in collectionList" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
+                <div style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:{{item.updateTime}}</div>
                 <a-dropdown :trigger="['contextmenu']" @contextmenu="openNovel">
                     <div :style="{textAlign: 'center',height: '180px',width: '150px',position: 'relative',cursor: 'pointer'}">
                         <div class="item-tag">
                             <transition name="slide-fade">
-                                <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">小说</a-tag>
+                                <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">
+                                    {{item.collectionType==='0'?'分卷':item.collectionType==='1'?'小说':'文件夹'}}
+                                </a-tag>
                             </transition>
                         </div>
                         <div class="item-image">
-                            <a-image :preview="false" height="180px" width="150px" :src="require('@/assets/img/notImg.png')" @click="openNovel" />
+                            <a-image :preview="false" height="180px" width="150px"
+                                     :src="'/img/'+item.imgPath"
+                                     :fallback="require('@/assets/img/photo.png')"
+                                     @click="openNovel" />
                         </div>
                     </div>
                     <template #overlay>
                         <a-menu style="width: 100px">
-                            <a-menu-item key="3">取消收藏</a-menu-item>
-                            <a-menu-item key="2">复制</a-menu-item>
-                            <a-menu-item key="3">移动</a-menu-item>
-                            <a-menu-item key="3">重命名</a-menu-item>
-                            <a-menu-item key="1">下载</a-menu-item>
-                            <a-menu-item key="3">删除</a-menu-item>
+                            <a-menu-item key="copy" @click.native="copyCollection(item)">复制</a-menu-item>
+                            <a-menu-item key="move" @click.native="moveCollection(item)">移动</a-menu-item>
+                            <a-menu-item v-if="item.collectionType==='2'" key="rename" @click.native="renameCatalog(item)">重命名</a-menu-item>
+                            <a-menu-item v-if="item.collectionType!=='2'" key="deleteCollection" @click.native="deleteCollection(item)">取消收藏</a-menu-item>
+                            <a-menu-item v-if="item.collectionType==='2'" key="deleteCatalog" @click.native="deleteCatalog(item)">删除</a-menu-item>
+                            <a-menu-item v-if="item.collectionType!=='1'" key="download" @click.native="download(item)">下载</a-menu-item>
                         </a-menu>
                     </template>
                 </a-dropdown>
-                <div class="novel-list-item-name">实力至上注意的教师</div>
+                <div class="novel-list-item-name">{{item.catalogName}}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-    import {reactive,toRefs, watch} from "vue";
+    import {reactive,toRefs, watch,onMounted} from "vue";
     import IconComponent from "../../components/common/IconComponent";
     import '../../common/index.less'
     import { useRouter } from "vue-router";
+    import api from "../../api/api";
 
     export default {
         name: "ListPage",
         components: {IconComponent},
         setup(){
             const state = reactive({
-                novelName: '',
                 checkAll: true,
                 indeterminate: false,
-                searchType: ['A','B','C'],
+                searchType: ['1','0','2'],
                 filterTypeShow: false,
                 show: true,
-                mouseIndex: -1
+                mouseIndex: -1,
+                collectionList: [],
+                searchForm: {
+                    catalogName: '',
+                    typeList: [],
+                    parentId: '',
+                }
             })
+            onMounted(()=>{
+                getCollectionList()
+            })
+
+            const getCollectionList = () =>{
+                let param = {
+                    ...state.searchForm,
+                    typeList: state.searchType,
+                }
+                api.novelApi.getCollectionList(param).then(res=>{
+                    state.collectionList = res
+                })
+            }
+
             const route = useRouter()
 
             const onCheckAllChange = e => {
@@ -135,12 +160,45 @@
                 })
             }
 
+            /** 右键菜单 **/
+            // 取消收藏
+            const deleteCollection = (collection) => {
+                debugger
+            }
+            // 复制收藏
+            const copyCollection = (collection) => {
+
+            }
+            // 移动收藏
+            const moveCollection = (collection) => {
+
+            }
+            // 重命名文件夹
+            const renameCatalog = (collection) => {
+
+            }
+            // 下载
+            const download = (collection) => {
+
+            }
+            // 删除目录
+            const deleteCatalog = () => {
+
+            }
+
             return{
                 ...toRefs(state),
                 onCheckAllChange,
                 openNovel,
                 showTag,
                 uploadNovelBtn,
+                deleteCollection,
+                copyCollection,
+                moveCollection,
+                renameCatalog,
+                download,
+                deleteCatalog,
+                getCollectionList,
             }
         }
     }
