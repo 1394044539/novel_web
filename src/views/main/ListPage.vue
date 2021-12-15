@@ -43,11 +43,11 @@
                         </template>
                     </a-dropdown>
                 </div>
-                <a-input v-model:value="searchForm.catalogName" placeholder="请输入小说名" />
-                <a-button type="primary" @click="getCollectionList">查询</a-button>
+                <a-input allowClear v-model:value="searchForm.catalogName" placeholder="请输入小说名" />
+                <a-button style="margin-left: 3px" type="primary" @click="getCollectionList">查询</a-button>
             </div>
             <div>
-                <a-button type="primary" shape="round">
+                <a-button type="primary" shape="round" @click="addCatalog(true,'create')">
                     <icon-component name="FolderAddOutlined"/>创建文件夹
                 </a-button>
                 <a-button @click="uploadNovelBtn" type="primary" shape="round" style="margin-left: 5px">
@@ -58,7 +58,9 @@
         <a-divider />
         <div class="main-list-content">
             <div class="novel-list-item" v-for="(item,index)  in collectionList" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
-                <div style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:{{item.updateTime}}</div>
+                <div v-if="item.collectionType==='0'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:{{item.updateTime}}</div>
+                <div v-if="item.collectionType==='1'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读到</div>
+                <div v-if="item.collectionType==='2'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次操作:{{item.updateTime}}</div>
                 <a-dropdown :trigger="['contextmenu']" @contextmenu="openNovel">
                     <div :style="{textAlign: 'center',height: '180px',width: '150px',position: 'relative',cursor: 'pointer'}">
                         <div class="item-tag">
@@ -69,10 +71,17 @@
                             </transition>
                         </div>
                         <div class="item-image">
-                            <a-image :preview="false" height="180px" width="150px"
+                            <a-image
+                                    v-if="item.collectionType!=='2'"
+                                    :preview="false" height="180px" width="150px"
                                      :src="'/img/'+item.imgPath"
                                      :fallback="require('@/assets/img/photo.png')"
                                      @click="openNovel" />
+                            <a-image
+                                    v-else
+                                    :preview="false" height="180px" width="150px"
+                                    :src="require('@/assets/img/catalog.png')"
+                                    @click="openNovel" />
                         </div>
                     </div>
                     <template #overlay>
@@ -82,13 +91,21 @@
                             <a-menu-item v-if="item.collectionType==='2'" key="rename" @click.native="renameCatalog(item)">重命名</a-menu-item>
                             <a-menu-item v-if="item.collectionType!=='2'" key="deleteCollection" @click.native="deleteCollection(item)">取消收藏</a-menu-item>
                             <a-menu-item v-if="item.collectionType==='2'" key="deleteCatalog" @click.native="deleteCatalog(item)">删除</a-menu-item>
-                            <a-menu-item v-if="item.collectionType!=='1'" key="download" @click.native="download(item)">下载</a-menu-item>
+                            <a-menu-item key="download" @click.native="download(item)">下载</a-menu-item>
                         </a-menu>
                     </template>
                 </a-dropdown>
                 <div class="novel-list-item-name">{{item.catalogName}}</div>
             </div>
         </div>
+        <CreateCatalog
+            :modal-flag="modalFlagCatalog"
+            :show-create-catalog="showCreateCatalog"
+            :catalog-name="choseCatalogName"
+            :now-catalog="nowCatalog"
+            @closeForm="addCatalog"
+            @success="catalogSuccess"
+        />
     </div>
 </template>
 
@@ -98,10 +115,11 @@
     import '../../common/index.less'
     import { useRouter } from "vue-router";
     import api from "../../api/api";
+    import CreateCatalog from "../../components/novel/CreateCatalog";
 
     export default {
         name: "ListPage",
-        components: {IconComponent},
+        components: {CreateCatalog, IconComponent},
         setup(){
             const state = reactive({
                 checkAll: true,
@@ -115,12 +133,18 @@
                     catalogName: '',
                     typeList: [],
                     parentId: '',
-                }
+                },
+                showCreateCatalog: false,
+                modalFlagCatalog: 'create',
+                choseCatalogName: '',
+                nowCatalog: {}
             })
+            // 路由
+            const route = useRouter()
             onMounted(()=>{
                 getCollectionList()
             })
-
+            // 获取收藏列表
             const getCollectionList = () =>{
                 let param = {
                     ...state.searchForm,
@@ -130,12 +154,10 @@
                     state.collectionList = res
                 })
             }
-
-            const route = useRouter()
-
+            /** 中间搜索框 **/
             const onCheckAllChange = e => {
                 state.checkAll = e.target.checked;
-                state.searchType = state.checkAll ? ['A','B','C'] : []
+                state.searchType = state.checkAll ? ['1','0','2'] : []
             }
             watch(()=>state.searchType,(newV, oldV)=>{
                 if(newV.length===3){
@@ -144,20 +166,31 @@
                     state.checkAll = false
                 }
             })
-
-            const openNovel = () => {
-                console.log("hhh")
+            /** 右上角按钮 **/
+            // 添加目录
+            const addCatalog = (flag=false,modalFlag='') => {
+                state.modalFlagCatalog=modalFlag
+                state.showCreateCatalog=flag
             }
-
-            const showTag = (show,index=-1) => {
-                state.show = show
-                state.mouseIndex = index
+            // 回调
+            const catalogSuccess = () => {
+                addCatalog(false)
+                getCollectionList()
             }
-
+            // 上传小说
             const uploadNovelBtn = () => {
                 route.push({
                     name: 'NovelManager'
                 })
+            }
+
+            /** 小说内容 **/
+            const openNovel = () => {
+                console.log("hhh")
+            }
+            const showTag = (show,index=-1) => {
+                state.show = show
+                state.mouseIndex = index
             }
 
             /** 右键菜单 **/
@@ -199,6 +232,8 @@
                 download,
                 deleteCatalog,
                 getCollectionList,
+                addCatalog,
+                catalogSuccess,
             }
         }
     }
