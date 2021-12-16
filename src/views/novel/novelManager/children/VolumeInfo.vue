@@ -126,13 +126,23 @@
                     window.open(href,chapter.chapterName,
                         'width=665,height=515,top=100, left=100,menubar=no,toolbar=no,status=no,scrollbars=yes')
                 }else {
-                    let { href } = route.resolve({
-                        path: '/main/chapterContent',
-                        query:{
-                            chapterId:chapter.chapterId
-                        }
-                    })
-                    window.open(href, '_blank');
+                    debugger
+                    if(route.currentRoute.value.name==="VolumeInfo2"){
+                        route.push({
+                            path: '/mainPage/chapterContent',
+                            query:{
+                                chapterId:chapter.chapterId
+                            }
+                        })
+                    }else {
+                        let {href} = route.resolve({
+                            path: '/main/chapterContent',
+                            query: {
+                                chapterId: chapter.chapterId
+                            }
+                        })
+                        window.open(href, '_blank');
+                    }
                 }
             }
 

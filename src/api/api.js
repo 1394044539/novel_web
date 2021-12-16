@@ -124,6 +124,9 @@ const novelApi = {
     addCollection: (params,loading=false)=> {
         return http.put('/userCollection/addCollection',params,loading)
     },
+    updateCollection: (params,loading=false)=> {
+        return http.post('/userCollection/updateCollection',params,loading)
+    },
     getCollection: (params,loading=false)=> {
         return http.get('/userCollection/getCollection',params,loading)
     },
@@ -132,6 +135,9 @@ const novelApi = {
     },
     getCollectionList: (params,loading=false)=> {
         return http.post('/userCollection/getCollectionList',params,loading)
+    },
+    getHistoryList: (params,loading=false)=> {
+        return http.post('/novelHistory/getHistoryList',params,loading)
     },
 }
 

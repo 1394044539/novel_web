@@ -1,7 +1,7 @@
 <template>
     <a-layout style="min-height: 100%">
         <a-layout-header class="header" :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-            <div class="logo">没有名字的系统</div>
+            <div class="logo" @click="jumpMain">没有名字的系统</div>
             <div style="display: flex">
                 <div style="margin-right: 25px">
                     <a-breadcrumb style="line-height: 64px">
@@ -9,11 +9,11 @@
                         <a-breadcrumb-item href="javascript:void(0);">
                             <span>
                                 <a-dropdown placement="bottomCenter">
-                                    <a style="color: #ffffff;font-size: 16px" @click.prevent>历史</a>
+                                    <a style="color: #ffffff;font-size: 16px" @mouseenter="getHistoryList('0')" @click.prevent>历史</a>
                                     <template #overlay>
                                       <a-menu style="margin-top: 20px">
-                                        <a-menu-item>
-                                          <span>1st menu item</span>
+                                        <a-menu-item v-for="item in markList">
+                                          <span @click.native="alert('测试')">1st menu item</span>
                                         </a-menu-item>
                                       </a-menu>
                                     </template>
@@ -22,11 +22,11 @@
                         </a-breadcrumb-item>
                         <a-breadcrumb-item href="javascript:void(0);">
                             <a-dropdown placement="bottomCenter">
-                                <a style="color: #ffffff;font-size: 16px" @click.prevent>书签</a>
+                                <a style="color: #ffffff;font-size: 16px" @click.prevent @mouseenter="getHistoryList('1')">书签</a>
                                 <template #overlay>
                                     <a-menu style="margin-top: 20px">
-                                        <a-menu-item>
-                                            <span>1st menu item</span>
+                                        <a-menu-item v-for="item in markList">
+                                            <span @click.native="alert('测试')">1st menu item</span>
                                         </a-menu-item>
                                     </a-menu>
                                 </template>
@@ -67,7 +67,7 @@
                 </a-dropdown>
             </div>
         </a-layout-header>
-        <a-layout-content :style="{ marginTop: '64px',paddingBottom: '40px' }">
+        <a-layout-content :style="{ marginTop: '64px',paddingBottom: '40px',paddingTop: '20px',paddingLeft: '180px',paddingRight: '180px'}">
             <router-view/>
         </a-layout-content>
         <a-layout-footer class="main-footer">
@@ -98,10 +98,29 @@
         components: {IconComponent,QuestionCircleOutlined},
         setup(){
             const state=reactive({
+                historyList: [],
+                markList: []
             })
             const route = useRouter()
             const store = useStore()
+            const jumpMain = () => {
+                route.push("/mainPage")
+            }
             //右上角用户信息部分
+            const getHistoryList = (type) => {
+                let param = {
+                    page: 1,
+                    pageSize: 5,
+                    recordType: type
+                }
+                api.novelApi.getHistoryList(param).then(res=>{
+                    if(type === '0'){
+                        state.historyList = res.records
+                    }else if(type === '1'){
+                        state.markList = res.records
+                    }
+                })
+            }
             const handleMenuClick = ({key}) => {
                 if (key === 'logout') {
                     Modal.confirm({
@@ -137,6 +156,8 @@
             return{
                 ...toRefs(state),
                 handleMenuClick,
+                jumpMain,
+                getHistoryList,
             }
         }
     }
@@ -159,6 +180,7 @@
         text-align: center;
         letter-spacing: 2px;
         font-weight: bold;
+        cursor: pointer;
     }
 
     .ant-row-rtl .logo {

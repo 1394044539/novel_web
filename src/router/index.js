@@ -163,6 +163,30 @@ const routes = [
         },
         component: () => import('@/views/main/ListPage.vue')
       },
+      {
+        path: 'volumeInfo',
+        name: 'VolumeInfo2',
+        meta: {
+          title: '分卷详情'
+        },
+        component: () => import('@/views/novel/novelManager/children/VolumeInfo.vue'),
+      },
+      {
+        path: 'novelInfo',
+        name: 'NovelInfo2',
+        meta: {
+          title: '小说详情'
+        },
+        component: () => import('@/views/novel/novelManager/children/NovelInfo.vue'),
+      },
+      {
+        path: 'chapterContent',
+        name: 'ChapterContent2',
+        meta: {
+          title: '小说内容'
+        },
+        component: () => import('@/views/novel/chapter/ChapterContent.vue'),
+      },
     ],
   }
 ]

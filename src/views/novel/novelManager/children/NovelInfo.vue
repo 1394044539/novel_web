@@ -180,14 +180,24 @@
             }
             // 跳转分卷信息
             const jumpVolumeInfo = (volume) => {
-                const { href } = router.resolve({
-                    path: '/main/volumeInfo',
-                    query:{
-                        novelId: volume.novelId,
-                        volumeId: volume.volumeId
-                    }
-                })
-                window.open(href, '_blank');
+                if(router.currentRoute.value.name==="NovelInfo2"){
+                    router.push({
+                        path: '/mainPage/volumeInfo',
+                        query:{
+                            novelId: volume.novelId,
+                            volumeId: volume.volumeId
+                        }
+                    })
+                }else {
+                    const { href } = router.resolve({
+                        path: '/main/volumeInfo',
+                        query:{
+                            novelId: volume.novelId,
+                            volumeId: volume.volumeId
+                        }
+                    })
+                    window.open(href, '_blank');
+                }
             }
             // 打开/关闭分卷弹窗
             const showTransferOrder = (flag) => {

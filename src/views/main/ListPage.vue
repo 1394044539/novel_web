@@ -1,11 +1,11 @@
 <template>
     <div class="main-list">
         <div class="main-list-header">
-            <div class="custom-ellipsis" style="display: flex;align-items: center;max-width: 350px">
+            <div class="custom-ellipsis" style="display: flex;align-items: center;width: 350px">
                 <a-breadcrumb>
-                    <span class="breadcrumb-catalog">刷新<IconComponent name="ReloadOutlined"/></span>
-                    <a-breadcrumb-item style="margin-left: 15px" href="javascript:void(0);" class="breadcrumb-catalog">图书列表</a-breadcrumb-item>
-                    <a-breadcrumb-item href="javascript:void(0);" class="breadcrumb-catalog">实例之上</a-breadcrumb-item>
+                    <span class="breadcrumb-catalog" @click="reFlush">刷新<IconComponent name="ReloadOutlined"/></span>
+                    <a-breadcrumb-item @click="jumpBreadcrumbMain()" style="margin-left: 15px" href="javascript:void(0);" class="breadcrumb-catalog">收藏列表</a-breadcrumb-item>
+                    <a-breadcrumb-item @click="jumpBreadcrumbMain(item,index)" v-for="(item,index) in breadcrumbList" href="javascript:void(0);" class="breadcrumb-catalog">{{item.catalogName}}</a-breadcrumb-item>
                 </a-breadcrumb>
             </div>
             <div style="width: 400px;display: flex">
@@ -47,7 +47,7 @@
                 <a-button style="margin-left: 3px" type="primary" @click="getCollectionList">查询</a-button>
             </div>
             <div>
-                <a-button type="primary" shape="round" @click="addCatalog(true,'create')">
+                <a-button type="primary" shape="round" @click="addCatalog(true)">
                     <icon-component name="FolderAddOutlined"/>创建文件夹
                 </a-button>
                 <a-button @click="uploadNovelBtn" type="primary" shape="round" style="margin-left: 5px">
@@ -56,52 +56,54 @@
             </div>
         </div>
         <a-divider />
-        <div class="main-list-content">
-            <div class="novel-list-item" v-for="(item,index)  in collectionList" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
-                <div v-if="item.collectionType==='0'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:{{item.updateTime}}</div>
-                <div v-if="item.collectionType==='1'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读到</div>
-                <div v-if="item.collectionType==='2'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次操作:{{item.updateTime}}</div>
-                <a-dropdown :trigger="['contextmenu']" @contextmenu="openNovel">
-                    <div :style="{textAlign: 'center',height: '180px',width: '150px',position: 'relative',cursor: 'pointer'}">
-                        <div class="item-tag">
-                            <transition name="slide-fade">
-                                <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">
-                                    {{item.collectionType==='0'?'分卷':item.collectionType==='1'?'小说':'文件夹'}}
-                                </a-tag>
-                            </transition>
+        <a-spin :spinning="loading">
+            <div class="main-list-content">
+                <div class="novel-list-item" v-for="(item,index)  in collectionList" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
+                    <div v-if="item.collectionType==='0'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:{{item.updateTime}}</div>
+                    <div v-if="item.collectionType==='1'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读到</div>
+                    <div v-if="item.collectionType==='2'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次操作:{{item.updateTime}}</div>
+                    <a-dropdown :trigger="['contextmenu']">
+                        <div :style="{textAlign: 'center',height: '180px',width: '150px',position: 'relative',cursor: 'pointer'}">
+                            <div class="item-tag">
+                                <transition name="slide-fade">
+                                    <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">
+                                        {{item.collectionType==='0'?'分卷':item.collectionType==='1'?'小说':'文件夹'}}
+                                    </a-tag>
+                                </transition>
+                            </div>
+                            <div class="item-image">
+                                <a-image
+                                        v-if="item.collectionType!=='2'"
+                                        :preview="false" height="180px" width="150px"
+                                         :src="'/img/'+item.imgPath"
+                                         :fallback="require('@/assets/img/photo.png')"
+                                         @click="openNovel(item)" />
+                                <a-image
+                                        v-else
+                                        :preview="false" height="180px" width="150px"
+                                        :src="require('@/assets/img/catalog.png')"
+                                        @click="intoCatalog(item)" />
+                            </div>
                         </div>
-                        <div class="item-image">
-                            <a-image
-                                    v-if="item.collectionType!=='2'"
-                                    :preview="false" height="180px" width="150px"
-                                     :src="'/img/'+item.imgPath"
-                                     :fallback="require('@/assets/img/photo.png')"
-                                     @click="openNovel" />
-                            <a-image
-                                    v-else
-                                    :preview="false" height="180px" width="150px"
-                                    :src="require('@/assets/img/catalog.png')"
-                                    @click="openNovel" />
-                        </div>
-                    </div>
-                    <template #overlay>
-                        <a-menu style="width: 100px">
-                            <a-menu-item key="copy" @click.native="copyCollection(item)">复制</a-menu-item>
-                            <a-menu-item key="move" @click.native="moveCollection(item)">移动</a-menu-item>
-                            <a-menu-item v-if="item.collectionType==='2'" key="rename" @click.native="renameCatalog(item)">重命名</a-menu-item>
-                            <a-menu-item v-if="item.collectionType!=='2'" key="deleteCollection" @click.native="deleteCollection(item)">取消收藏</a-menu-item>
-                            <a-menu-item v-if="item.collectionType==='2'" key="deleteCatalog" @click.native="deleteCatalog(item)">删除</a-menu-item>
-                            <a-menu-item key="download" @click.native="download(item)">下载</a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-                <div class="novel-list-item-name">{{item.catalogName}}</div>
+                        <template #overlay>
+                            <a-menu style="width: 100px">
+                                <a-menu-item key="copy" @click.native="copyCollection(item)">复制</a-menu-item>
+                                <a-menu-item key="move" @click.native="moveCollection(item)">移动</a-menu-item>
+                                <a-menu-item v-if="item.collectionType==='2'" key="rename" @click.native="renameCatalog(true,item)">重命名</a-menu-item>
+                                <a-menu-item v-if="item.collectionType!=='2'" key="deleteCollection" @click.native="deleteCollection(item)">取消收藏</a-menu-item>
+                                <a-menu-item v-if="item.collectionType==='2'" key="deleteCatalog" @click.native="deleteCatalog(item)">删除</a-menu-item>
+                                <a-menu-item key="download" @click.native="download(item)">下载</a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                    <div class="novel-list-item-name">{{item.catalogName}}</div>
+                </div>
             </div>
-        </div>
+        </a-spin>
         <CreateCatalog
             :modal-flag="modalFlagCatalog"
             :show-create-catalog="showCreateCatalog"
-            :catalog-name="choseCatalogName"
+            :chose-catalog="choseCatalog"
             :now-catalog="nowCatalog"
             @closeForm="addCatalog"
             @success="catalogSuccess"
@@ -110,11 +112,14 @@
 </template>
 
 <script>
-    import {reactive,toRefs, watch,onMounted} from "vue";
+    import {reactive,toRefs, watch,onMounted,createVNode} from "vue";
+    import { Modal } from 'ant-design-vue'
     import IconComponent from "../../components/common/IconComponent";
+    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import '../../common/index.less'
     import { useRouter } from "vue-router";
     import api from "../../api/api";
+    import util from "../../utils/util";
     import CreateCatalog from "../../components/novel/CreateCatalog";
 
     export default {
@@ -136,8 +141,10 @@
                 },
                 showCreateCatalog: false,
                 modalFlagCatalog: 'create',
-                choseCatalogName: '',
-                nowCatalog: {}
+                choseCatalog: {},
+                nowCatalog: {},
+                loading: false,
+                breadcrumbList: [],
             })
             // 路由
             const route = useRouter()
@@ -146,18 +153,30 @@
             })
             // 获取收藏列表
             const getCollectionList = () =>{
+                state.loading=true
                 let param = {
                     ...state.searchForm,
                     typeList: state.searchType,
                 }
                 api.novelApi.getCollectionList(param).then(res=>{
                     state.collectionList = res
+                    state.loading=false
                 })
             }
             /** 中间搜索框 **/
+            //刷新面包屑
+            const reFlush = () => {
+                getCollectionList()
+            }
+            //全选
             const onCheckAllChange = e => {
-                state.checkAll = e.target.checked;
-                state.searchType = state.checkAll ? ['1','0','2'] : []
+                if(state.searchType.length<3){
+                    state.searchType = ['1','0','2']
+                    state.checkAll = true
+                }else {
+                    state.searchType = []
+                    state.checkAll = false
+                }
             }
             watch(()=>state.searchType,(newV, oldV)=>{
                 if(newV.length===3){
@@ -168,8 +187,8 @@
             })
             /** 右上角按钮 **/
             // 添加目录
-            const addCatalog = (flag=false,modalFlag='') => {
-                state.modalFlagCatalog=modalFlag
+            const addCatalog = (flag=false) => {
+                state.modalFlagCatalog='create'
                 state.showCreateCatalog=flag
             }
             // 回调
@@ -179,24 +198,82 @@
             }
             // 上传小说
             const uploadNovelBtn = () => {
-                route.push({
-                    name: 'NovelManager'
-                })
+                Modal.confirm({
+                    title: "上传小说",
+                    content: "上传小说需要进入小说列表上传，是否跳转？",
+                    icon: createVNode(QuestionCircleOutlined),
+                    okText: '确认',
+                    cancelText: '取消',
+                    onOk() {
+                        route.push({
+                            name: 'NovelManager'
+                        })
+                    }
+                });
             }
 
             /** 小说内容 **/
-            const openNovel = () => {
-                console.log("hhh")
+            const openNovel = (item) => {
+                if(item.collectionType==='0'){
+                    // 分卷
+                    route.push({
+                        path: '/mainPage/volumeInfo',
+                        query:{
+                            novelId: item.novelId,
+                            volumeId: item.volumeId
+                        }
+                    })
+                }else if(item.collectionType==='1'){
+                    // 系列
+                    route.push({
+                        path: '/mainPage/novelInfo',
+                        query: {
+                            novelId: item.novelId,
+                        }
+                    })
+                }
             }
             const showTag = (show,index=-1) => {
                 state.show = show
                 state.mouseIndex = index
             }
-
+            const intoCatalog = (catalog) => {
+                state.nowCatalog = catalog
+                state.searchForm.parentId = catalog.collectionId
+                state.breadcrumbList.push(catalog)
+                getCollectionList()
+            }
+            const jumpBreadcrumbMain = (item,index) => {
+                if(item){
+                    state.nowCatalog = item
+                    state.searchForm.parentId = item.collectionId
+                    state.breadcrumbList = state.breadcrumbList.slice(0,index+1)
+                }else {
+                    state.nowCatalog = {}
+                    state.breadcrumbList = []
+                    state.searchForm.parentId = ''
+                    getCollectionList()
+                }
+            }
             /** 右键菜单 **/
             // 取消收藏
             const deleteCollection = (collection) => {
-                debugger
+                    Modal.confirm({
+                        title: "取消收藏",
+                        content: "是否确定取消收藏？",
+                        icon: createVNode(QuestionCircleOutlined),
+                        okText: '确认',
+                        cancelText: '取消',
+                        onOk() {
+                            let param = {
+                                collectionId: collection.collectionId,
+                            }
+                            api.novelApi.deleteCollection(param).then(res=>{
+                                util.success("取消成功")
+                                getCollectionList();
+                            })
+                        }
+                    });
             }
             // 复制收藏
             const copyCollection = (collection) => {
@@ -207,16 +284,34 @@
 
             }
             // 重命名文件夹
-            const renameCatalog = (collection) => {
-
+            const renameCatalog = (flag,collection) => {
+                state.modalFlagCatalog='edit'
+                state.showCreateCatalog=flag
+                state.choseCatalog = collection
             }
             // 下载
             const download = (collection) => {
 
             }
             // 删除目录
-            const deleteCatalog = () => {
-
+            const deleteCatalog = (collection) => {
+                Modal.confirm({
+                    title: "删除目录",
+                    content: "是否确定删除目录(目录下的记录会一并删除)？",
+                    icon: createVNode(QuestionCircleOutlined),
+                    okText: '确认',
+                    cancelText: '取消',
+                    onOk() {
+                        let param = {
+                            collectionId: collection.collectionId,
+                            collectionType: '2',
+                        }
+                        api.novelApi.deleteCollection(param).then(res=>{
+                            util.success("删除成功")
+                            getCollectionList();
+                        })
+                    }
+                });
             }
 
             return{
@@ -234,6 +329,9 @@
                 getCollectionList,
                 addCatalog,
                 catalogSuccess,
+                reFlush,
+                intoCatalog,
+                jumpBreadcrumbMain,
             }
         }
     }
@@ -249,10 +347,10 @@
         opacity: 1;
     }
 
-    .main-list{
-        margin-top: 20px;
-        padding: 0 180px;
-    }
+    /*.main-list{*/
+    /*    margin-top: 20px;*/
+    /*    padding: 0 180px;*/
+    /*}*/
 
     .main-list-header{
         display: flex;

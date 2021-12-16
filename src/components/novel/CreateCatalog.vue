@@ -35,7 +35,7 @@
                 type: Boolean,
             },
             modalFlag: String,
-            catalogName:String,
+            choseCatalog:Object,
             nowCatalog: Object,
         },
         setup(props,content){
@@ -44,7 +44,7 @@
             })
             watch(()=>props.showCreateCatalog,(newV,oldV)=>{
                 if(newV && props.modalFlag==='edit'){
-                    state.inputCatalogName = props.catalogName
+                    state.inputCatalogName = props.choseCatalog.catalogName
                 }else {
                     state.inputCatalogName = ''
                 }
@@ -72,7 +72,11 @@
                                 success()
                             })
                         }else {
-
+                            param.collectionId = props.choseCatalog. collectionId
+                            api.novelApi.updateCollection(param).then(res=>{
+                                util.success("修改成功")
+                                success()
+                            })
                         }
                     }
                 });
