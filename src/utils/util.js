@@ -85,14 +85,16 @@ util.noticeWarning = function (message='警告',description='警告',duration=4.
 /**
  * 问号提示框
  */
-util.confirm = function (title="确认",content) {
+util.confirm = function (title="确认",content,recall) {
     //改成问号
      return  Modal.confirm({
          title,
          content,
+         okText: '确认',
+         cancelText: '取消',
          icon:createVNode(QuestionCircleOutlined),
          onOk(){
-
+             recall()
          }
      });
 

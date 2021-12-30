@@ -198,18 +198,23 @@
             }
             // 上传小说
             const uploadNovelBtn = () => {
-                Modal.confirm({
-                    title: "上传小说",
-                    content: "上传小说需要进入小说列表上传，是否跳转？",
-                    icon: createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk() {
-                        route.push({
-                            name: 'NovelManager'
-                        })
-                    }
-                });
+                util.confirm('上传小说','上传小说需要进入小说列表上传，是否跳转？',()=>{
+                    route.push({
+                        name: 'NovelManager'
+                    })
+                })
+                // Modal.confirm({
+                //     title: "上传小说",
+                //     content: "上传小说需要进入小说列表上传，是否跳转？",
+                //     icon: createVNode(QuestionCircleOutlined),
+                //     okText: '确认',
+                //     cancelText: '取消',
+                //     onOk() {
+                //         route.push({
+                //             name: 'NovelManager'
+                //         })
+                //     }
+                // });
             }
 
             /** 小说内容 **/
