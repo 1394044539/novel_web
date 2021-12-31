@@ -126,7 +126,6 @@
                     window.open(href,chapter.chapterName,
                         'width=665,height=515,top=100, left=100,menubar=no,toolbar=no,status=no,scrollbars=yes')
                 }else {
-                    debugger
                     if(route.currentRoute.value.name==="VolumeInfo2"){
                         route.push({
                             path: '/mainPage/chapterContent',

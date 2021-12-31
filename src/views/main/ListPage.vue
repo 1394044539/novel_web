@@ -108,6 +108,13 @@
             @closeForm="addCatalog"
             @success="catalogSuccess"
         />
+        <CatalogTree 
+            :collectionInfo="choseCatalog"
+            :showTree="showTree"
+            :treeType="treeType"
+            @closeForm="closeCollection"
+            @successCall="closeCollection"
+        />
     </div>
 </template>
 
@@ -121,10 +128,11 @@
     import api from "../../api/api";
     import util from "../../utils/util";
     import CreateCatalog from "../../components/novel/CreateCatalog";
+    import CatalogTree from "../../components/novel/CatalogTree.vue"
 
     export default {
         name: "ListPage",
-        components: {CreateCatalog, IconComponent},
+        components: {CreateCatalog, IconComponent,CatalogTree},
         setup(){
             const state = reactive({
                 checkAll: true,
@@ -145,6 +153,8 @@
                 nowCatalog: {},
                 loading: false,
                 breadcrumbList: [],
+                showTree: false,
+                treeType: '',
             })
             // 路由
             const route = useRouter()
@@ -282,11 +292,21 @@
             }
             // 复制收藏
             const copyCollection = (collection) => {
-
+                state.showTree = true
+                state.treeType = 'copy'
+                state.choseCatalog = collection
+            }
+            const closeCollection = (flag) => {
+                state.showTree = false
+                if(flag){
+                    getCollectionList()
+                }
             }
             // 移动收藏
             const moveCollection = (collection) => {
-
+                state.showTree = true
+                state.treeType = 'move'
+                state.choseCatalog = collection
             }
             // 重命名文件夹
             const renameCatalog = (flag,collection) => {
@@ -337,6 +357,7 @@
                 reFlush,
                 intoCatalog,
                 jumpBreadcrumbMain,
+                closeCollection,
             }
         }
     }
