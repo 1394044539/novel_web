@@ -104,12 +104,14 @@ export default {
         util.confirm(tilte+"到",msg,()=>{
             let param = {
                 optType: props.treeType,
-                collectionId: collectionInfo.collectionId,
-                collectionType: collectionInfo.collectionType,
+                collectionId: props.collectionInfo.collectionId,
+                collectionType: props.collectionInfo.collectionType,
                 parentId: state.selectedTree.key,
             }
-            util.success(tilte+"成功！")
-            content.emit("successCall",true)
+            api.novelApi.copyOrMove(param).then(res=>{
+              util.success(tilte+"成功！")
+              content.emit("successCall",true)
+            })
         })
     }
     const select = (selectedKeys,e) => {

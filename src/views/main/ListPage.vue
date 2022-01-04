@@ -267,8 +267,8 @@
                     state.nowCatalog = {}
                     state.breadcrumbList = []
                     state.searchForm.parentId = ''
-                    getCollectionList()
                 }
+                getCollectionList()
             }
             /** 右键菜单 **/
             // 取消收藏

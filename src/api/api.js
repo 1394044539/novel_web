@@ -139,6 +139,9 @@ const novelApi = {
     getHistoryList: (params,loading=false)=> {
         return http.post('/novelHistory/getHistoryList',params,loading)
     },
+    copyOrMove: (params,loading=false)=> {
+        return http.post('/userCollection/copyOrMove',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}
