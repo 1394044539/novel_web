@@ -316,27 +316,23 @@
             }
             // 下载
             const download = (collection) => {
-
+                let param = {
+                    ...collection
+                }
+                api.novelApi.download(param)
             }
             // 删除目录
             const deleteCatalog = (collection) => {
-                Modal.confirm({
-                    title: "删除目录",
-                    content: "是否确定删除目录(目录下的记录会一并删除)？",
-                    icon: createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk() {
-                        let param = {
-                            collectionId: collection.collectionId,
-                            collectionType: '2',
-                        }
-                        api.novelApi.deleteCollection(param).then(res=>{
-                            util.success("删除成功")
-                            getCollectionList();
-                        })
+                util.confirm("删除目录","是否确定删除目录(目录下的记录会一并删除)？",()=>{
+                    let param = {
+                        collectionId: collection.collectionId,
+                        collectionType: '2',
                     }
-                });
+                    api.novelApi.deleteCollection(param).then(res=>{
+                        util.success("删除成功")
+                        getCollectionList();
+                    })
+                })
             }
 
             return{

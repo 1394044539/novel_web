@@ -142,6 +142,9 @@ const novelApi = {
     copyOrMove: (params,loading=false)=> {
         return http.post('/userCollection/copyOrMove',params,loading)
     },
+    download: (params)=> {
+        return http.downloadFile('/userCollection/download',params)
+    },
 }
 
 export default {userApi, sysApi, novelApi}

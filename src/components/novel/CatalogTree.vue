@@ -99,6 +99,9 @@ export default {
         }else if(state.selectedTree.key===props.collectionInfo.collectionId){
             util.info("不允许往自身"+tilte)
             return
+        }else if(state.selectedTree.key===props.collectionInfo.parentId){
+            util.info("不允许往上级"+tilte)
+            return
         }
         let msg = `是否要将${props.collectionInfo.catalogName}${tilte}到${state.selectedTree.title}`
         util.confirm(tilte+"到",msg,()=>{
