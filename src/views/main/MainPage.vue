@@ -72,8 +72,8 @@
         </a-layout-content>
         <a-layout-footer class="main-footer">
             <div class="main-footer-span">
-                <icon-component style="margin-right: 3px" name="QuestionCircleOutlined"/><span>意见反馈</span>
-                <icon-component style="margin-right: 3px" name="InfoCircleOutlined"/><span>bug反馈</span>
+                <icon-component @click="showFeedback('1')" style="margin-right: 3px" name="QuestionCircleOutlined"/><span @click="showFeedback('1')">意见反馈</span>
+                <icon-component @click="showFeedback('0')" style="margin-right: 3px" name="InfoCircleOutlined"/><span @click="showFeedback('0')">bug反馈</span>
                 <icon-component style="margin-right: 3px" name="AlignLeftOutlined"/><span>公告</span>
             </div>
             <div>
@@ -81,6 +81,11 @@
             </div>
         </a-layout-footer>
     </a-layout>
+    <FeedbackModal
+        :feedback-show="feedbackShow"
+        :feedback-type="feedbackType"
+        @closeForm="closeFeedback"
+    />
 </template>
 
 <script>
@@ -92,14 +97,17 @@
     import {Modal} from "ant-design-vue";
     import api from "../../api/api"
     import util from "../../utils/util"
+    import FeedbackModal from "../../components/system/FeedbackModal";
 
     export default {
         name: "MainPage",
-        components: {IconComponent,QuestionCircleOutlined},
+        components: {FeedbackModal, IconComponent,QuestionCircleOutlined},
         setup(){
             const state=reactive({
                 historyList: [],
-                markList: []
+                markList: [],
+                feedbackShow: false,
+                feedbackType: '',
             })
             const route = useRouter()
             const store = useStore()
@@ -153,11 +161,22 @@
                 }
             }
 
+            const showFeedback = (type) => {
+                state.feedbackShow = true
+                state.feedbackType = type
+            }
+
+            const closeFeedback = () => {
+                state.feedbackShow = false
+            }
+
             return{
                 ...toRefs(state),
                 handleMenuClick,
                 jumpMain,
                 getHistoryList,
+                showFeedback,
+                closeFeedback,
             }
         }
     }
