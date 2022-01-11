@@ -187,6 +187,14 @@ const routes = [
         },
         component: () => import('@/views/novel/chapter/ChapterContent.vue'),
       },
+      {
+        path: 'noticeList',
+        name: 'NoticeList',
+        meta: {
+          title: '公告列表'
+        },
+        component: () => import('@/views/system/NoticeList.vue')
+      }
     ],
   }
 ]

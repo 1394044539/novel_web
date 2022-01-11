@@ -76,6 +76,12 @@ const sysApi = {
     getDictParamList: (params,loading=false)=>{
         return http.post('/sysDictParam/getDictParamList',params,loading)
     },
+    addFeedback: (params,loading=false)=>{
+        return http.post('/feedback/insert',params,loading)
+    },
+    getOpenNotice: ()=>{
+        return http.get('/sysNotice/openNotice')
+    }
 }
 
 const novelApi = {

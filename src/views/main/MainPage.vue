@@ -74,7 +74,7 @@
             <div class="main-footer-span">
                 <icon-component @click="showFeedback('1')" style="margin-right: 3px" name="QuestionCircleOutlined"/><span @click="showFeedback('1')">意见反馈</span>
                 <icon-component @click="showFeedback('0')" style="margin-right: 3px" name="InfoCircleOutlined"/><span @click="showFeedback('0')">bug反馈</span>
-                <icon-component style="margin-right: 3px" name="AlignLeftOutlined"/><span>公告</span>
+                <icon-component @click="jumpNotice()" style="margin-right: 3px" name="AlignLeftOutlined"/><span @click="jumpNotice()">公告</span>
             </div>
             <div>
                 @一只小NPC&nbsp;QQ:1394044539
@@ -86,10 +86,26 @@
         :feedback-type="feedbackType"
         @closeForm="closeFeedback"
     />
+    <a-modal
+            v-model:visible="showNotice"
+            :maskClosable="false"
+            title="新公告"
+            :footer="null"
+            @cancel="closeForm"
+            width="600px"
+    >
+        <div style="text-align: center">
+            <h2>{{notice.noticeTitle}}</h2>
+            <div>
+                {{notice.noticeContent}}
+            </div>
+        </div>
+        {{notice.content}}
+    </a-modal>
 </template>
 
 <script>
-    import { createVNode,reactive,toRefs } from 'vue'
+    import { createVNode,reactive,toRefs,onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { useStore } from 'vuex'
     import IconComponent from "../../components/common/IconComponent";
@@ -108,9 +124,23 @@
                 markList: [],
                 feedbackShow: false,
                 feedbackType: '',
+                showNotice: false,
+                notice: {}
             })
             const route = useRouter()
             const store = useStore()
+            onMounted(()=>{
+                getOpenNotice();
+            })
+            const getOpenNotice = () => {
+                api.sysApi.getOpenNotice().then(res=>{
+                    if(res){
+                        state.showNotice = true
+                        state.notice = res
+                    }
+                })
+            }
+
             const jumpMain = () => {
                 route.push("/mainPage")
             }
@@ -170,6 +200,14 @@
                 state.feedbackShow = false
             }
 
+            const jumpNotice = () => {
+                route.push("noticeList")
+            }
+
+            const closeForm = () => {
+                state.showNotice = false
+            }
+
             return{
                 ...toRefs(state),
                 handleMenuClick,
@@ -177,6 +215,8 @@
                 getHistoryList,
                 showFeedback,
                 closeFeedback,
+                jumpNotice,
+                closeForm,
             }
         }
     }

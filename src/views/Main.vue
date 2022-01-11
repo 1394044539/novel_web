@@ -29,7 +29,7 @@
             </div>
         </a-layout-header>
         <a-layout :style="{ marginTop: '64px' }">
-            <a-layout-sider :style="{ overflowY: 'auto', height: '100vh', position: 'fixed', left: 0}"  width="200" style="background: #fff" v-model:collapsed="collapsed" collapsible>
+            <a-layout-sider :style="{ overflowY: 'auto', height: '100vh', position: 'fixed', left: 0}"  width="200" style="background: #fff" >
                 <a-menu
                         theme="dark"
                         mode="inline"
@@ -49,12 +49,9 @@
                     </a-sub-menu>
                 </a-menu>
             </a-layout-sider>
-            <a-layout style="padding: 0 10% 24px;margin-left: 200px">
-                <a-breadcrumb style="margin: 16px 0">
-                    <a-breadcrumb-item v-for="(item,index) in breadList">{{item}}</a-breadcrumb-item>
-                </a-breadcrumb>
+            <a-layout style="margin-left: 200px">
                 <a-layout-content
-                        :style="{ background: '#fff', padding: '0 24px', margin: 0, minHeight: '540px'}"
+                        :style="{ background: '#fff', padding: '0 24px', margin: 0}"
                 >
                     <router-view/>
                 </a-layout-content>
@@ -107,17 +104,8 @@
                 }
             }
 
-            //面包屑信息，从缓存中取出，没有就默认第一个
-            const breadList = ref(JSON.parse(localStorage.getItem("breadList")) || ['小说模块', '我的书架'])
             //切换菜单
             const switchMenu = e => {
-                //当前面包屑
-                breadList.value = []
-                e.keyPath.forEach(e => {
-                    breadList.value.push(constant.method.getMenuValue(e))
-                })
-                //存入缓存
-                localStorage.setItem("breadList", JSON.stringify(breadList.value))
                 //切换路由
                 router.push({name: e.key})
             }
@@ -137,11 +125,9 @@
                 selectedKeys: ref([router.currentRoute.value.name]),
                 //打开的主菜单，从缓存中获取，缓存中有就打开，没有就取默认的novel
                 openKeys: ref(localStorage.getItem("openKey") ? JSON.parse(localStorage.getItem("openKey")) : ['Novel']),
-                collapsed: ref(false),
                 handleMenuClick,
                 switchMenu,
                 openMenu,
-                breadList,
                 menus: menus,
                 jumpMain
             };
