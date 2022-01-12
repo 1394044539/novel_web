@@ -87,7 +87,7 @@
                         </div>
                         <template #overlay>
                             <a-menu style="width: 100px">
-                                <a-menu-item key="copy" @click.native="copyCollection(item)">复制</a-menu-item>
+<!--                                <a-menu-item key="copy" @click.native="copyCollection(item)">复制</a-menu-item>-->
                                 <a-menu-item key="move" @click.native="moveCollection(item)">移动</a-menu-item>
                                 <a-menu-item v-if="item.collectionType==='2'" key="rename" @click.native="renameCatalog(true,item)">重命名</a-menu-item>
                                 <a-menu-item v-if="item.collectionType!=='2'" key="deleteCollection" @click.native="deleteCollection(item)">取消收藏</a-menu-item>
