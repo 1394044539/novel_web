@@ -1,10 +1,13 @@
 <template>
-  <div id="nav">
-    <router-view/>
-  </div>
-
+  <a-config-provider :locale="locale">
+    <div id="nav">
+      <router-view/>
+    </div>
+  </a-config-provider>
 </template>
-
+<script setup>
+  import locale from 'ant-design-vue/es/locale/zh_CN'
+</script>
 <style>
 #app {
 /*  font-family: Avenir, Helvetica, Arial, sans-serif;*/

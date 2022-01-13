@@ -24,10 +24,15 @@ let method = {
         })
         return reMenu
     },
+    //去重
     intersect(set1, set2) {
         let a = new Set(set1);
         return set2.filter(x => a.has(x.roleCode));
     },
+    //获取时间
+    getFormatTime(moment,format){
+        return moment?moment.format(format):"";
+    }
 }
 
 let date = {

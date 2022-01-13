@@ -139,6 +139,9 @@ const novelApi = {
     deleteCollection: (params,loading=false)=> {
         return http.Delete('/userCollection/deleteCollection',params,loading)
     },
+    batchCancelCollection: (params,loading=false)=> {
+        return http.Delete('/userCollection/batchCancelCollection',params,loading)
+    },
     getCollectionList: (params,loading=false)=> {
         return http.post('/userCollection/getCollectionList',params,loading)
     },

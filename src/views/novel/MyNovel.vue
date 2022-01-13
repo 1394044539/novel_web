@@ -23,30 +23,51 @@
                         </a-form-item>
                     </a-col>
                 </a-row>
+                <a-row>
+                    <a-col :span="8">
+                        <a-form-item label="操作人" name="createByName" :label-col="labelCol">
+                            <a-input allowClear v-model:value="searchFrom.createByName" />
+                        </a-form-item>
+                    </a-col>
+                    <a-col :span="8">
+                        <a-form-item label="创建日期" name="createTime" :label-col="labelCol">
+                            <a-range-picker
+                                    v-model:value="searchFrom.createTime"
+                                    :show-time="{ format: 'HH:mm' }"
+                                    :placeholder="['开始时间', '结束时间']"
+                                    format="YYYY-MM-DD HH:mm"
+                                    style="width: 100%"
+                            />
+                        </a-form-item>
+                    </a-col>
+                </a-row>
             </a-form>
         </div>
         <div style="margin-bottom: 20px">
             <a-row>
                 <a-col :span="8" style="text-align: left">
-                    <a-button type="primary">新增</a-button>
-                    <a-button style="margin-left: 15px">修改</a-button>
-                    <a-button style="margin-left: 15px">删除</a-button>
+                    <a-button class="custom-btn" @click="batchDelete">删除</a-button>
                 </a-col>
                 <a-col :span="8" style="text-align: center">
                     <a-button type="primary" @click="getList()">查询</a-button>
-                    <a-button style="margin-left: 15px" @click="resetList()" >重置</a-button>
+                    <a-button class="custom-btn" @click="resetList()" >重置</a-button>
                 </a-col>
                 <a-col :span="8" style="text-align: right">
-                    <a-button>清空收藏</a-button>
+                    <a-button>清除失效收藏</a-button>
+                    <a-button class="custom-btn" @click="removeAll">清空收藏</a-button>
                 </a-col>
             </a-row>
         </div>
         <div>
             <a-table :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
                      rowKey='collectionId'
-                     :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ y: 500 }">
+                     :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ y: 600 }">
                 <template #collectionType="{text,record,index}">
                     {{text==='0'?'小说':text==='1'?'系列':'文件夹'}}
+                </template>
+                <template #operation="{text,record,index}">
+                    <a-button v-if="record.collectionType==='2'" size="small">重命名</a-button>
+                    <a-button class="custom-btn" size="small">移动</a-button>
                 </template>
             </a-table>
         </div>
@@ -56,6 +77,8 @@
 <script>
     import { reactive,toRefs,onMounted,ref} from 'vue'
     import api from '../../api/api'
+    import util from '../../utils/util'
+    import constant from '../../common/constant'
 
     export default {
         name: "MyNovel",
@@ -70,6 +93,9 @@
                 searchFrom:{
                     catalogName: '',
                     parentName: '',
+                    collectionType: '',
+                    createByName: '',
+                    createTime: '',
                 },
             })
             let searchFromRef = ref()
@@ -120,6 +146,7 @@
                 {
                     title: '操作',
                     key: 'operation',
+                    align: 'center',
                     slots: {
                         customRender: 'operation',
                     },
@@ -145,6 +172,7 @@
                     pageSize: state.pageSize,
                     ...state.searchFrom
                 }
+                param.createTime = constant.method.getFormatTime(state.searchFrom.createTime[0],'YYYY-MM-DD HH:mm:ss')
                 api.novelApi.getCollectionListPage(param).then(res=>{
                     state.data=res.records
                     state.total = res.total
@@ -155,6 +183,24 @@
                 state.page= 1
                 state.pageSize= 10
                 getList()
+            }
+            // 批量删除
+            const batchDelete = () => {
+                if(state.selectedRowKeys.length===0){
+                    util.info("请选择要删除的内容")
+                    return
+                }
+                util.confirm("删除","是否删除选择的内容？",()=>{
+                    api.novelApi.batchCancelCollection(state.selectedRows).then(res=>{
+                    })
+                })
+            }
+            //清空收藏
+            const removeAll = () => {
+                util.confirm("清空","是否要清空收藏？",()=>{
+                    api.novelApi.batchCancelCollection([]).then(res=>{
+                    })
+                })
             }
             return {
                 ...toRefs(state),
@@ -167,6 +213,8 @@
                 getList,
                 resetList,
                 searchFromRef,
+                batchDelete,
+                removeAll,
             }
         }
     }
