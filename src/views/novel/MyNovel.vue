@@ -1,6 +1,7 @@
 <template>
     <div class="content-div">
-        <div style="padding: 0 10%">
+        <a-divider />
+        <div class="custom-table-search">
             <a-form :model="searchFrom" ref="searchFromRef">
                 <a-row>
                     <a-col :span="8">
@@ -53,7 +54,7 @@
                     <a-button class="custom-btn" @click="resetList()" >重置</a-button>
                 </a-col>
                 <a-col :span="8" style="text-align: right">
-                    <a-button>清除失效收藏</a-button>
+<!--                    <a-button>清除失效收藏</a-button>-->
                     <a-button class="custom-btn" @click="removeAll">清空收藏</a-button>
                 </a-col>
             </a-row>
@@ -67,7 +68,7 @@
                 </template>
                 <template #operation="{text,record,index}">
                     <a-button v-if="record.collectionType==='2'" size="small">重命名</a-button>
-                    <a-button class="custom-btn" size="small">移动</a-button>
+<!--                    <a-button class="custom-btn" size="small">移动</a-button>-->
                 </template>
             </a-table>
         </div>
@@ -198,7 +199,9 @@
             //清空收藏
             const removeAll = () => {
                 util.confirm("清空","是否要清空收藏？",()=>{
-                    api.novelApi.batchCancelCollection([]).then(res=>{
+                    api.novelApi.removeAll({}).then(res=>{
+                        util.success("清除成功！")
+                        getList()
                     })
                 })
             }

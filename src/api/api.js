@@ -142,6 +142,9 @@ const novelApi = {
     batchCancelCollection: (params,loading=false)=> {
         return http.Delete('/userCollection/batchCancelCollection',params,loading)
     },
+    removeAll:(params,loading=false)=> {
+        return http.Delete('/userCollection/removeAll',params,loading)
+    },
     getCollectionList: (params,loading=false)=> {
         return http.post('/userCollection/getCollectionList',params,loading)
     },

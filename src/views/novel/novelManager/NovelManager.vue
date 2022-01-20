@@ -1,14 +1,27 @@
 <template>
     <div class="content-div">
-        <div class="content-header">
-        </div>
         <a-divider />
+        <div class="custom-table-search">
+            <a-form :model="searchFrom" ref="searchFromRef">
+                <a-row>
+                    <a-col :span="8" :labelCol="labelCol">
+
+                    </a-col>
+                    <a-col :span="8" :labelCol="labelCol">
+
+                    </a-col>
+                    <a-col :span="8" :labelCol="labelCol">
+
+                    </a-col>
+                </a-row>
+            </a-form>
+        </div>
         <div>
             <div style="margin-bottom: 10px">
                 <a-row>
                     <a-col :span="12">
                         <a-button type="primary" @click="createNovel(true,'create')">
-                            <component :is="$antIcons['DiffOutlined']"/>
+                            <icon-component name="DiffOutlined"/>
                             创建小说
                         </a-button>
                         <a-button type="primary" style="margin-left: 5px" @click="editNovel()">编辑</a-button>
@@ -16,7 +29,7 @@
                     </a-col>
                     <a-col :span="12" style="text-align: right">
                         <a-button type="primary" style="margin-right: 5px" @click="quickUpload(true)">
-                            <component :is="$antIcons['UploadOutlined']"/>
+                            <icon-component name="UploadOutlined"/>
                             快速上传
                         </a-button>
                     </a-col>
@@ -82,10 +95,11 @@
     import CreateNovel from "../../../components/novel/CreateNovel";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import VolumeTable from "../../../components/novel/VolumeTable";
+    import IconComponent from "../../../components/common/IconComponent";
 
     export default {
         name: "NovelManager",
-        components: { VolumeTable, CreateNovel, QuickUpload},
+        components: {IconComponent, VolumeTable, CreateNovel, QuickUpload},
         setup(props,content){
             const state = reactive({
                 page: 1,
@@ -98,6 +112,9 @@
                 showVolume: false,
                 novelInfo: {},
                 modalFlag: '',
+                searchFrom: {
+
+                }
             })
             //初始化
             onMounted(()=>{
@@ -310,16 +327,16 @@
                 onSelectChange,
                 showVolumeModal,
                 successCall,
-                getNovelTypeName
+                getNovelTypeName,
+                labelCol:{
+                    span: 8,
+                },
             }
         }
     }
 </script>
 
 <style scoped>
-    .content-header{
-        text-align: right;
-    }
     .upload-modal-upload{
         text-align: center;
         margin-top: 20px;
