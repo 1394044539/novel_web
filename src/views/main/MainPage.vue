@@ -161,14 +161,8 @@
             }
             const handleMenuClick = ({key}) => {
                 if (key === 'logout') {
-                    Modal.confirm({
-                        title: "退出",
-                        content: "确认退出登录？",
-                        icon: createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk() {
-                            return new Promise((resolve, reject) => {
+                    util.confirm('退出','确认退出登录？',()=>{
+                        return new Promise((resolve, reject) => {
                                 //请求后台
                                 api.userApi.logout().then(res => {
                                     util.success("退出成功！")
@@ -182,8 +176,7 @@
                                 route.push({name: 'Login'})
                             }).catch(() => {
                             });
-                        }
-                    });
+                    })
                 }else {
                     route.push({
                         name: key

@@ -5,13 +5,46 @@
             <a-form :model="searchFrom" ref="searchFromRef">
                 <a-row>
                     <a-col :span="8" :labelCol="labelCol">
-
+                        <a-form-item label="系列名" name="novelName" :label-col="labelCol">
+                            <a-input allowClear v-model:value="searchFrom.novelName" />
+                        </a-form-item>
                     </a-col>
                     <a-col :span="8" :labelCol="labelCol">
-
+                        <a-form-item label="作者" name="novelAuthor" :label-col="labelCol">
+                            <a-input allowClear v-model:value="searchFrom.novelAuthor" />
+                        </a-form-item>
                     </a-col>
                     <a-col :span="8" :labelCol="labelCol">
-
+                        <a-form-item label="类型" name="collectionType" :label-col="labelCol">
+                            <a-select allowClear v-model:value="searchFrom.typeCodeList" mode="multiple">
+                                <a-select-option v-for="item in novelTypes" value="0">小说</a-select-option>
+                                <a-select-option value="1">系列</a-select-option>
+                                <a-select-option value="2">文件夹</a-select-option>
+                            </a-select>
+                        </a-form-item>
+                    </a-col>
+                </a-row>
+                <a-row>
+                    <a-col :span="8" :labelCol="labelCol">
+                        <a-form-item label="发布日期" name="publicTime" :label-col="labelCol">
+                            <a-range-picker
+                                    v-model:value="searchFrom.publicTime"
+                                    :placeholder="['开始时间', '结束时间']"
+                                    format="YYYY-MM-DD"
+                                    style="width: 100%"
+                            />
+                        </a-form-item>
+                    </a-col>
+                    <a-col :span="8" :labelCol="labelCol">
+                        <a-form-item label="创建日期" name="createTime" :label-col="labelCol">
+                            <a-range-picker
+                                    v-model:value="searchFrom.createTime"
+                                    :show-time="{ format: 'HH:mm' }"
+                                    :placeholder="['开始时间', '结束时间']"
+                                    format="YYYY-MM-DD HH:mm"
+                                    style="width: 100%"
+                            />
+                        </a-form-item>
                     </a-col>
                 </a-row>
             </a-form>
@@ -19,7 +52,7 @@
         <div>
             <div style="margin-bottom: 10px">
                 <a-row>
-                    <a-col :span="12">
+                    <a-col :span="8" style="text-align: left">
                         <a-button type="primary" @click="createNovel(true,'create')">
                             <icon-component name="DiffOutlined"/>
                             创建小说
@@ -27,7 +60,11 @@
                         <a-button type="primary" style="margin-left: 5px" @click="editNovel()">编辑</a-button>
                         <a-button style="margin-left: 5px" @click="deleteNovel">删除</a-button>
                     </a-col>
-                    <a-col :span="12" style="text-align: right">
+                    <a-col :span="8" style="text-align: center">
+                        <a-button type="primary" @click="getNovelList()">查询</a-button>
+                    <a-button class="custom-btn" @click="resetList()" >重置</a-button>
+                    </a-col>
+                    <a-col :span="8" style="text-align: right">
                         <a-button type="primary" style="margin-right: 5px" @click="quickUpload(true)">
                             <icon-component name="UploadOutlined"/>
                             快速上传
@@ -35,7 +72,7 @@
                     </a-col>
                 </a-row>
             </div>
-            <a-table :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
+            <a-table rowKey="novelId" :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
                      :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
                 <template #novelName="{ text, record, index }">
                     <a-tooltip>
@@ -69,6 +106,7 @@
                 </template>
                 <template #operation="{ text, record, index }">
                     <a-button size="small" type="primary" @click="showVolumeModal(true,record)">查看分卷</a-button>
+                    <a-button class="custom-btn" size="small" type="primary" @click="downloadNovel(record)">下载</a-button>
                 </template>
             </a-table>
         </div>
@@ -86,14 +124,13 @@
 
 <script>
     import '../../../views/novel/less/index.less'
-    import {createVNode, onMounted, reactive, toRefs} from 'vue'
-    import { Modal } from 'ant-design-vue'
+    import { onMounted, reactive, toRefs,ref} from 'vue'
     import api from '../../../api/api'
     import util from '../../../utils/util'
+    import constant from '../../../common/constant'
     import { useRouter } from 'vue-router'
     import QuickUpload from "../../../components/novel/QuickUpload";
     import CreateNovel from "../../../components/novel/CreateNovel";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import VolumeTable from "../../../components/novel/VolumeTable";
     import IconComponent from "../../../components/common/IconComponent";
 
@@ -113,8 +150,13 @@
                 novelInfo: {},
                 modalFlag: '',
                 searchFrom: {
-
-                }
+                    novelName: '',
+                    novelAuthor: '',
+                    typeCodeList: [],
+                    publicTime: [],
+                    createTime: [],
+                },
+                novelTypes: []
             })
             //初始化
             onMounted(()=>{
@@ -122,7 +164,7 @@
             })
             //获取路由
             const route = useRouter();
-
+            const searchFromRef = ref();
             //列表功能
             const columns = [
                 {
@@ -211,7 +253,7 @@
                     title: '操作',
                     key: 'operation',
                     fixed: 'right',
-                    width: 150,
+                    width: 200,
                     slots: {
                         customRender: 'operation',
                     },
@@ -255,7 +297,15 @@
                 let param={
                     page:state.page,
                     pageSize:state.pageSize,
+                    ...state.searchFrom
                 }
+                param.createStartTime = constant.method.getFormatTime(param.createTime[0],'YYYY-MM-DD')
+                param.createEndTime = constant.method.getFormatTime(param.createTime[1],'YYYY-MM-DD')
+                param.publicStartTime = constant.method.getFormatTime(param.publicTime[0],'YYYY-MM-DD HH:mm')
+                param.publicEndTime = constant.method.getFormatTime(param.publicTime[1],'YYYY-MM-DD HH:mm')
+                delete param.publicTime
+                delete param.createTime
+
                 api.novelApi.getNovelList(param).then(res=>{
                     state.data = res.records
                     state.selectedRowKeys=[]
@@ -292,19 +342,12 @@
                 if(state.selectedRowKeys.length===0){
                     util.info("请选择要删除的小说")
                 }else {
-                    Modal.confirm({
-                        title: '确认删除',
-                        content: '是否删除选中小说（分卷、章节等信息将一并删除）',
-                        icon:createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk(){
-                            let ids = state.selectedRows.map(e=>e.novelId);
+                    util.confirm('确认删除','是否删除选中小说（分卷、章节等信息将一并删除）',()=>{
+                        let ids = state.selectedRows.map(e=>e.novelId);
                             api.novelApi.deleteNovel(ids).then(res=>{
                                 util.success("删除成功")
                                 getNovelList()
                             })
-                        }
                     })
                 }
             }
@@ -312,6 +355,21 @@
             const showVolumeModal = (flag,novelInfo = {}) => {
                 state.showVolume = flag
                 state.novelInfo = novelInfo
+            }
+
+            const downloadNovel = (novelInfo={}) => {
+                let param = {
+                    collectionType: '1',
+                    novelId: novelInfo.novelId
+                }
+                api.novelApi.download(param)
+            }
+
+            const resetList = () => {
+                searchFromRef.value.resetFields()
+                state.page= 1
+                state.pageSize= 10
+                getNovelList()
             }
 
             return {
@@ -331,6 +389,9 @@
                 labelCol:{
                     span: 8,
                 },
+                downloadNovel,
+                resetList,
+                searchFromRef,
             }
         }
     }
