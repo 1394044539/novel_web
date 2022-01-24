@@ -1,8 +1,8 @@
 <template>
     <div>
         <a-modal
-                v-model:visible="showCreateNovel"
-                :title="modalFlag==='create'?'创建小说':'编辑小说'"
+                v-model:visible="showCreateSeries"
+                :title="modalFlag==='create'?'创建系列':'编辑系列'"
                 :footer="null"
                 @cancel="closeForm"
                 width="800px"
@@ -10,19 +10,19 @@
             <div style="padding-right: 10%">
                 <a-form :model="formData"
                         :rules="rules"
-                        ref="createNovelRef"
+                        ref="createSeriesRef"
                 >
                     <a-row :gutter="16">
                         <a-col :span="24">
-                            <a-form-item label="小说名" name="novelName" :label-col="{span: 4}">
-                                <a-input allowClear v-model:value="formData.novelName" />
+                            <a-form-item label="系列名" name="seriesName" :label-col="{span: 4}">
+                                <a-input allowClear v-model:value="formData.seriesName" />
                             </a-form-item>
                         </a-col>
                     </a-row>
                     <a-row :gutter="16">
                         <a-col :span="12">
-                            <a-form-item label="作者" name="novelAuthor" :label-col="{span: 8}">
-                                <a-input allowClear v-model:value="formData.novelAuthor" />
+                            <a-form-item label="作者" name="seriesAuthor" :label-col="{span: 8}">
+                                <a-input allowClear v-model:value="formData.seriesAuthor" />
                             </a-form-item>
                         </a-col>
                         <a-col :span="12">
@@ -43,7 +43,7 @@
                                         allowClear
                                         v-model:value="formData.typeCodeList"
                                         mode="multiple"
-                                        placeholder="选择小说类型">
+                                        placeholder="选择系列类型">
                                     <a-select-option v-for="(item,index) in novelTypeList" :value="item.paramCode">{{item.paramValue}}</a-select-option>
                                 </a-select>
                             </a-form-item>
@@ -51,7 +51,7 @@
                     </a-row>
                     <a-row :gutter="16">
                         <a-col :span="24">
-                            <a-form-item label="封面" name="novelImg" :label-col="{span: 4}">
+                            <a-form-item label="封面" name="seriesImg" :label-col="{span: 4}">
                                 <a-upload
                                         :before-upload="beforeUpload"
                                         accept=".jpg, .jpeg, .png"
@@ -72,13 +72,13 @@
                     </a-row>
                     <a-row :gutter="16">
                         <a-col :span="24">
-                            <a-form-item label="简介" name="novelIntroduce" :label-col="{span: 4}">
+                            <a-form-item label="简介" name="seriesIntroduce" :label-col="{span: 4}">
                                 <a-textarea
                                         showCount
                                         allowClear
                                         :maxlength=500
                                         :autoSize="{ minRows: 3, maxRows: 3 }"
-                                        v-model:value="formData.novelIntroduce"
+                                        v-model:value="formData.seriesIntroduce"
                                         :rows="3"/>
                             </a-form-item>
                         </a-col>
@@ -105,9 +105,9 @@
     import {useRouter} from "vue-router";
 
     export default {
-        name: "CreateNovel",
+        name: "CreateSeries",
         props: {
-            showCreateNovel: {
+            showCreateSeries: {
                 default: false,
                 type: Boolean,
             },
@@ -115,20 +115,20 @@
                 default: '', //create edit
                 type: String,
             },
-            novelInfo: {
+            seriesInfo: {
                 type: Object,
             }
         },
         setup(props,content){
             const state = reactive({
                 formData: {
-                    novelId: '',
-                    novelName:'',
-                    novelAuthor:'',
+                    seriesId: '',
+                    seriesName:'',
+                    seriesAuthor:'',
                     publicTime:'',
                     typeCodeList: [],
-                    novelImg: '',
-                    novelIntroduce: ''
+                    seriesImg: '',
+                    seriesIntroduce: ''
                 },
                 novelTypeList: [],
                 fileList: [],
@@ -138,23 +138,23 @@
             onMounted(()=>{
                 getNovelType();
             })
-            watch(()=>props.showCreateNovel,(newV,oldV)=>{
+            watch(()=>props.showCreateSeries,(newV,oldV)=>{
                 if(newV && props.modalFlag==='edit'){
                     state.formData = {
                         ...state.formData,
-                        ...props.novelInfo,
+                        ...props.seriesInfo,
                     }
-                    if(props.novelInfo.typeList){
-                        state.formData.typeCodeList = props.novelInfo.typeList.map(e=> e.paramCode)
+                    if(props.seriesInfo.typeCodeList){
+                        state.formData.typeCodeList = props.seriesInfo.typeCodeList
                     }
                 }else if(newV && props.modalFlag==='create'){
                     state.formData = {
-                        novelName:'',
-                        novelAuthor:'',
+                        seriesName:'',
+                        seriesAuthor:'',
                         publicTime:'',
                         typeCodeList: [],
-                        novelImg: '',
-                        novelIntroduce: ''
+                        seriesImg: '',
+                        seriesIntroduce: ''
                     }
                 }
             })
@@ -168,18 +168,18 @@
             }
             //获取路由
             const route = useRouter();
-            const createNovelRef=ref();
+            const createSeriesRef=ref();
             const rules = {
-                novelName: [
+                seriesName: [
                     {
                         required: true,
-                        message: '请填写小说名称'
+                        message: '请填写系列名称'
                     }
                 ]
             }
             // 关闭弹窗
             const closeForm = () => {
-                createNovelRef.value.resetFields();
+                createSeriesRef.value.resetFields();
                 state.formData.typeCodeList=[]
                 state.fileList = []
                 content.emit("closeForm");
@@ -208,10 +208,11 @@
             }
             // 提交表单
             const createNovel = () => {
-                createNovelRef.value.validate().then(res=>{
+                createSeriesRef.value.validate().then(res=>{
                     let formData = new FormData();
-                    formData.append("novelName",res.novelName);
-                    formData.append("novelAuthor",res.novelAuthor);
+                    formData.append("seriesName",res.seriesName);
+                    formData.append("seriesAuthor",res.seriesAuthor);
+                    formData.append("seriesIntroduce",res.seriesIntroduce);
                     if(res.publicTime){
                         let time = typeof res.publicTime === 'string' ?res.publicTime : res.publicTime.format('YYYY-MM-DD')
                         formData.append("publicTime",time);
@@ -220,20 +221,19 @@
                     if(state.fileList.length>0){
                         formData.append("imgFile",state.fileList[0].originFileObj);
                     }
-                    formData.append("novelIntroduce",res.novelIntroduce);
                     if(props.modalFlag==='create'){
-                        api.novelApi.createNovel(formData).then(res=>{
-                            util.success("创建小说成功");
+                        api.novelApi.createSeries(formData).then(res=>{
+                            util.success("创建系列成功");
                             route.push({
-                                name: 'NovelInfo',
+                                name: 'SeriesInfo',
                                 query: {
-                                    novelId: res.novelId,
+                                    seriesId: res.seriesId,
                                 }
                             })
                         })
                     }else {
-                        formData.append("novelId",props.novelInfo.novelId)
-                        api.novelApi.updateNovel(formData).then(res=>{
+                        formData.append("seriesId",props.seriesInfo.seriesId)
+                        api.novelApi.updateSeries(formData).then(res=>{
                             state.formData.typeCodeList=[]
                             state.fileList = []
                             util.success("修改成功")
@@ -247,7 +247,7 @@
             return{
                 ...toRefs(state),
                 closeForm,
-                createNovelRef,
+                createSeriesRef,
                 rules,
                 createNovel,
                 beforeUpload,

@@ -5,21 +5,19 @@
             <a-form :model="searchFrom" ref="searchFromRef">
                 <a-row>
                     <a-col :span="8" :labelCol="labelCol">
-                        <a-form-item label="系列名" name="novelName" :label-col="labelCol">
-                            <a-input allowClear v-model:value="searchFrom.novelName" />
+                        <a-form-item label="系列名" name="seriesName" :label-col="labelCol">
+                            <a-input allowClear v-model:value="searchFrom.seriesName" />
                         </a-form-item>
                     </a-col>
                     <a-col :span="8" :labelCol="labelCol">
-                        <a-form-item label="作者" name="novelAuthor" :label-col="labelCol">
-                            <a-input allowClear v-model:value="searchFrom.novelAuthor" />
+                        <a-form-item label="作者" name="seriesAuthor" :label-col="labelCol">
+                            <a-input allowClear v-model:value="searchFrom.seriesAuthor" />
                         </a-form-item>
                     </a-col>
                     <a-col :span="8" :labelCol="labelCol">
-                        <a-form-item label="类型" name="collectionType" :label-col="labelCol">
+                        <a-form-item label="类型" name="typeCodeList" :label-col="labelCol">
                             <a-select allowClear v-model:value="searchFrom.typeCodeList" mode="multiple">
-                                <a-select-option v-for="item in novelTypes" value="0">小说</a-select-option>
-                                <a-select-option value="1">系列</a-select-option>
-                                <a-select-option value="2">文件夹</a-select-option>
+                                <a-select-option v-for="(item,index) in novelTypes" :value="item.paramCode">{{item.paramValue}}</a-select-option>
                             </a-select>
                         </a-form-item>
                     </a-col>
@@ -53,15 +51,15 @@
             <div style="margin-bottom: 10px">
                 <a-row>
                     <a-col :span="8" style="text-align: left">
-                        <a-button type="primary" @click="createNovel(true,'create')">
+                        <a-button type="primary" @click="createSeries(true,'create')">
                             <icon-component name="DiffOutlined"/>
                             创建小说
                         </a-button>
-                        <a-button type="primary" style="margin-left: 5px" @click="editNovel()">编辑</a-button>
-                        <a-button style="margin-left: 5px" @click="deleteNovel">删除</a-button>
+                        <a-button type="primary" style="margin-left: 5px" @click="editSeries()">编辑</a-button>
+                        <a-button style="margin-left: 5px" @click="deleteSeries">删除</a-button>
                     </a-col>
                     <a-col :span="8" style="text-align: center">
-                        <a-button type="primary" @click="getNovelList()">查询</a-button>
+                        <a-button type="primary" @click="getSeriesList()">查询</a-button>
                     <a-button class="custom-btn" @click="resetList()" >重置</a-button>
                     </a-col>
                     <a-col :span="8" style="text-align: right">
@@ -72,25 +70,25 @@
                     </a-col>
                 </a-row>
             </div>
-            <a-table rowKey="novelId" :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
-                     :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 300 }">
-                <template #novelName="{ text, record, index }">
+            <a-table rowKey="seriesId" :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
+                     :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ x: 1500, y: 500 }">
+                <template #seriesName="{ text, record, index }">
                     <a-tooltip>
                         <template #title>{{text}}</template>
                         <a href="javascript:" @click="lookNovel(record)" class="custom-two-ellipsis">{{text}}</a>
                     </a-tooltip>
                 </template>
-                <template #novelImg="{ text, record, index }">
+                <template #seriesImg="{ text, record, index }">
                     <a-image
                             :width="50"
                             :src="'/img/'+record.novelImg"
                             :fallback="require('@/assets/img/notImg.png')"
                     />
                 </template>
-                <template #typeList="{ text, record, index }">
-                    {{getNovelTypeName(text)}}
-                </template>
-                <template #novelDesc="{ text, record, index }">
+<!--                <template #typeList="{ text, record, index }">-->
+<!--                    {{getNovelTypeName(text)}}-->
+<!--                </template>-->
+                <template #seriesDesc="{ text, record, index }">
                     <a-tooltip>
                         <template #title>
                             {{text}}
@@ -98,7 +96,7 @@
                         <div class="custom-two-ellipsis">{{text}}</div>
                     </a-tooltip>
                 </template>
-                <template #novelIntroduce="{ text, record, index }">
+                <template #seriesIntroduce="{ text, record, index }">
                     <a-tooltip>
                         <template #title>{{text}}</template>
                         <div class="custom-two-ellipsis">{{text}}</div>
@@ -111,12 +109,12 @@
             </a-table>
         </div>
         <QuickUpload :quickUploadModal="quickUploadModal" @closeForm="quickUpload(false)"/>
-        <CreateNovel :showCreateNovel="showCreateNovel" :modal-flag="modalFlag" :novel-info="novelInfo"
-                     @closeForm="createNovel(false)"
+        <CreateSeries :showCreateSeries="showCreateSeries" :modal-flag="modalFlag" :seriesInfo="seriesInfo"
+                     @closeForm="createSeries(false)"
                      @success="successCall"/>
         <VolumeTable
                 :showVolumeTable="showVolume"
-                :novelInfo="novelInfo"
+                :novelInfo="seriesInfo"
                 @closeForm="showVolumeModal"
         />
     </div>
@@ -130,28 +128,29 @@
     import constant from '../../../common/constant'
     import { useRouter } from 'vue-router'
     import QuickUpload from "../../../components/novel/QuickUpload";
-    import CreateNovel from "../../../components/novel/CreateNovel";
+    import CreateSeries from "../../../components/novel/CreateSeries";
     import VolumeTable from "../../../components/novel/VolumeTable";
     import IconComponent from "../../../components/common/IconComponent";
 
     export default {
         name: "NovelManager",
-        components: {IconComponent, VolumeTable, CreateNovel, QuickUpload},
+        components: {IconComponent, VolumeTable, CreateSeries, QuickUpload},
         setup(props,content){
             const state = reactive({
                 page: 1,
                 pageSize: 10,
+                total: 0,
                 data: [],
                 selectedRowKeys: [],
                 selectedRows: [],
                 quickUploadModal: false,
-                showCreateNovel: false,
+                showCreateSeries: false,
                 showVolume: false,
-                novelInfo: {},
+                seriesInfo: {},
                 modalFlag: '',
                 searchFrom: {
-                    novelName: '',
-                    novelAuthor: '',
+                    seriesName: '',
+                    seriesAuthor: '',
                     typeCodeList: [],
                     publicTime: [],
                     createTime: [],
@@ -160,7 +159,8 @@
             })
             //初始化
             onMounted(()=>{
-                getNovelList();
+                initSeriesType()
+                getSeriesList();
             })
             //获取路由
             const route = useRouter();
@@ -170,53 +170,53 @@
                 {
                     title: '小说名',
                     width: 150,
-                    dataIndex: 'novelName',
-                    key: 'novelName',
+                    dataIndex: 'seriesName',
+                    key: 'seriesName',
                     fixed: 'left',
                     slots: {
-                        customRender: 'novelName'
+                        customRender: 'seriesName'
                     }
                 },
                 {
                     title: '作者',
-                    dataIndex: 'novelAuthor',
-                    key: 'novelAuthor',
+                    dataIndex: 'seriesAuthor',
+                    key: 'seriesAuthor',
                     width: 150,
                 },
                 {
                     title: '封面信息',
-                    dataIndex: 'novelImg',
-                    key: 'novelImg',
+                    dataIndex: 'seriesImg',
+                    key: 'seriesImg',
                     width: 150,
                     slots: {
-                        customRender: 'novelImg',
+                        customRender: 'seriesImg',
                     },
                 },
                 {
                     title: '小说类型',
-                    dataIndex: 'typeList',
-                    key: 'typeList',
+                    dataIndex: 'types',
+                    key: 'types',
                     width: 150,
                     slots: {
-                        customRender: 'typeList',
+                        customRender: 'types',
                     },
                 },
                 {
                     title: '描述(简单)',
-                    dataIndex: 'novelDesc',
-                    key: 'novelDesc',
+                    dataIndex: 'seriesDesc',
+                    key: 'seriesDesc',
                     width: 250,
                     slots: {
-                        customRender: 'novelDesc',
+                        customRender: 'seriesDesc',
                     },
                 },
                 {
                     title: '介绍',
-                    dataIndex: 'novelIntroduce',
-                    key: 'novelIntroduce',
+                    dataIndex: 'seriesIntroduce',
+                    key: 'seriesIntroduce',
                     width: 250,
                     slots: {
-                        customRender: 'novelIntroduce',
+                        customRender: 'seriesIntroduce',
                     },
                 },
                 {
@@ -260,6 +260,7 @@
                 }
             ]
             const pagination = {
+                total: state.total,
                 current: state.page,
                 pageSize: state.pageSize,
                 showSizeChanger: true,
@@ -273,6 +274,14 @@
                 state.selectedRows = selectedRows
             }
 
+            const initSeriesType = () => {
+                let param = {
+                    dictCode: 'NOVEL_TYPE'
+                }
+                api.sysApi.getDictParamList(param).then(res=>{
+                    state.novelTypes=res
+                })
+            }
             const getNovelTypeName = (types) =>{
                 if(types){
                     let name = ''
@@ -285,7 +294,7 @@
             }
             const lookNovel = (novel) => {
                 const { href } = route.resolve({
-                    path: '/main/novelInfo',
+                    path: '/main/seriesInfo',
                     query: {
                         novelId: novel.novelId,
                     }
@@ -293,21 +302,24 @@
                 window.open(href, '_blank');
             }
             //获取小说列表
-            const getNovelList = () => {
+            const getSeriesList = () => {
                 let param={
-                    page:state.page,
-                    pageSize:state.pageSize,
                     ...state.searchFrom
                 }
-                param.createStartTime = constant.method.getFormatTime(param.createTime[0],'YYYY-MM-DD')
-                param.createEndTime = constant.method.getFormatTime(param.createTime[1],'YYYY-MM-DD')
-                param.publicStartTime = constant.method.getFormatTime(param.publicTime[0],'YYYY-MM-DD HH:mm')
-                param.publicEndTime = constant.method.getFormatTime(param.publicTime[1],'YYYY-MM-DD HH:mm')
+                param.createStartTime = constant.method.getFormatTime(param.createTime[0],'yyyy-MM-DD HH:mm')
+                param.createEndTime = constant.method.getFormatTime(param.createTime[1],'yyyy-MM-DD HH:mm')
+                param.publicStartTime = constant.method.getFormatTime(param.publicTime[0],'YYYY-MM-DD')
+                param.publicEndTime = constant.method.getFormatTime(param.publicTime[1],'YYYY-MM-DD')
                 delete param.publicTime
                 delete param.createTime
-
-                api.novelApi.getNovelList(param).then(res=>{
+                let requestParam = {
+                    page: state.page,
+                    pageSize: state.pageSize,
+                    param:param,
+                }
+                api.novelApi.getSeriesList(requestParam).then(res=>{
                     state.data = res.records
+                    state.total = res.total
                     state.selectedRowKeys=[]
                     state.selectedRows=[]
                 }).catch(err=>{})
@@ -319,42 +331,42 @@
             }
 
             //创建小数功能
-            const createNovel = (flag,modalFlag='') => {
-                state.showCreateNovel = flag
+            const createSeries = (flag,modalFlag='') => {
+                state.showCreateSeries = flag
                 state.modalFlag = modalFlag
             }
             // 修改成功回调
             const successCall = () => {
-                createNovel(false)
-                getNovelList()
+                createSeries(false)
+                getSeriesList()
             }
             //修改小说功能
-            const editNovel = () => {
+            const editSeries = () => {
                 if(state.selectedRowKeys.length===1){
                     state.modalFlag = 'edit'
-                    state.novelInfo = state.selectedRows[0]
-                    state.showCreateNovel = true
+                    state.seriesInfo = state.selectedRows[0]
+                    state.showCreateSeries = true
                 }else {
                     util.info("请选择一个小说")
                 }
             }
-            const deleteNovel = () => {
+            const deleteSeries = () => {
                 if(state.selectedRowKeys.length===0){
-                    util.info("请选择要删除的小说")
+                    util.info("请选择要删除的系列")
                 }else {
-                    util.confirm('确认删除','是否删除选中小说（分卷、章节等信息将一并删除）',()=>{
-                        let ids = state.selectedRows.map(e=>e.novelId);
-                            api.novelApi.deleteNovel(ids).then(res=>{
+                    util.confirm('确认删除','是否删除选中系列（小说、章节等信息将一并删除）',()=>{
+                        let ids = state.selectedRows.map(e=>e.seriesId);
+                            api.novelApi.deleteSeries(ids).then(res=>{
                                 util.success("删除成功")
-                                getNovelList()
+                                getSeriesList()
                             })
                     })
                 }
             }
 
-            const showVolumeModal = (flag,novelInfo = {}) => {
+            const showVolumeModal = (flag,seriesInfo = {}) => {
                 state.showVolume = flag
-                state.novelInfo = novelInfo
+                state.seriesInfo = seriesInfo
             }
 
             const downloadNovel = (novelInfo={}) => {
@@ -369,17 +381,17 @@
                 searchFromRef.value.resetFields()
                 state.page= 1
                 state.pageSize= 10
-                getNovelList()
+                getSeriesList()
             }
 
             return {
                 ...toRefs(state),
                 columns,
                 quickUpload,
-                getNovelList,
-                createNovel,
-                editNovel,
-                deleteNovel,
+                getSeriesList,
+                createSeries,
+                editSeries,
+                deleteSeries,
                 lookNovel,
                 pagination,
                 onSelectChange,

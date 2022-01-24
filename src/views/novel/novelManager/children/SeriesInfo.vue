@@ -113,7 +113,7 @@
     import {Modal} from "ant-design-vue";
     import util from "../../../../utils/util";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
-    import CreateNovel from "../../../../components/novel/CreateNovel";
+    import CreateNovel from "../../../../components/novel/CreateSeries";
 
     export default {
         name: "NovelInfo",

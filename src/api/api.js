@@ -85,47 +85,47 @@ const sysApi = {
 }
 
 const novelApi = {
-    getNovelList: (params, loading = false) => {
-        return http.post('/novel/getNovelList', params, loading)
+    getSeriesList: (params, loading = false) => {
+        return http.post('/series/getSeriesList', params, loading)
     },
     quickUpload: (params,loading=false) =>{
-        return http.post('/novel/quickUpload',params,loading)
+        return http.post('/series/quickUpload',params,loading)
     },
-    createNovel: (params,loading=false)=>{
-        return http.post('/novel/addNovel',params,loading)
+    createSeries: (params,loading=false)=>{
+        return http.post('/series/addSeries',params,loading)
     },
-    updateNovel: (params,loading=false)=>{
-        return http.put('/novel/updateNovel',params,loading)
+    updateSeries: (params,loading=false)=>{
+        return http.put('/series/updateSeries',params,loading)
     },
-    getNovelData: (params,loading=false)=> {
-        return http.get('/novel/getNovelInfo',params,loading)
+    getSeriesData: (params,loading=false)=> {
+        return http.get('/series/getSeriesInfo',params,loading)
     },
-    deleteNovel: (params,loading=false)=> {
-        return http.Delete('/novel/deleteNovel',params,loading)
+    deleteSeries: (params,loading=false)=> {
+        return http.Delete('/series/deleteSeries',params,loading)
     },
     batchUploadVolume: (params,loading=false)=> {
-        return http.post('/novelVolume/batchUploadVolume',params,loading)
+        return http.post('/novel/batchUploadNovel',params,loading)
     },
-    getVolumeInfo: (params,loading=false)=> {
-        return http.get('/novelVolume/getVolumeInfo',params,loading)
+    getNovelInfo: (params,loading=false)=> {
+        return http.get('/novel/getNovelInfo',params,loading)
     },
-    getVolumeList: (params,loading=false)=> {
-        return http.get('/novelVolume/getVolumeList',params,loading)
+    getNovelList: (params,loading=false)=> {
+        return http.get('/novel/getNovelList',params,loading)
     },
     getChapterContent: (params,loading=false)=> {
         return http.get('/novelChapter/getChapterContent',params,loading)
     },
     updateOrder: (params,loading=false)=> {
-        return http.put('/novelVolume/updateOrder',params,loading)
+        return http.put('/novel/updateOrder',params,loading)
     },
-    deleteVolume: (params,loading=false)=> {
-        return http.Delete('/novelVolume/deleteVolume',params,loading)
+    deleteNovel: (params,loading=false)=> {
+        return http.Delete('/novel/deleteNovel',params,loading)
     },
-    addVolume: (params,loading=false)=> {
-        return http.put('/novelVolume/addVolume',params,loading)
+    addNovel: (params,loading=false)=> {
+        return http.put('/novel/addNovel',params,loading)
     },
-    updateVolume: (params,loading=false)=> {
-        return http.post('/novelVolume/updateVolume',params,loading)
+    updateNovel: (params,loading=false)=> {
+        return http.post('/novel/updateNovel',params,loading)
     },
     addCollection: (params,loading=false)=> {
         return http.put('/userCollection/addCollection',params,loading)

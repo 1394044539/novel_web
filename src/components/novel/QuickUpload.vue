@@ -85,9 +85,9 @@
                     util.success("上传成功")
                     state.uploading = false
                     route.push({
-                        name: 'NovelInfo',
+                        name: 'SeriesInfo',
                         query: {
-                            novelId: res.novelId,
+                            seriesId: res.seriesId,
                         }
                     })
                 }).catch(err=>{})
