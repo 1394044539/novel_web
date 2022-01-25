@@ -107,7 +107,7 @@
     import {onMounted, ref, reactive, toRefs, provide, createVNode} from "vue";
     import api from "../../../../api/api";
     import '../../../../common/index.less'
-    import UploadVolume from "../../../../components/novel/UploadVolume";
+    import UploadVolume from "../../../../components/novel/UploadNovel";
     import TransferOrder from "../../../../components/novel/TransferOrder";
     import DeleteVolume from "../../../../components/novel/DeleteVolume";
     import {Modal} from "ant-design-vue";

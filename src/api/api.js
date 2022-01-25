@@ -103,7 +103,7 @@ const novelApi = {
     deleteSeries: (params,loading=false)=> {
         return http.Delete('/series/deleteSeries',params,loading)
     },
-    batchUploadVolume: (params,loading=false)=> {
+    batchUploadNovel: (params,loading=false)=> {
         return http.post('/novel/batchUploadNovel',params,loading)
     },
     getNovelInfo: (params,loading=false)=> {

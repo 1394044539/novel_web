@@ -43,7 +43,7 @@
                 type: Boolean,
                 default: false,
             },
-            novelVolumeList: {
+            novelList: {
                 type: Array,
                 default: [],
             }
@@ -58,11 +58,11 @@
             watch(()=>props.showTransfer,(newV,oldV)=>{
                 if(newV){
                     state.mockData=[]
-                    props.novelVolumeList.forEach((item,index)=>{
+                    props.novelList.forEach((item,index)=>{
                         state.mockData.push({
-                            key: item.volumeId,
-                            title: item.volumeName,
-                            description: item.volumeName,
+                            key: item.novelId,
+                            title: item.novelName,
+                            description: item.novelName,
                             disabled: false,
                         })
                     })
@@ -90,7 +90,7 @@
             }
             const reOrder = () =>{
                 let param = {
-                    volumeIdList: state.targetKeys
+                    novelIdList: state.targetKeys
                 }
                 api.novelApi.updateOrder(param).then(res=>{
                     util.success("修改成功")

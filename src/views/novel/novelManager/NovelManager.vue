@@ -81,7 +81,7 @@
                 <template #seriesImg="{ text, record, index }">
                     <a-image
                             :width="50"
-                            :src="'/img/'+record.novelImg"
+                            :src="'/img/'+record.seriesImg"
                             :fallback="require('@/assets/img/notImg.png')"
                     />
                 </template>
@@ -103,7 +103,7 @@
                     </a-tooltip>
                 </template>
                 <template #operation="{ text, record, index }">
-                    <a-button size="small" type="primary" @click="showVolumeModal(true,record)">查看分卷</a-button>
+                    <a-button size="small" type="primary" @click="showNovelModal(true,record)">查看小说</a-button>
                     <a-button class="custom-btn" size="small" type="primary" @click="downloadNovel(record)">下载</a-button>
                 </template>
             </a-table>
@@ -112,29 +112,29 @@
         <CreateSeries :showCreateSeries="showCreateSeries" :modal-flag="modalFlag" :seriesInfo="seriesInfo"
                      @closeForm="createSeries(false)"
                      @success="successCall"/>
-        <VolumeTable
-                :showVolumeTable="showVolume"
-                :novelInfo="seriesInfo"
-                @closeForm="showVolumeModal"
+        <NovelTable
+                :showNovelTable="showNovel"
+                :seriesInfo="seriesInfo"
+                @closeForm="showNovelModal"
         />
     </div>
 </template>
 
 <script>
     import '../../../views/novel/less/index.less'
-    import { onMounted, reactive, toRefs,ref} from 'vue'
+    import { onMounted, reactive, toRefs,ref,provide} from 'vue'
     import api from '../../../api/api'
     import util from '../../../utils/util'
     import constant from '../../../common/constant'
     import { useRouter } from 'vue-router'
     import QuickUpload from "../../../components/novel/QuickUpload";
     import CreateSeries from "../../../components/novel/CreateSeries";
-    import VolumeTable from "../../../components/novel/VolumeTable";
+    import NovelTable from "../../../components/novel/NovelTable";
     import IconComponent from "../../../components/common/IconComponent";
 
     export default {
         name: "NovelManager",
-        components: {IconComponent, VolumeTable, CreateSeries, QuickUpload},
+        components: {IconComponent, NovelTable, CreateSeries, QuickUpload},
         setup(props,content){
             const state = reactive({
                 page: 1,
@@ -145,7 +145,7 @@
                 selectedRows: [],
                 quickUploadModal: false,
                 showCreateSeries: false,
-                showVolume: false,
+                showNovel: false,
                 seriesInfo: {},
                 modalFlag: '',
                 searchFrom: {
@@ -227,8 +227,8 @@
                 },
                 {
                     title: '小说总章节数',
-                    dataIndex: 'totalWord',
-                    key: 'totalWord',
+                    dataIndex: 'totalChapter',
+                    key: 'totalChapter',
                     width: 150,
                 },
                 {
@@ -364,15 +364,15 @@
                 }
             }
 
-            const showVolumeModal = (flag,seriesInfo = {}) => {
-                state.showVolume = flag
+            const showNovelModal = (flag,seriesInfo = {}) => {
+                state.showNovel = flag
                 state.seriesInfo = seriesInfo
             }
 
-            const downloadNovel = (novelInfo={}) => {
+            const downloadNovel = (seriesInfo={}) => {
                 let param = {
                     collectionType: '1',
-                    novelId: novelInfo.novelId
+                    seriesId: seriesInfo.seriesId
                 }
                 api.novelApi.download(param)
             }
@@ -395,7 +395,7 @@
                 lookNovel,
                 pagination,
                 onSelectChange,
-                showVolumeModal,
+                showNovelModal,
                 successCall,
                 getNovelTypeName,
                 labelCol:{
