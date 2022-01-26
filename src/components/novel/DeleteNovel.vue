@@ -2,7 +2,7 @@
     <a-modal
             v-model:visible="showDelete"
             :maskClosable="false"
-            title="删除分卷"
+            title="删除小说"
             :footer="null"
             @cancel="closeForm"
             width="600px"
@@ -11,7 +11,7 @@
             <a-table size="small"
                      :row-selection="{selectedRowKeys:selectedRowKeys,onChange: onSelectChange}"
                      :pagination="false"
-                     :data-source="novelVolumeList"
+                     :data-source="novelList"
                      :columns="columns"
                      bordered>
             </a-table>
@@ -33,13 +33,13 @@
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
-        name: "DeleteVolume",
+        name: "DeleteNovel",
         props: {
             showDelete: {
                 type: Boolean,
                 default: false,
             },
-            novelVolumeList: {
+            novelList: {
                 type: Array,
                 default: [],
             }
@@ -59,9 +59,9 @@
 
             const columns = [
                 {
-                    title: '分卷名',
-                    dataIndex: 'volumeName',
-                    key: 'volumeName',
+                    title: '小说名',
+                    dataIndex: 'novelName',
+                    key: 'novelName',
                 },
                 {
                     title: '上传时间',
@@ -75,21 +75,14 @@
             }
 
             const confirmDelete = () =>{
-                Modal.confirm({
-                    title: '确认删除',
-                    content: '是否确认删除选中分卷（相关数据会一并删除）',
-                    icon:createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk(){
-                        state.loadingSuccess = true
-                        let selectedRows = state.selectedRows.map(e=>e.volumeId);
-                        api.novelApi.deleteVolume(selectedRows).then(res=>{
-                            util.success("删除成功")
-                            state.loadingSuccess = false
-                            content.emit("success")
-                        })
-                    }
+                util.confirm('确认删除','是否确认删除选中小说（相关数据会一并删除）',()=>{
+                    state.loadingSuccess = true
+                    let selectedRows = state.selectedRows.map(e=>e.novelId);
+                    api.novelApi.deleteNovel(selectedRows).then(res=>{
+                        util.success("删除成功")
+                        state.loadingSuccess = false
+                        content.emit("success")
+                    })
                 })
             }
 

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="padding: 0 10%">
         <p v-for="(item,index) in content.context">{{item}}</p>
     </div>
 </template>

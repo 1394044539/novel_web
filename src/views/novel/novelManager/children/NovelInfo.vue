@@ -1,26 +1,26 @@
 <template>
-    <div class="content-div">
+    <div class="content-div" style="padding: 0 10%">
         <div>
             <a-row>
                 <a-col :span="10" style="text-align: center">
                     <a-image
                         :width="150"
-                        :src="'/img/'+volumeInfo.volumeImg"
+                        :src="'/img/'+novelInfo.novelImg"
                         :fallback="require('@/assets/img/notImg.png')"
                     />
                 </a-col>
                 <a-col :span="14">
-                    <h2>{{volumeInfo.volumeName}}</h2>
+                    <h2>{{novelInfo.novelName}}</h2>
                     <a-row>
-                        <a-col :span="12"><p><span style="color: grey">总字数：</span>{{volumeInfo.totalWord}}</p></a-col>
-                        <a-col :span="12"><p><span style="color: grey">发布时间：</span>{{volumeInfo.publicTime}}</p></a-col>
+                        <a-col :span="12"><p><span style="color: grey">总字数：</span>{{novelInfo.totalWord}}</p></a-col>
+                        <a-col :span="12"><p><span style="color: grey">发布时间：</span>{{novelInfo.publicTime}}</p></a-col>
                     </a-row>
                     <a-row>
                         <div style="min-height: 90px">
                             <span style="color: grey">简介：</span>
 <!--                            <a-tooltip arrowPointAtCenter placement="bottomRight">-->
-<!--                                <template #title>{{volumeInfo.volumeDesc}}</template>-->
-                            <p :title="volumeInfo.volumeDesc" style="text-indent:2em;padding-right: 20%;font-size: 12px" class="custom-three-ellipsis">{{volumeInfo.volumeDesc}}</p>
+<!--                                <template #title>{{novelInfo.novelDesc}}</template>-->
+                            <p :title="novelInfo.novelDesc" style="text-indent:2em;padding-right: 20%;font-size: 12px" class="custom-three-ellipsis">{{novelInfo.novelDesc}}</p>
 <!--                            </a-tooltip>-->
                         </div>
                     </a-row>
@@ -32,8 +32,8 @@
                             <a-button v-if="collectionInfo" @click="deleteCollection" style="margin-left: 5px">取消收藏</a-button>
                         </a-col>
                         <a-col style="text-align: right">
-                            <a-button type="primary" @click="updateVolume(true)">编辑</a-button>
-                            <a-button style="margin-left: 5px" @click="deleteVolume">删除</a-button>
+                            <a-button type="primary" @click="updateNovel(true)">编辑</a-button>
+                            <a-button style="margin-left: 5px" @click="deleteNovel">删除</a-button>
                         </a-col>
                     </a-row>
                 </a-col>
@@ -53,7 +53,7 @@
                 </a-row>
             </div>
             <div style="margin-left: 12px;margin-right: 12px;overflow-y: auto;overflow-x: hidden;max-height: 500px">
-                <a-list v-if="switchModel" :grid="{ gutter: 24, column: 4 }" :data-source="volumeInfo.chapterList">
+                <a-list v-if="switchModel" :grid="{ gutter: 24, column: 4 }" :data-source="novelInfo.chapterList">
                     <template #renderItem="{ item }">
                         <div style="padding: 5px">
                             <a-card @click="jumpChapter(item)" :hoverable='true' :bodyStyle="{padding: '10px',textAlign: 'center'}">
@@ -62,7 +62,7 @@
                         </div>
                     </template>
                 </a-list>
-                <a-list v-if="!switchModel" :grid="{ gutter: 24, column: 1 }" :data-source="volumeInfo.chapterList">
+                <a-list v-if="!switchModel" :grid="{ gutter: 24, column: 1 }" :data-source="novelInfo.chapterList">
                     <template #renderItem="{ item,index }">
                         <div style="padding: 5px">
                             <a-card @click="jumpChapter(item)" :hoverable='true' :bodyStyle="{padding: '10px'}">
@@ -73,31 +73,29 @@
                 </a-list>
             </div>
         </div>
-        <UpdateVolume
-            :show-update-volume="showUpdateForm"
-            :volume-info="volumeInfo"
-            @closeForm="updateVolume"
+        <updateNovel
+            :show-update-novel="showUpdateForm"
+            :novel-info="novelInfo"
+            @closeForm="updateNovel"
             @success="updateCall"
         />
     </div>
 </template>
 
 <script>
-    import { reactive,toRefs,toRaw,onMounted,createVNode } from 'vue'
+    import { reactive,toRefs,onMounted } from 'vue'
     import { useRouter } from 'vue-router'
-    import { Modal } from 'ant-design-vue'
     import api from "../../../../api/api";
     import util from "../../../../utils/util"
     import '../../../../common/index.less'
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
-    import UpdateVolume from "../../../../components/novel/UpdateVolume";
+    import updateNovel from "../../../../components/novel/UpdateNovel";
 
     export default {
-        name: "VolumeInfo",
-        components: {UpdateVolume},
+        name: "NovelInfo",
+        components: {updateNovel},
         setup(props,content){
             const state = reactive({
-                volumeInfo: {},
+                novelInfo: {},
                 switchModel: false,
                 readModel: false,
                 showUpdateForm: false,
@@ -106,13 +104,13 @@
             const route = useRouter()
             let query = route.currentRoute.value.query
             onMounted(()=>{
-                getVolumeInfo()
+                getNovelInfo()
                 getCollection()
             })
-            const getVolumeInfo = () => {
-                let param = { volumeId: query.volumeId }
-                api.novelApi.getVolumeInfo(param).then(res=>{
-                    state.volumeInfo = res
+            const getNovelInfo = () => {
+                let param = { novelId: query.novelId }
+                api.novelApi.getNovelInfo(param).then(res=>{
+                    state.novelInfo = res
                 })
             }
             const jumpChapter = (chapter) => {
@@ -146,45 +144,36 @@
             }
 
             //删除
-            const deleteVolume = () => {
-                Modal.confirm({
-                    title: '确认删除',
-                    content: '是否确认删除当前分卷（相关数据会一并删除）',
-                    icon:createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk(){
-                        let volumeIds = []
-                        volumeIds.push(query.volumeId)
-                        api.novelApi.deleteVolume(volumeIds).then(res=>{
-                            util.success("删除成功")
-                            route.push({
-                                path: '/main/novelInfo',
-                                query: {
-                                    novelId: query.novelId,
-                                }
-                            })
+            const deleteNovel = () => {
+                util.confirm('确认删除','是否确认删除当前小说（相关数据会一并删除）',()=>{
+                    api.novelApi.deleteNovel([query.novelId]).then(res=>{
+                        util.success("删除成功")
+                        route.push({
+                            path: '/main/seriesInfo',
+                            query: {
+                                seriesId: state.novelInfo.seriesId,
+                            }
                         })
-                    }
+                    })
                 })
             }
 
             // 编辑
-            const updateVolume = (flag) => {
+            const updateNovel = (flag) => {
                 state.showUpdateForm = flag
             }
 
             // 编辑回调
             const updateCall = () => {
-                updateVolume(false)
-                getVolumeInfo()
+                updateNovel(false)
+                getNovelInfo()
             }
 
             // 加入收藏
             const addCollection = () =>{
                 let param = {
-                    collectionType: '0', //分卷
-                    volumeId: state.volumeInfo.volumeId,
+                    collectionType: '0', //小说
+                    novelId: state.novelInfo.novelId,
                 }
                 api.novelApi.addCollection(param).then(res=>{
                     util.success("收藏成功")
@@ -204,8 +193,8 @@
             // 获取信息
             const getCollection = () => {
                 let param={
-                    id: query.volumeId,
-                    collectionType: '0', //分卷
+                    id: query.novelId,
+                    collectionType: '0', //小说
                 }
                 api.novelApi.getCollection(param).then(res=>{
                     state.collectionInfo=res
@@ -215,8 +204,8 @@
             return{
                 ...toRefs(state),
                 jumpChapter,
-                deleteVolume,
-                updateVolume,
+                deleteNovel,
+                updateNovel,
                 updateCall,
                 addCollection,
                 deleteCollection,

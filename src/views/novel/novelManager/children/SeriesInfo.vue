@@ -1,43 +1,48 @@
 <template>
-    <div class="content-div">
+    <div class="content-div" style="padding: 0 10%">
         <div>
             <a-descriptions bordered :labelStyle="{minWidth: '120px'}" :contentStyle="{minWidth: '200px'}">
                 <template #title>
                     <div style="display: flex;justify-content: space-between">
-                        <div style="padding-left: 15px">小说详情</div>
+                        <div style="padding-left: 15px">系列详情</div>
 <!--                        <div style="display:table-cell;" @click="goBack">-->
 <!--                            <component class="switchIcon" title="返回" :is="$antIcons['RollbackOutlined']"/>-->
 <!--                        </div>-->
                         <div>
                             <a-button v-if="!collectionInfo" type="primary" @click="addCollection">加入书架</a-button>
                             <a-button v-if="collectionInfo" @click="deleteCollection">取消收藏</a-button>
-                            <a-button style="margin-left: 5px" type="primary">全部下载</a-button>
-                            <a-button style="margin-left: 5px" type="primary" @click="createNovel">编辑</a-button>
-                            <a-button style="margin-left: 5px" type="primary" @click="deleteNovel">删除</a-button>
+                            <a-button style="margin-left: 5px" type="primary" @click="downloadSeries">全部下载</a-button>
+                            <a-button style="margin-left: 5px" type="primary" @click="createSeries">编辑</a-button>
+                            <a-button style="margin-left: 5px" type="primary" @click="deleteSeries">删除</a-button>
                         </div>
                     </div>
                 </template>
-                <a-descriptions-item label="小说名"><span style="font-weight: bold">{{novelInfo.novelName}}</span></a-descriptions-item>
-                <a-descriptions-item label="作者名">{{novelInfo.novelAuthor||'未知'}}</a-descriptions-item>
-                <a-descriptions-item label="发布时间">{{novelInfo.publicTime||'未知'}}</a-descriptions-item>
-                <a-descriptions-item label="小说类型">{{getNovelType(novelInfo.typeList)}}</a-descriptions-item>
-                <a-descriptions-item label="总字数">{{novelInfo.totalWord||'未知'}}</a-descriptions-item>
-                <a-descriptions-item label="分卷数">{{novelInfo.novelVolumeList?novelInfo.novelVolumeList.length:0}}</a-descriptions-item>
+                <a-descriptions-item label="系列名"><span style="font-weight: bold">{{seriesInfo.seriesName}}</span></a-descriptions-item>
+                <a-descriptions-item label="作者名">{{seriesInfo.seriesAuthor||'未知'}}</a-descriptions-item>
+                <a-descriptions-item label="发布时间">{{seriesInfo.publicTime||'未知'}}</a-descriptions-item>
+                <a-descriptions-item label="系列类型">{{getNovelType(seriesInfo.typeList)}}</a-descriptions-item>
+                <a-descriptions-item label="总字数">{{seriesInfo.totalWord||'未知'}}</a-descriptions-item>
+                <a-descriptions-item label="分卷数">{{seriesInfo.novelList?seriesInfo.novelList.length:0}}</a-descriptions-item>
                 <a-descriptions-item label="封面信息">
                     <a-image
                             :width="150"
-                            :src="'/img/'+novelInfo.novelImg"
+                            :src="'/img/'+seriesInfo.seriesImg"
                             :fallback="require('@/assets/img/notImg.png')"
                     />
                 </a-descriptions-item>
                 <a-descriptions-item label="描述">
-                    {{novelInfo.novelDesc||'-'}}
+                    <div class="custom-seven-ellipsis" style="max-width: 300px">
+                        <a-tooltip placement="leftTop">
+                            <template #title>{{seriesInfo.seriesDesc||'-'}}</template>
+                            {{seriesInfo.seriesDesc||'-'}}
+                        </a-tooltip>
+                    </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="介绍">
-                    <div class="custom-seven-ellipsis">
+                    <div class="custom-seven-ellipsis" style="max-width: 300px">
                         <a-tooltip placement="leftTop">
-                            <template #title>{{novelInfo.novelIntroduce||'-'}}</template>
-                            {{novelInfo.novelIntroduce||'-'}}
+                            <template #title>{{seriesInfo.seriesIntroduce||'-'}}</template>
+                            {{seriesInfo.seriesIntroduce||'-'}}
                         </a-tooltip>
                     </div>
                 </a-descriptions-item>
@@ -59,45 +64,46 @@
                 </a-row>
             </div>
             <div style="margin-left: 12px;margin-right: 12px;overflow-y: auto;overflow-x: hidden;max-height: 500px">
-                <a-list v-if="switchModel" :grid="{ gutter: 24, column: 4 }" :data-source="novelInfo.novelVolumeList">
+                <a-list v-if="switchModel" :grid="{ gutter: 24, column: 4 }" :data-source="seriesInfo.novelList">
                     <template #renderItem="{ item }">
                         <div style="padding: 5px">
-                            <a-card @click="jumpVolumeInfo(item)" :hoverable='true' :bodyStyle="{padding: '10px',textAlign: 'center'}">
-                                {{item.volumeName}}
+                            <a-card @click="jumpNovelInfo(item)" :hoverable='true' :bodyStyle="{padding: '10px',textAlign: 'center'}">
+                                {{item.novelName}}
                             </a-card>
                         </div>
                     </template>
                 </a-list>
-                <a-list v-if="!switchModel" :grid="{ gutter: 24, column: 1 }" :data-source="novelInfo.novelVolumeList">
+                <a-list v-if="!switchModel" :grid="{ gutter: 24, column: 1 }" :data-source="seriesInfo.novelList">
                     <template #renderItem="{ item,index }">
                         <div style="padding: 5px">
-                            <a-card @click="jumpVolumeInfo(item)" :hoverable='true' :bodyStyle="{padding: '10px'}">
-                                {{'第'+(index+1)+'卷 '}}{{item.volumeName}}
+                            <a-card @click="jumpNovelInfo(item)" :hoverable='true' :bodyStyle="{padding: '10px'}">
+                                {{'第'+(index+1)+'卷 '}}{{item.novelName}}
                             </a-card>
                         </div>
                     </template>
                 </a-list>
             </div>
         </div>
-        <UploadVolume
+        <UploadNovel
             :showUploadModal="showUploadModal"
+            :series-info="seriesInfo"
             @closeForm="showUpload(false)"
             @success="reloadPage"
         />
         <TransferOrder
-            :novelVolumeList="novelInfo.novelVolumeList"
+            :novelList="seriesInfo.novelList"
             :showTransfer="showTransfer"
             @closeForm="showTransferOrder"
             @success="successOrder"
         />
-        <DeleteVolume
-            :novelVolumeList="novelInfo.novelVolumeList"
+        <DeleteNovel
+            :novelList="seriesInfo.novelList"
             :showDelete="showDelete"
             @closeForm="showDeleteForm"
             @success="successOrder"
         />
-        <CreateNovel :showCreateNovel="showCreateNovel" :modal-flag="modalFlag" :novel-info="novelInfo"
-                     @closeForm="createNovel"
+        <CreateSeries :show-create-series="showCreateSeries" :modal-flag="modalFlag" :series-info="seriesInfo"
+                     @closeForm="createSeries"
                      @success="successCall"/>
     </div>
 </template>
@@ -107,45 +113,43 @@
     import {onMounted, ref, reactive, toRefs, provide, createVNode} from "vue";
     import api from "../../../../api/api";
     import '../../../../common/index.less'
-    import UploadVolume from "../../../../components/novel/UploadNovel";
+    import UploadNovel from "../../../../components/novel/UploadNovel";
     import TransferOrder from "../../../../components/novel/TransferOrder";
-    import DeleteVolume from "../../../../components/novel/DeleteVolume";
-    import {Modal} from "ant-design-vue";
+    import DeleteNovel from "../../../../components/novel/DeleteNovel";
     import util from "../../../../utils/util";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
-    import CreateNovel from "../../../../components/novel/CreateSeries";
+    import CreateSeries from "../../../../components/novel/CreateSeries";
 
     export default {
-        name: "NovelInfo",
-        components: {CreateNovel, DeleteVolume, TransferOrder, UploadVolume},
+        name: "SeriesInfo",
+        components: {CreateSeries, DeleteNovel, TransferOrder, UploadNovel},
         setup(){
             const router = useRouter();
-            const novelId = router.currentRoute.value.query.novelId;
+            const seriesId = router.currentRoute.value.query.seriesId;
             const state=reactive({
-                novelInfo: {},
+                seriesInfo: {},
                 switchModel: false,
                 showUploadModal: false,
                 showTransfer: false,
                 showDelete: false,
-                showCreateNovel: false,
+                showCreateSeries: false,
                 modalFlag: 'edit',
                 collectionInfo: {},
             })
             onMounted(()=>{
-                initNovelData();
+                initSeriesData();
                 getCollection();
             })
-            provide("novelId",novelId)
-            const initNovelData = () => {
-                api.novelApi.getNovelData({novelId:novelId}).then(res=>{
-                    state.novelInfo = res
+            provide("seriesId",seriesId)
+            const initSeriesData = () => {
+                api.novelApi.getSeriesData({seriesId:seriesId}).then(res=>{
+                    state.seriesInfo = res
                 })
             }
             // 获取信息
             const getCollection = () => {
                 let param={
-                    id: novelId,
-                    collectionType: '1', //小说
+                    id: seriesId,
+                    collectionType: '1', //系列
                 }
                 api.novelApi.getCollection(param).then(res=>{
                     state.collectionInfo=res
@@ -176,34 +180,32 @@
             // 上传分卷信息成功后的回调
             const reloadPage = () => {
                 state.showUploadModal = false
-                initNovelData();
+                initSeriesData();
             }
             // 跳转分卷信息
-            const jumpVolumeInfo = (volume) => {
-                if(router.currentRoute.value.name==="NovelInfo2"){
+            const jumpNovelInfo = (novel) => {
+                if(router.currentRoute.value.name==="SeriesInfo2"){
                     router.push({
-                        path: '/mainPage/volumeInfo',
+                        path: '/mainPage/novelInfo',
                         query:{
-                            novelId: volume.novelId,
-                            volumeId: volume.volumeId
+                            novelId: novel.novelId,
                         }
                     })
                 }else {
                     const { href } = router.resolve({
-                        path: '/main/volumeInfo',
+                        path: '/main/novelInfo',
                         query:{
-                            novelId: volume.novelId,
-                            volumeId: volume.volumeId
+                            novelId: novel.novelId,
                         }
                     })
                     window.open(href, '_blank');
                 }
             }
-            // 打开/关闭分卷弹窗
+            // 打开/关闭小说弹窗
             const showTransferOrder = (flag) => {
                 state.showTransfer = flag
             }
-            // 打开/关闭删除分卷
+            // 打开/关闭删除小说
             const showDeleteForm = (flag) => {
                 state.showDelete = flag
             }
@@ -211,32 +213,25 @@
             const successOrder = () => {
                 showTransferOrder(false)
                 showDeleteForm(false)
-                initNovelData()
+                initSeriesData()
             }
-            // 删除分卷信息
-            const deleteNovel = () => {
-                Modal.confirm({
-                    title: '确认删除',
-                    content: '是否删除小说（分卷、章节等信息将一并删除）',
-                    icon:createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk(){
-                        let ids = [router.currentRoute.value.query.novelId];
-                        api.novelApi.deleteNovel(ids).then(res=>{
-                            util.success("删除成功")
-                            router.push({
-                                name: 'Main',
-                            })
+            // 删除系列信息
+            const deleteSeries = () => {
+                util.confirm('确认删除','是否删除系列（小说、章节等信息将一并删除）',()=>{
+                    let ids = [seriesId];
+                    api.novelApi.deleteSeries(ids).then(res=>{
+                        util.success("删除成功")
+                        router.push({
+                            name: 'Main',
                         })
-                    }
+                    })
                 })
             }
             // 加入收藏
             const addCollection = () =>{
                 let param = {
-                    collectionType: '1', //小说
-                    novelId,
+                    collectionType: '1', //系列
+                    seriesId,
                 }
                 api.novelApi.addCollection(param).then(res=>{
                     util.success("收藏成功")
@@ -254,13 +249,21 @@
                 })
             }
             // 弹出/关闭编辑弹窗
-            const createNovel = (flag) => {
-                state.showCreateNovel = flag
+            const createSeries = (flag) => {
+                state.showCreateSeries = flag
             }
             // 编辑回调
             const successCall = () => {
-                createNovel(false)
-                initNovelData()
+                createSeries(false)
+                initSeriesData()
+            }
+            //下载
+            const downloadSeries = () => {
+                let param = {
+                    collectionType: '1',
+                    seriesId: seriesId
+                }
+                api.novelApi.download(param)
             }
 
             return {
@@ -270,15 +273,16 @@
                 goBack,
                 showUpload,
                 reloadPage,
-                jumpVolumeInfo,
+                jumpNovelInfo,
                 showTransferOrder,
                 successOrder,
                 showDeleteForm,
-                deleteNovel,
-                createNovel,
+                deleteSeries,
+                createSeries,
                 successCall,
                 addCollection,
                 deleteCollection,
+                downloadSeries,
             }
         }
     }

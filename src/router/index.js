@@ -39,17 +39,17 @@ const routes = [
         path: 'seriesInfo',
         name: 'SeriesInfo',
         meta: {
-          title: '小说详情'
+          title: '系列详情'
         },
         component: () => import('@/views/novel/novelManager/children/SeriesInfo.vue'),
       },
       {
-        path: 'volumeInfo',
-        name: 'VolumeInfo',
+        path: 'novelInfo',
+        name: 'NovelInfo',
         meta: {
-          title: '分卷详情'
+          title: '小说详情'
         },
-        component: () => import('@/views/novel/novelManager/children/VolumeInfo.vue'),
+        component: () => import('@/views/novel/novelManager/children/NovelInfo.vue'),
       },
       {
         path: 'chapterContent',
@@ -164,18 +164,18 @@ const routes = [
         component: () => import('@/views/main/ListPage.vue')
       },
       {
-        path: 'volumeInfo',
-        name: 'VolumeInfo2',
+        path: 'NovelInfo',
+        name: 'NovelInfo2',
         meta: {
-          title: '分卷详情'
+          title: '小说详情'
         },
-        component: () => import('@/views/novel/novelManager/children/VolumeInfo.vue'),
+        component: () => import('@/views/novel/novelManager/children/NovelInfo.vue'),
       },
       {
         path: 'seriesInfo',
         name: 'SeriesInfo2',
         meta: {
-          title: '小说详情'
+          title: '系列详情'
         },
         component: () => import('@/views/novel/novelManager/children/SeriesInfo.vue'),
       },

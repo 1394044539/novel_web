@@ -75,7 +75,7 @@
                 <template #seriesName="{ text, record, index }">
                     <a-tooltip>
                         <template #title>{{text}}</template>
-                        <a href="javascript:" @click="lookNovel(record)" class="custom-two-ellipsis">{{text}}</a>
+                        <a href="javascript:" @click="lookSeries(record)" class="custom-two-ellipsis">{{text}}</a>
                     </a-tooltip>
                 </template>
                 <template #seriesImg="{ text, record, index }">
@@ -85,9 +85,6 @@
                             :fallback="require('@/assets/img/notImg.png')"
                     />
                 </template>
-<!--                <template #typeList="{ text, record, index }">-->
-<!--                    {{getNovelTypeName(text)}}-->
-<!--                </template>-->
                 <template #seriesDesc="{ text, record, index }">
                     <a-tooltip>
                         <template #title>
@@ -104,7 +101,7 @@
                 </template>
                 <template #operation="{ text, record, index }">
                     <a-button size="small" type="primary" @click="showNovelModal(true,record)">查看小说</a-button>
-                    <a-button class="custom-btn" size="small" type="primary" @click="downloadNovel(record)">下载</a-button>
+                    <a-button class="custom-btn" size="small" type="primary" @click="downloadSeries(record)">下载</a-button>
                 </template>
             </a-table>
         </div>
@@ -282,21 +279,11 @@
                     state.novelTypes=res
                 })
             }
-            const getNovelTypeName = (types) =>{
-                if(types){
-                    let name = ''
-                    types.forEach(e=>{
-                        name += e.paramName + ','
-                    })
-                    return name.substring(0,name.length-1)
-                }
-                return ''
-            }
-            const lookNovel = (novel) => {
+            const lookSeries = (series) => {
                 const { href } = route.resolve({
                     path: '/main/seriesInfo',
                     query: {
-                        novelId: novel.novelId,
+                        seriesId: series.seriesId,
                     }
                 })
                 window.open(href, '_blank');
@@ -369,7 +356,7 @@
                 state.seriesInfo = seriesInfo
             }
 
-            const downloadNovel = (seriesInfo={}) => {
+            const downloadSeries = (seriesInfo={}) => {
                 let param = {
                     collectionType: '1',
                     seriesId: seriesInfo.seriesId
@@ -392,16 +379,15 @@
                 createSeries,
                 editSeries,
                 deleteSeries,
-                lookNovel,
+                lookSeries,
                 pagination,
                 onSelectChange,
                 showNovelModal,
                 successCall,
-                getNovelTypeName,
                 labelCol:{
                     span: 8,
                 },
-                downloadNovel,
+                downloadSeries,
                 resetList,
                 searchFromRef,
             }

@@ -1,18 +1,18 @@
 <template>
     <a-modal
-            v-model:visible="showUpdateVolume"
-            title="编辑分卷"
+            v-model:visible="showUpdateNovel"
+            title="编辑小说"
             :footer="null"
             @cancel="closeForm"
             width="800px"
     >
-        <a-form :model="volumeFormData"
-                ref="volumeFormRef"
-                :rules="volumeRules">
+        <a-form :model="novelFormData"
+                ref="novelFormRef"
+                :rules="novelRules">
             <a-row>
                 <a-col :span="24">
-                    <a-form-item label="分卷名：" name="volumeName" :label-col="{span: 4}">
-                        <a-input allowClear v-model:value="volumeFormData.volumeName" />
+                    <a-form-item label="小说名：" name="novelName" :label-col="{span: 4}">
+                        <a-input allowClear v-model:value="novelFormData.novelName" />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -20,7 +20,7 @@
                 <a-col :span="12">
                     <a-form-item label="发布时间：" name="publicTime" :label-col="{span: 8}">
                         <a-date-picker
-                                v-model:value="volumeFormData.publicTime"
+                                v-model:value="novelFormData.publicTime"
                                 type="date"
                                 placeholder="发布时间"
                                 style="width: 100%"
@@ -28,8 +28,8 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                    <a-form-item label="排序号：" name="volumeOrder" :label-col="{span: 8}">
-                        <a-input-number allowClear style="width: 100%" v-model:value="volumeFormData.volumeOrder" />
+                    <a-form-item label="排序号：" name="novelOrder" :label-col="{span: 8}">
+                        <a-input-number allowClear style="width: 100%" v-model:value="novelFormData.novelOrder" />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -40,10 +40,10 @@
                                 :before-upload="beforeUpload"
                                 accept=".jpg, .jpeg, .png"
                                 list-type="picture-card"
-                                v-model:file-list="volumeImgFiles"
+                                v-model:file-list="novelImgFiles"
                                 @preview="handlePreview"
                         >
-                            <div v-if="volumeImgFiles.length < 1">
+                            <div v-if="novelImgFiles.length < 1">
                                 <plus-outlined />
                                 <div class="ant-upload-text">点击上传封面</div>
                             </div>
@@ -56,20 +56,20 @@
             </a-row>
             <a-row>
                 <a-col :span="24">
-                    <a-form-item label="分卷描述：" name="volumeDesc" :label-col="{span: 4}">
+                    <a-form-item label="小说描述：" name="novelDesc" :label-col="{span: 4}">
                         <a-textarea
                                 showCount
                                 allowClear
                                 :maxlength=500
-                                :autoSize="{ minRows: 3, maxRows: 3 }"
-                                v-model:value="volumeFormData.volumeDesc"
-                                :rows="3"/>
+                                :autoSize="{ minRows: 5, maxRows: 5 }"
+                                v-model:value="novelFormData.novelDesc"
+                                :rows="5"/>
                     </a-form-item>
                 </a-col>
             </a-row>
             <a-row>
                 <a-col :span="24" style="text-align: center">
-                    <a-button type="primary" @click="updateVolume">保存</a-button>
+                    <a-button type="primary" @click="updateNovel">保存</a-button>
                     <a-button style="margin-left: 5px" @click="closeForm">取消</a-button>
                 </a-col>
             </a-row>
@@ -84,50 +84,50 @@
     import {useRouter} from "vue-router";
 
     export default {
-        name: "UpdateVolume",
+        name: "UpdateNovel",
         props:{
-            showUpdateVolume:{
+            showUpdateNovel:{
                 type:Boolean,
                 default: false
             },
-            volumeInfo:{
+            novelInfo:{
                 type: Object
             }
         },
         setup(props,content){
             const state = reactive({
-                showUpdateVolume: false,
-                volumeFormData:{},
-                volumeImgFiles: [],
+                // showUpdateNovel: false,
+                novelFormData:{},
+                novelImgFiles: [],
                 previewVisible: false,
                 previewImage: ''
             })
-            const volumeRules = {}
-            watch(()=>props.showUpdateVolume,(newV,oldV)=>{
+            const novelRules = {}
+            watch(()=>props.showUpdateNovel,(newV,oldV)=>{
                 if(newV){
-                    state.volumeFormData = { ...props.volumeInfo }
-                    state.volumeImgFiles = []
+                    state.novelFormData = { ...props.novelInfo }
+                    state.novelImgFiles = []
                 }
             })
             const closeForm = () => {
                 content.emit("closeForm",false)
             }
-            const updateVolume = () => {
+            const updateNovel = () => {
                 let formData = new FormData();
-                formData.append("novelId",props.volumeInfo.novelId)
-                formData.append("volumeId",props.volumeInfo.volumeId)
-                formData.append("volumeName",state.volumeFormData.volumeName)
-                if(state.volumeFormData.publicTime){
-                    let time = state.volumeFormData.publicTime
+                formData.append("seriesId",props.novelInfo.seriesId)
+                formData.append("novelId",props.novelInfo.novelId)
+                formData.append("novelName",state.novelFormData.novelName)
+                if(state.novelFormData.publicTime){
+                    let time = state.novelFormData.publicTime
                     time = typeof time === 'string' ?time : time.format('YYYY-MM-DD')
                     formData.append("publicTime",time);
                 }
-                formData.append("volumeOrder",state.volumeFormData.volumeOrder)
-                formData.append("volumeDesc",state.volumeFormData.volumeDesc)
-                if(state.volumeImgFiles.length>0){
-                    formData.append("imgFile",state.volumeImgFiles[0].originFileObj)
+                formData.append("novelOrder",state.novelFormData.novelOrder)
+                formData.append("novelDesc",state.novelFormData.novelDesc)
+                if(state.novelImgFiles.length>0){
+                    formData.append("imgFile",state.novelImgFiles[0].originFileObj)
                 }
-                api.novelApi.updateVolume(formData).then(res=>{
+                api.novelApi.updateNovel(formData).then(res=>{
                     util.success("修改成功！")
                     content.emit("success")
                 })
@@ -159,11 +159,11 @@
             return{
                 ...toRefs(state),
                 closeForm,
-                volumeRules,
+                novelRules,
                 handleCancel,
                 handlePreview,
                 beforeUpload,
-                updateVolume
+                updateNovel
             }
         }
     }
