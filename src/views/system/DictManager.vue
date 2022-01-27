@@ -40,17 +40,15 @@
 </template>
 
 <script>
-    import {onMounted, reactive, toRefs,createVNode} from "vue";
+    import {onMounted, reactive, toRefs} from "vue";
     import api from '../../api/api'
     import DictModal from "../../components/dict/DictModal";
     import DictParamTable from "../../components/dict/DictParamTable";
     import util from "../../utils/util";
-    import {Modal} from "ant-design-vue";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "DictManager",
-        components: {DictParamTable, DictModal, QuestionCircleOutlined},
+        components: {DictParamTable, DictModal},
         setup(props,content){
             const state=reactive({
                 data: [],
@@ -157,20 +155,13 @@
                 if(state.selectedRowKeys.length===0){
                     util.info('请选择要删除的字典')
                 }else {
-                    Modal.confirm({
-                        title: '确认删除',
-                        content: '是否删除选中字典',
-                        icon:createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk(){
-                            let strings = state.selectedRows.map(e=>e.dictId);
-                            api.sysApi.deleteDict(strings).then(res=>{
-                                util.success("删除成功！")
-                                getDictList()
-                            })
-                        }
-                    });
+                    util.confirm('确认删除','是否删除选中字典',()=>{
+                        let strings = state.selectedRows.map(e=>e.dictId);
+                        api.sysApi.deleteDict(strings).then(res=>{
+                            util.success("删除成功！")
+                            getDictList()
+                        })
+                    })
                 }
             }
 

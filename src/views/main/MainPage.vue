@@ -105,12 +105,11 @@
 </template>
 
 <script>
-    import { createVNode,reactive,toRefs,onMounted } from 'vue'
+    import { reactive,toRefs,onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import { useStore } from 'vuex'
     import IconComponent from "../../components/common/IconComponent";
     import { QuestionCircleOutlined } from '@ant-design/icons-vue';
-    import {Modal} from "ant-design-vue";
     import api from "../../api/api"
     import util from "../../utils/util"
     import FeedbackModal from "../../components/system/FeedbackModal";

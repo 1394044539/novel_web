@@ -26,11 +26,9 @@
 </template>
 
 <script>
-    import {createVNode, reactive, toRefs} from 'vue'
-    import { Modal } from 'ant-design-vue'
+    import { reactive, toRefs} from 'vue'
     import api from '../../api/api'
     import util from '../../utils/util'
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "DeleteNovel",

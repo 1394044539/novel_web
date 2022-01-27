@@ -37,12 +37,10 @@
 </template>
 
 <script>
-    import {reactive,toRefs,onMounted,createVNode} from "vue";
+    import {reactive,toRefs,onMounted} from "vue";
     import api from '../../../api/api'
     import util from '../../../utils/util'
     import InsertUserModal from "./InsertUserModal";
-    import {Modal} from "ant-design-vue";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "UserInfoTab",
@@ -154,19 +152,12 @@
             // 禁用用户
             const disabledUser = () => {
                 if(state.selectedRowKeys.length>0){
-                    Modal.confirm({
-                        title: '确认禁用',
-                        content: '是否禁用选择用户',
-                        icon:createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk(){
-                            let idList = state.selectedRows.map(e=>e.userId);
-                            api.userApi.disableUser(idList).then(res=>{
-                                util.success("禁用成功")
-                                getUserInfoList()
-                            })
-                        },
+                    util.confirm('确认禁用','是否禁用选择用户',()=>{
+                        let idList = state.selectedRows.map(e=>e.userId);
+                        api.userApi.disableUser(idList).then(res=>{
+                            util.success("禁用成功")
+                            getUserInfoList()
+                        })
                     })
                 }else {
                     util.info("请选择要禁用的用户")
@@ -174,22 +165,15 @@
             }
             // 取消禁用
             const cancelDisable = (userId) => {
-                Modal.confirm({
-                    title: '取消禁用',
-                    content: '是否解除用户禁用',
-                    icon:createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk(){
-                        let param={
-                            userId: userId,
-                            userStatus: '0',
-                        }
-                        api.userApi.updateUser(param).then(res=>{
-                            util.success("解除成功")
-                            getUserInfoList()
-                        })
+                util.confirm('取消禁用','是否解除用户禁用',()=>{
+                    let param={
+                        userId: userId,
+                        userStatus: '0',
                     }
+                    api.userApi.updateUser(param).then(res=>{
+                        util.success("解除成功")
+                        getUserInfoList()
+                    })
                 })
             }
 

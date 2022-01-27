@@ -110,7 +110,7 @@
 
 <script>
     import { useRouter } from 'vue-router'
-    import {onMounted, ref, reactive, toRefs, provide, createVNode} from "vue";
+    import {onMounted, reactive, toRefs, provide} from "vue";
     import api from "../../../../api/api";
     import '../../../../common/index.less'
     import UploadNovel from "../../../../components/novel/UploadNovel";

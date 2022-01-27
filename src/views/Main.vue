@@ -61,14 +61,12 @@
 </template>
 
 <script>
-    import {createVNode, ref, watch, reactive,computed } from 'vue';
-    import {Modal} from 'ant-design-vue'
+    import {ref,computed } from 'vue';
     import {useStore} from 'vuex'
     import {useRouter,} from 'vue-router'
     import api from '../api/api'
     import util from '../utils/util'
     import constant from '../common/constant'
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "Main",
@@ -78,29 +76,22 @@
             //右上角用户信息部分
             const handleMenuClick = ({key}) => {
                 if (key === 'logout') {
-                    Modal.confirm({
-                        title: "退出",
-                        content: "确认退出登录？",
-                        icon: createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk() {
-                            return new Promise((resolve, reject) => {
-                                //请求后台
-                                api.userApi.logout().then(res => {
-                                    util.success("退出成功！")
-                                    localStorage.clear()
-                                    store.commit('clearStore')
-                                    resolve()
-                                }).catch(err => {
-                                    reject()
-                                })
-                            }).then(() => {
-                                router.push({name: 'Login'})
-                            }).catch(() => {
-                            });
-                        }
-                    });
+                    util.confirm('退出','确认退出登录？',()=>{
+                        return new Promise((resolve, reject) => {
+                            //请求后台
+                            api.userApi.logout().then(res => {
+                                util.success("退出成功！")
+                                localStorage.clear()
+                                store.commit('clearStore')
+                                resolve()
+                            }).catch(err => {
+                                reject()
+                            })
+                        }).then(() => {
+                            router.push({name: 'Login'})
+                        }).catch(() => {
+                        });
+                    })
                 }
             }
 

@@ -119,10 +119,8 @@
 </template>
 
 <script>
-    import {reactive,toRefs, watch,onMounted,createVNode} from "vue";
-    import { Modal } from 'ant-design-vue'
+    import {reactive,toRefs, watch,onMounted} from "vue";
     import IconComponent from "../../components/common/IconComponent";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import '../../common/index.less'
     import { useRouter } from "vue-router";
     import api from "../../api/api";
@@ -213,18 +211,6 @@
                         name: 'NovelManager'
                     })
                 })
-                // Modal.confirm({
-                //     title: "上传小说",
-                //     content: "上传小说需要进入小说列表上传，是否跳转？",
-                //     icon: createVNode(QuestionCircleOutlined),
-                //     okText: '确认',
-                //     cancelText: '取消',
-                //     onOk() {
-                //         route.push({
-                //             name: 'NovelManager'
-                //         })
-                //     }
-                // });
             }
 
             /** 小说内容 **/

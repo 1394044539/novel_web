@@ -40,11 +40,9 @@
 </template>
 
 <script>
-    import {reactive,toRefs,onMounted,createVNode} from 'vue'
+    import {reactive,toRefs,onMounted} from 'vue'
     import api from '../../../api/api'
     import util from '../../../utils/util'
-    import {Modal} from "ant-design-vue";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
     import '../../../common/index.less'
 
     export default {
@@ -177,18 +175,11 @@
             }
             // 创建注册信息或生成发送
             const createRegInfo = (data) => {
-                Modal.confirm({
-                    title: '创建注册信息',
-                    content: '是否生成注册信息',
-                    icon:createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk(){
-                        api.userApi.createRegInfo({registerId:data.registerId}).then(res=>{
-                            util.success("发送成功")
-                            getRegInfoList()
-                        })
-                    },
+                util.confirm('创建注册信息','是否生成注册信息',()=>{
+                    api.userApi.createRegInfo({registerId:data.registerId}).then(res=>{
+                        util.success("发送成功")
+                        getRegInfoList()
+                    })
                 })
             }
 

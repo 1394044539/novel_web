@@ -109,16 +109,14 @@
 </template>
 
 <script>
-    import { ref,reactive,toRefs,toRaw,watch,createVNode } from 'vue'
+    import { ref,reactive,toRefs,toRaw,watch } from 'vue'
     import DictParamModal from "./DictParamModal";
     import api from '../../api/api'
     import util from "../../utils/util";
-    import {Modal} from "ant-design-vue";
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
     export default {
         name: "DictModal",
-        components: {DictParamModal,QuestionCircleOutlined},
+        components: {DictParamModal},
         props: {
             showModal: {
                 type: Boolean,
@@ -319,31 +317,24 @@
                 if(state.selectedRowKeys.length===0){
                     util.info('请选择要删除的参数')
                 }else {
-                    Modal.confirm({
-                        title: '确认删除',
-                        content: '是否删除选中子项',
-                        icon:createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk(){
-                            let arr=state.dictParamData
-                            state.selectedRows.forEach(e=>{
-                                delete arr[e.index]
+                    util.confirm('确认删除','是否删除选中子项',()=>{
+                        let arr=state.dictParamData
+                        state.selectedRows.forEach(e=>{
+                            delete arr[e.index]
+                        })
+                        let index=0;
+                        let newArr=[];
+                        arr.forEach((value,i)=>{
+                            newArr.push({
+                                ...value,
+                                index:index
                             })
-                            let index=0;
-                            let newArr=[];
-                            arr.forEach((value,i)=>{
-                                newArr.push({
-                                    ...value,
-                                    index:index
-                                })
-                                index++
-                            })
-                            state.dictParamData = newArr
-                            state.selectedRowKeys = []
-                            state.selectedRows = []
-                        }
-                    });
+                            index++
+                        })
+                        state.dictParamData = newArr
+                        state.selectedRowKeys = []
+                        state.selectedRows = []
+                    })
                 }
             }
 

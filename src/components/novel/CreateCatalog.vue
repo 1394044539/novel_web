@@ -20,11 +20,9 @@
 </template>
 
 <script>
-    import { reactive,toRefs,watch,createVNode } from 'vue'
-    import { Modal } from 'ant-design-vue'
+    import { reactive,toRefs,watch } from 'vue'
     import api from '../../api/api'
     import util from "../../utils/util"
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 
 
     export default {
@@ -54,32 +52,25 @@
                     util.info("目录名不能为空！")
                     return
                 }
-                Modal.confirm({
-                    title: props.modalFlag==='create'?'添加':'修改',
-                    content: props.modalFlag==='create'?'是否添加新目录':'是否修改新目录',
-                    icon:createVNode(QuestionCircleOutlined),
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk(){
-                        let param={
-                            catalogName: state.inputCatalogName,
-                            parentId: props.nowCatalog.collectionId,
-                            collectionType: '2' //文件夹
-                        }
-                        if(props.modalFlag==='create'){
-                            api.novelApi.addCollection(param).then(res=>{
-                                util.success("创建成功")
-                                success()
-                            })
-                        }else {
-                            param.collectionId = props.choseCatalog. collectionId
-                            api.novelApi.updateCollection(param).then(res=>{
-                                util.success("修改成功")
-                                success()
-                            })
-                        }
+                util.confirm(props.modalFlag==='create'?'添加':'修改',props.modalFlag==='create'?'是否添加新目录':'是否修改新目录',()=>{
+                    let param={
+                        catalogName: state.inputCatalogName,
+                        parentId: props.nowCatalog.collectionId,
+                        collectionType: '2' //文件夹
                     }
-                });
+                    if(props.modalFlag==='create'){
+                        api.novelApi.addCollection(param).then(res=>{
+                            util.success("创建成功")
+                            success()
+                        })
+                    }else {
+                        param.collectionId = props.choseCatalog. collectionId
+                        api.novelApi.updateCollection(param).then(res=>{
+                            util.success("修改成功")
+                            success()
+                        })
+                    }
+                })
             }
 
             const closeForm = () => {

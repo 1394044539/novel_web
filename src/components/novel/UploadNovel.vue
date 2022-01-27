@@ -153,9 +153,7 @@
 </template>
 
 <script>
-    import {ref, reactive, toRefs, toRaw, createVNode,inject } from 'vue'
-    import {Modal} from 'ant-design-vue'
-    import { QuestionCircleOutlined } from '@ant-design/icons-vue';
+    import {ref, reactive, toRefs } from 'vue'
     import api from '../../api/api'
     import util from '../../utils/util'
 
@@ -171,7 +169,6 @@
                 default:{},
             }
         },
-        components: {QuestionCircleOutlined},
         setup(props,content){
             const state = reactive({
                 showSingleModal: false,
