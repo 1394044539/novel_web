@@ -164,7 +164,7 @@ const routes = [
         component: () => import('@/views/main/ListPage.vue')
       },
       {
-        path: 'NovelInfo',
+        path: 'novelInfo',
         name: 'NovelInfo2',
         meta: {
           title: '小说详情'

@@ -30,10 +30,10 @@
                                 <a-menu-divider />
                                 <a-checkbox-group v-model:value="searchType">
                                     <a-menu-item>
-                                        <a-checkbox value="1">小说</a-checkbox>
+                                        <a-checkbox value="1">系列</a-checkbox>
                                     </a-menu-item>
                                     <a-menu-item>
-                                        <a-checkbox value="0">分卷</a-checkbox>
+                                        <a-checkbox value="0">小说</a-checkbox>
                                     </a-menu-item>
                                     <a-menu-item>
                                         <a-checkbox value="2">目录</a-checkbox>
@@ -67,7 +67,7 @@
                             <div class="item-tag">
                                 <transition name="slide-fade">
                                     <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">
-                                        {{item.collectionType==='0'?'分卷':item.collectionType==='1'?'小说':'文件夹'}}
+                                        {{item.collectionType==='0'?'小说':item.collectionType==='1'?'系列':'文件夹'}}
                                     </a-tag>
                                 </transition>
                             </div>
@@ -230,20 +230,20 @@
             /** 小说内容 **/
             const openNovel = (item) => {
                 if(item.collectionType==='0'){
-                    // 分卷
+                    // 小说
                     route.push({
-                        path: '/mainPage/volumeInfo',
+                        path: '/mainPage/novelInfo',
                         query:{
-                            novelId: item.novelId,
-                            volumeId: item.volumeId
+                            seriesId: item.seriesId,
+                            novelId: item.novelId
                         }
                     })
                 }else if(item.collectionType==='1'){
                     // 系列
                     route.push({
-                        path: '/mainPage/novelInfo',
+                        path: '/mainPage/seriesInfo',
                         query: {
-                            novelId: item.novelId,
+                            seriesId: item.seriesId,
                         }
                     })
                 }
@@ -273,22 +273,15 @@
             /** 右键菜单 **/
             // 取消收藏
             const deleteCollection = (collection) => {
-                    Modal.confirm({
-                        title: "取消收藏",
-                        content: "是否确定取消收藏？",
-                        icon: createVNode(QuestionCircleOutlined),
-                        okText: '确认',
-                        cancelText: '取消',
-                        onOk() {
-                            let param = {
-                                collectionId: collection.collectionId,
-                            }
-                            api.novelApi.deleteCollection(param).then(res=>{
-                                util.success("取消成功")
-                                getCollectionList();
-                            })
-                        }
-                    });
+                util.confirm('取消收藏','是否确定取消收藏？',()=>{
+                    let param = {
+                        collectionId: collection.collectionId,
+                    }
+                    api.novelApi.deleteCollection(param).then(res=>{
+                        util.success("取消成功")
+                        getCollectionList();
+                    })
+                })
             }
             // 复制收藏
             const copyCollection = (collection) => {

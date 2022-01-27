@@ -66,6 +66,9 @@
                 <template #collectionType="{text,record,index}">
                     {{text==='0'?'小说':text==='1'?'系列':'文件夹'}}
                 </template>
+                <template #parentName="{text,record,index}">
+                    {{text || '-'}}
+                </template>
                 <template #operation="{text,record,index}">
                     <a-button v-if="record.collectionType==='2'" size="small">重命名</a-button>
 <!--                    <a-button class="custom-btn" size="small">移动</a-button>-->
@@ -124,6 +127,7 @@
                     title: '父级目录',
                     dataIndex: 'parentName',
                     key: 'parentName',
+                    align: 'center',
                     slots: {
                         customRender: 'parentName'
                     }
