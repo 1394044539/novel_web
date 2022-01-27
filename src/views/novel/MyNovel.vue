@@ -173,12 +173,17 @@
 
             const getList = () =>{
                 let param = {
-                    page: state.page,
-                    pageSize: state.pageSize,
                     ...state.searchFrom
                 }
-                param.createTime = constant.method.getFormatTime(state.searchFrom.createTime[0],'YYYY-MM-DD HH:mm:ss')
-                api.novelApi.getCollectionListPage(param).then(res=>{
+                param.createStartTime = constant.method.getFormatTime(param.createTime[0],'yyyy-MM-DD HH:mm')
+                param.createEndTime = constant.method.getFormatTime(param.createTime[1],'yyyy-MM-DD HH:mm')
+                delete param.createTime
+                let requestParam = {
+                    page: state.page,
+                    pageSize: state.pageSize,
+                    param
+                }
+                api.novelApi.getCollectionListPage(requestParam).then(res=>{
                     state.data=res.records
                     state.total = res.total
                 })

@@ -60,18 +60,25 @@
             <div class="main-list-content">
                 <div class="novel-list-item" v-for="(item,index)  in collectionList" @mouseenter="showTag(true,index)" @mouseleave="showTag(false)">
                     <div v-if="item.collectionType==='0'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读:{{item.updateTime}}</div>
-                    <div v-if="item.collectionType==='1'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读到</div>
+                    <div v-if="item.collectionType==='1'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次阅读到：第七章</div>
                     <div v-if="item.collectionType==='2'" style="font-size: 12px;color: #9e9e9e;padding-bottom: 8px">上次操作:{{item.updateTime}}</div>
                     <a-dropdown :trigger="['contextmenu']">
-                        <div :style="{textAlign: 'center',height: '180px',width: '150px',position: 'relative',cursor: 'pointer'}">
-                            <div class="item-tag">
-                                <transition name="slide-fade">
-                                    <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">
-                                        {{item.collectionType==='0'?'小说':item.collectionType==='1'?'系列':'文件夹'}}
-                                    </a-tag>
-                                </transition>
-                            </div>
-                            <div class="item-image">
+                        <div style="cursor: pointer;display: flex;justify-content: center">
+<!--                            <div class="item-tag">-->
+<!--                                <transition name="slide-fade">-->
+<!--                                    <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">-->
+<!--                                        {{item.collectionType==='0'?'小说':item.collectionType==='1'?'系列':'文件夹'}}-->
+<!--                                    </a-tag>-->
+<!--                                </transition>-->
+<!--                            </div>-->
+                            <div class="item-image" style="height: 180px;width: 150px;position: relative">
+                                <div class="item-tag">
+                                    <transition name="slide-fade">
+                                        <a-tag v-if="show&&index===mouseIndex" style="border-radius: 5px" color="pink">
+                                            {{item.collectionType==='0'?'小说':item.collectionType==='1'?'系列':'文件夹'}}
+                                        </a-tag>
+                                    </transition>
+                                </div>
                                 <a-image
                                         v-if="item.collectionType!=='2'"
                                         :preview="false" height="180px" width="150px"
@@ -376,6 +383,7 @@
         width: 20%;
         margin-bottom: 25px;
         overflow-y: auto;
+        text-align: center;
     }
 
     .item-tag{
