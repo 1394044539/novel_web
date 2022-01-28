@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p v-for="(item,index) in content.context">{{item}}</p>
+        <div v-html="item" v-for="(item,index) in content.context"></div>
     </div>
 </template>
 

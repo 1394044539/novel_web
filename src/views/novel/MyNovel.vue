@@ -44,7 +44,7 @@
                 </a-row>
             </a-form>
         </div>
-        <div style="margin-bottom: 20px">
+        <div style="margin-bottom: 10px">
             <a-row>
                 <a-col :span="8" style="text-align: left">
                     <a-button class="custom-btn" @click="batchDelete">删除</a-button>

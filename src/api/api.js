@@ -160,6 +160,9 @@ const novelApi = {
     download: (params)=> {
         return http.downloadFile('/userCollection/download',params)
     },
+    getUploadList: (params,loading=false)=>{
+        return http.post('/novelFile/list',params,loading)
+    }
 }
 
 export default {userApi, sysApi, novelApi}

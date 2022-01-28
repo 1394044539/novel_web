@@ -53,7 +53,7 @@
                     <a-col :span="8" style="text-align: left">
                         <a-button type="primary" @click="createSeries(true,'create')">
                             <icon-component name="DiffOutlined"/>
-                            创建小说
+                            创建系列
                         </a-button>
                         <a-button type="primary" style="margin-left: 5px" @click="editSeries()">编辑</a-button>
                         <a-button style="margin-left: 5px" @click="deleteSeries">删除</a-button>
@@ -165,7 +165,7 @@
             //列表功能
             const columns = [
                 {
-                    title: '小说名',
+                    title: '系列名',
                     width: 150,
                     dataIndex: 'seriesName',
                     key: 'seriesName',
@@ -190,7 +190,7 @@
                     },
                 },
                 {
-                    title: '小说类型',
+                    title: '系列类型',
                     dataIndex: 'types',
                     key: 'types',
                     width: 150,
@@ -223,13 +223,13 @@
                     width: 200,
                 },
                 {
-                    title: '小说总章节数',
+                    title: '系列总章节数',
                     dataIndex: 'totalChapter',
                     key: 'totalChapter',
                     width: 150,
                 },
                 {
-                    title: '小说总字数',
+                    title: '系列总字数',
                     dataIndex: 'totalWord',
                     key: 'totalWord',
                     width: 150,
@@ -288,7 +288,7 @@
                 })
                 window.open(href, '_blank');
             }
-            //获取小说列表
+            //获取系列列表
             const getSeriesList = () => {
                 let param={
                     ...state.searchFrom
@@ -327,14 +327,14 @@
                 createSeries(false)
                 getSeriesList()
             }
-            //修改小说功能
+            //修改系列功能
             const editSeries = () => {
                 if(state.selectedRowKeys.length===1){
                     state.modalFlag = 'edit'
                     state.seriesInfo = state.selectedRows[0]
                     state.showCreateSeries = true
                 }else {
-                    util.info("请选择一个小说")
+                    util.info("请选择一个系列")
                 }
             }
             const deleteSeries = () => {
