@@ -148,7 +148,9 @@
                 let param = {
                     page: 1,
                     pageSize: 5,
-                    recordType: type
+                    param: {
+                        recordType: type
+                    }
                 }
                 api.novelApi.getHistoryList(param).then(res=>{
                     if(type === '0'){

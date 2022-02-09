@@ -44,7 +44,7 @@
             <div style="margin-bottom: 10px">
                 <a-row>
                     <a-col :span="8" style="text-align: left">
-                        <a-button>删除</a-button>
+                        <a-button @click="deleteUpload">删除</a-button>
                     </a-col>
                     <a-col :span="8" style="text-align: center">
                         <a-button type="primary" @click="getUploadList()">查询</a-button>
@@ -213,6 +213,15 @@
                 searchFromRef.value.resetFields();
                 getUploadList();
             }
+            const deleteUpload = () => {
+                util.confirm('删除文件','确认要删除选中文件(小说会一并删除)',()=>{
+                    let selectedRows = state.selectedRows.map(e=>e.novelId);
+                    api.novelApi.deleteNovel(selectedRows).then(res=>{
+                        util.success("删除成功")
+                        getUploadList();
+                    })
+                })
+            }
             return{
                 ...toRefs(state),
                 labelCol:{
@@ -224,6 +233,7 @@
                 columns,
                 pagination,
                 onSelectChange,
+                deleteUpload
             }
         }
     }
