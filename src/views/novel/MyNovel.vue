@@ -63,6 +63,14 @@
             <a-table :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
                      rowKey='collectionId'
                      :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ y: 600 }">
+                <template #name="{text,record,index}">
+                    <div v-if="record.collectionType==='2'">
+                        {{text}}
+                    </div>
+                    <div v-else>
+                        <a href="javascript:" @click="lookCollection(record)" class="custom-two-ellipsis">{{text}}</a>
+                    </div>
+                </template>
                 <template #collectionType="{text,record,index}">
                     {{text==='0'?'小说':text==='1'?'系列':'文件夹'}}
                 </template>
@@ -80,6 +88,7 @@
 
 <script>
     import { reactive,toRefs,onMounted,ref} from 'vue'
+    import { useRouter } from 'vue-router'
     import api from '../../api/api'
     import util from '../../utils/util'
     import constant from '../../common/constant'
@@ -102,6 +111,7 @@
                     createTime: '',
                 },
             })
+            const route = useRouter()
             let searchFromRef = ref()
             onMounted(()=>{
                 getList();
@@ -214,6 +224,32 @@
                     })
                 })
             }
+
+            /**
+             * 查看小说
+             * @param record
+             */
+            const lookCollection = (record) =>{
+                if(record.collectionType==='0'){
+                    //小说
+                    const { href } = route.resolve({
+                        path: '/main/novelInfo',
+                        query:{
+                            novelId: record.novelId,
+                        }
+                    })
+                    window.open(href, '_blank');
+                }else if(record.collectionType==='1'){
+                    //系列
+                    const { href } = route.resolve({
+                        path: '/main/seriesInfo',
+                        query: {
+                            seriesId: record.seriesId,
+                        }
+                    })
+                    window.open(href, '_blank');
+                }
+            }
             return {
                 ...toRefs(state),
                 columns,
@@ -227,6 +263,7 @@
                 searchFromRef,
                 batchDelete,
                 removeAll,
+                lookCollection,
             }
         }
     }

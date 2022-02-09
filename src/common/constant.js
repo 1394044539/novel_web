@@ -32,6 +32,15 @@ let method = {
     //获取时间
     getFormatTime(moment,format){
         return moment?moment.format(format):"";
+    },
+    //计算百分比
+    getPercent(num,total){
+        num = parseFloat(num);
+        total = parseFloat(total);
+        if (isNaN(num) || isNaN(total)) {
+            return 0;
+        }
+        return total <= 0 ? 0 : (Math.round(num / total * 10000) / 100.00);
     }
 }
 

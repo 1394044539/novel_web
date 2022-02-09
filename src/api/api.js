@@ -154,6 +154,9 @@ const novelApi = {
     getHistoryList: (params,loading=false)=> {
         return http.post('/novelHistory/getHistoryList',params,loading)
     },
+    saveHistory: (params,loading=false)=> {
+        return http.put('/novelHistory/saveHistory',params,loading)
+    },
     copyOrMove: (params,loading=false)=> {
         return http.post('/userCollection/copyOrMove',params,loading)
     },
