@@ -41,6 +41,9 @@ let method = {
             return 0;
         }
         return total <= 0 ? 0 : (Math.round(num / total * 10000) / 100.00);
+    },
+    div(molecule,denominator,digit){
+        return Math.round((molecule/denominator) *Math.pow(10,digit))/Math.pow(10,digit);
     }
 }
 

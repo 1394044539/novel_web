@@ -165,7 +165,13 @@ const novelApi = {
     },
     getUploadList: (params,loading=false)=>{
         return http.post('/novelFile/list',params,loading)
-    }
+    },
+    batchDeleteHistory: (params,loading=false)=>{
+        return http.Delete('/novelHistory/batchDelete',params,loading)
+    },
+    clearHistory: (params,loading=false)=>{
+        return http.Delete('/novelHistory/clearHistory',params,loading)
+    },
 }
 
 export default {userApi, sysApi, novelApi}

@@ -56,10 +56,11 @@
                         <a-button class="custom-btn" @click="resetList()" >重置</a-button>
                     </a-col>
                     <a-col :span="8" style="text-align: right">
+                        <a-button @click="clearHistory">清空历史</a-button>
                     </a-col>
                 </a-row>
             </div>
-            <a-table rowKey="index" :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
+            <a-table rowKey="historyId" :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
                      :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ y: 500 }">
                 <template #operation="{ text, record, index }">
                 </template>
@@ -137,11 +138,19 @@
                     },
                 },
                 {
-                    title: '上传人',
+                    title: '记录人',
                     dataIndex: 'createByName',
                     key: 'createByName',
                     slots: {
                         customRender: 'createByName',
+                    },
+                },
+                {
+                    title: 'ip',
+                    dataIndex: 'ip',
+                    key: 'ip',
+                    slots: {
+                        customRender: 'ip',
                     },
                 },
                 {
@@ -197,7 +206,26 @@
 
             //删除历史
             const deleteHistory = () => {
+                if(state.selectedRowKeys.length===0){
+                    util.info("请选择要删除的内容")
+                    return
+                }
+                util.confirm("删除","是否删除选择的内容？",()=>{
+                    let ids = state.selectedRows.map(e=>e.historyId);
+                    api.novelApi.batchDeleteHistory(ids).then(res=>{
+                        util.success("删除成功！")
+                        getHistoryList();
+                    })
+                })
+            }
 
+            const clearHistory = () => {
+                util.confirm("清空","是否清空历史记录？",()=>{
+                    api.novelApi.clearHistory({recordType: '0'}).then(res=>{
+                        util.success("清空成功！")
+                        getHistoryList();
+                    })
+                })
             }
 
             return{
@@ -212,6 +240,7 @@
                 deleteHistory,
                 getHistoryList,
                 resetList,
+                clearHistory,
             }
         }
     }

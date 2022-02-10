@@ -21,7 +21,9 @@
             let query = route.currentRoute.value.query
             onMounted(()=>{
                 getChapterContent()
-                saveHistory()
+                saveHistory();
+                //todo 定时器会越走越快，需要处理
+                // setInterval(saveHistory,10000)
             })
             const getChapterContent = () => {
                 let param = { chapterId: query.chapterId }
@@ -34,14 +36,12 @@
             const saveHistory = () => {
                 let allHeight=parseInt(document.body.scrollHeight);
                 let nowHeight=window.pageYOffset
-                let recordPercentage = constant.method.getPercent(nowHeight,allHeight);
+                let recordPercentage = constant.method.div(nowHeight,allHeight,6);
                 let param={
                     lastChapterId: query.chapterId,
                     recordType: '0',
                     recordPercentage
                 }
-                debugger
-                console.log(param);
                 api.novelApi.saveHistory(param)
             }
 

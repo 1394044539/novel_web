@@ -343,10 +343,10 @@
                 }else {
                     util.confirm('确认删除','是否删除选中系列（小说、章节等信息将一并删除）',()=>{
                         let ids = state.selectedRows.map(e=>e.seriesId);
-                            api.novelApi.deleteSeries(ids).then(res=>{
-                                util.success("删除成功")
-                                getSeriesList()
-                            })
+                        api.novelApi.deleteSeries(ids).then(res=>{
+                            util.success("删除成功")
+                            getSeriesList()
+                        })
                     })
                 }
             }
