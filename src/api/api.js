@@ -151,6 +151,9 @@ const novelApi = {
     getCollectionListPage: (params,loading=false)=> {
         return http.post('/userCollection/list',params,loading)
     },
+    getHistory: (params,loading=false)=> {
+        return http.get('/novelHistory/getHistory',params,loading)
+    },
     getHistoryList: (params,loading=false)=> {
         return http.post('/novelHistory/getHistoryList',params,loading)
     },

@@ -15,6 +15,9 @@ util.info = function (msg,duration=3) {
     return message.info(msg,duration)
 }
 
+util.message = function (config={}) {
+    return message.open(config)
+}
 /**
  * 此方法会返回一个hide，需要调用setTimeout(hide, 2500)来停止loading，2500指时间，可以是0，代表立马停止
  * 也可以传入一个时间，然后返回一个hide，调用then方法，让他继续向后执行
