@@ -194,8 +194,13 @@ const routes = [
           title: '公告列表'
         },
         component: () => import('@/views/system/NoticeList.vue')
-      }
+      },
     ],
+  },
+  {
+    path: '/refresh',
+    name: 'Refresh',
+    component: () => import('@/views/Refresh.vue')
   }
 ]
 

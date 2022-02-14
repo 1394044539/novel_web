@@ -16,16 +16,16 @@
         name: "ChapterContent",
         setup(props, content) {
             const state = reactive({
-                content: []
+                content: {},
+                needSave: true,
             })
             let route = useRouter()
             let query = route.currentRoute.value.query
             let params = route.currentRoute.value.params
             let timer;
-            onMounted(() => {
-                getChapterContent()
-                checkVisitModel()
-                saveHistory();
+            onMounted(async () => {
+                await getChapterContent()
+                await checkVisitModel()
                 //每30秒执行一次
                 timer = setInterval(() => {
                     saveHistory()
@@ -35,33 +35,48 @@
                 if (timer) {
                     clearInterval(timer)
                 }
-                saveHistory();
+                if(state.needSave){
+                    saveHistory();
+                }
             })
             //校验模式
             const checkVisitModel = async () => {
                 await api.novelApi.getHistory({chapterId: query.chapterId}).then(res => {
+                    if(!res){
+                        return
+                    }
                     if (params.visit === 'continue') {
                         //继续阅读，展示是否回到开头
-                        showAlert('上次阅读到['+res.chapterName+']','点我跳转',()=>{
-                            alert("成功！")
+                        showAlert('已为您跳转到最新进度','点我返回顶部',()=>{
+                            jumpScroll(0)
                         })
                     } else if (params.visit === 'restart') {
                         //从头阅读，展示是否回到上一次
-                        showAlert('已为您跳转到最新进度','点我返回顶部',()=>{
-                            // alert("成功！")
+                        showAlert('上次阅读到['+res.chapterName+']','点我跳转',()=>{
+                            state.needSave = false
+                            route.replace({
+                                path: "/refresh",
+                                query: {
+                                    chapterId:res.lastChapterId
+                                },
+                            })
                         })
                     } else {
-                        if(!res){
-                            return
-                        }
                         //正常点击进入，如果有阅读进度，如果有，且是当前章节，则自动跳转，不是当前章节弹出提示框询问是否继续上次阅读
                         if (res.lastChapterId === query.chapterId) {
+                            jumpScroll(res.recordPercentage)
                             showAlert('已为您跳转到最新进度','点我返回顶部',()=>{
-                                // alert("成功！")
+                                jumpScroll(0)
                             })
                         }else {
                             showAlert('上次阅读到['+res.chapterName+']','点我跳转',()=>{
-                                alert("成功！")
+                                state.needSave = false
+                                route.replace({
+                                    path: "/refresh",
+                                    query: {
+                                        chapterId:res.lastChapterId
+                                    },
+                                })
                             })
                         }
                     }
@@ -78,6 +93,16 @@
                     duration: 5
                 })
             }
+
+            const jumpScroll = (y) =>{
+                let topY = document.body.scrollHeight * y
+                window.scrollTo({
+                    left:0,
+                    top: topY,
+                    behavior: "smooth"
+                });
+            }
+            // 获取内容
             const getChapterContent = async () => {
                 let param = {chapterId: query.chapterId}
                 await api.novelApi.getChapterContent(param).then(res => {
