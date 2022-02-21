@@ -41,12 +41,19 @@
             })
             //校验模式
             const checkVisitModel = async () => {
+                if (params.visit === 'mark'){
+                    showAlert('已为您跳转到书签进度','点我返回顶部',()=>{
+                        jumpScroll(0)
+                    })
+                    return
+                }
                 await api.novelApi.getHistory({chapterId: query.chapterId}).then(res => {
                     if(!res){
                         return
                     }
                     if (params.visit === 'continue') {
                         //继续阅读，展示是否回到开头
+                        jumpScroll(params.percentage)
                         showAlert('已为您跳转到最新进度','点我返回顶部',()=>{
                             jumpScroll(0)
                         })

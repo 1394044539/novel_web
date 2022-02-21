@@ -81,6 +81,12 @@
                         state.roleFormData = {
                             ...props.roleData
                         }
+                    }else {
+                        state.roleFormData = {
+                            roleCode: '',
+                            roleName: '',
+                            roleDesc: '',
+                        }
                     }
                 }
             })

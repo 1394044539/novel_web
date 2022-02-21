@@ -62,6 +62,9 @@
             </div>
             <a-table rowKey="historyId" :row-selection="{selectedRowKeys: selectedRowKeys,onChange: onSelectChange}"
                      :pagination="pagination" :columns="columns" :data-source="data" :scroll="{ y: 500 }">
+                <template #chapterName="{ text, record, index}">
+                    <a href="javascript:" @click="lookChapter(record)">{{text}}</a>
+                </template>
                 <template #operation="{ text, record, index }">
                 </template>
             </a-table>
@@ -71,6 +74,7 @@
 
 <script>
     import { reactive,toRefs,ref,onMounted } from 'vue'
+    import { useRoute,useRouter } from 'vue-router'
     import api from '../../api/api'
     import util from '../../utils/util'
     import constant from '../../common/constant'
@@ -94,6 +98,8 @@
                 selectedRows: [],
                 data: [],
             })
+            const route = useRoute()
+            const router = useRouter()
             const searchFromRef = ref();
             //列表功能
             const columns = [
@@ -182,7 +188,8 @@
             // 获取列表
             const getHistoryList = () => {
                 let param = {
-                    ...state.searchFrom
+                    ...state.searchFrom,
+                    recordType: '0'
                 }
                 param.updateStartTime = constant.method.getFormatTime(param.updateTime[0],'yyyy-MM-DD HH:mm')
                 param.updateEndTime = constant.method.getFormatTime(param.updateTime[1],'yyyy-MM-DD HH:mm')
@@ -228,6 +235,19 @@
                 })
             }
 
+            const lookChapter = (record) => {
+                let {href} = router.resolve({
+                    path: '/main/chapterContent',
+                    query: {
+                        chapterId: record.lastChapterId
+                    },
+                    param: {
+                        visit: 'continue'
+                    }
+                })
+                window.open(href, '_blank');
+            }
+
             return{
                 ...toRefs(state),
                 labelCol:{
@@ -241,6 +261,7 @@
                 getHistoryList,
                 resetList,
                 clearHistory,
+                lookChapter,
             }
         }
     }
